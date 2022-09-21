@@ -28,15 +28,15 @@ namespace KapMirror {
             delete[] array;
         };
 
-        T *toArray() {
+        T *toArray() const {
             return array;
         }
 
-        int getSize() {
+        int getSize() const {
             return size;
         }
 
-        int getOffset() {
+        int getOffset() const {
             return offset;
         }
 
@@ -65,6 +65,10 @@ namespace KapMirror {
             offset = other.offset;
             size = other.size;
             return *this;
+        }
+
+        operator T*() const {
+            return array;
         }
     };
 }

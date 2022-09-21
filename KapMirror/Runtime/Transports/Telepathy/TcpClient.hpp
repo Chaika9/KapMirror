@@ -22,7 +22,7 @@ namespace KapMirror {
             void connect(std::string host, int port);
             void close();
 
-            bool connected() {
+            bool connected() const {
                 return isConnected;
             }
 

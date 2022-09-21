@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Array.hpp"
+#include "ArraySegment.hpp"
 #include <string>
 
 #include <iostream>
@@ -13,6 +14,11 @@ namespace KapMirror {
 
         public:
         NetworkReader(char *_buffer) : buffer(_buffer) {
+            position = 0;
+        }
+
+        NetworkReader(ArraySegment<char> segment) {
+            buffer = segment.toArray();
             position = 0;
         }
 

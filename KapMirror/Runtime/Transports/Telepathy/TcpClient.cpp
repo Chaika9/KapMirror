@@ -64,7 +64,7 @@ namespace KapMirror {
             }
 
             std::cout << "TcpClient: sending data=" << data.getSize() << std::endl;
-            char *buffer = data.toArray();
+            char *buffer = data;
             if ((::send(target_fd, buffer, data.getSize(), 0)) < 0) {
                 throw SocketException("Send failed");
             }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Array.hpp"
+#include "ArraySegment.hpp"
 #include <string>
 #include <stdexcept>
 
@@ -42,8 +43,16 @@ namespace KapMirror {
             return Array::Array::copyArray(buffer, position);
         }
 
-        inline int size() {
+        inline ArraySegment<char> toArraySegment() {
+            return ArraySegment<char>(buffer, position);
+        }
+
+        inline int size() const {
             return position;
+        }
+
+        operator ArraySegment<char>() {
+            return toArraySegment();
         }
 
         private:
