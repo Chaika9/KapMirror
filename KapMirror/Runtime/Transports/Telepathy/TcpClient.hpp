@@ -24,7 +24,7 @@ namespace KapMirror {
                 return isConnected;
             }
 
-            void send();
+            void send(char *data, size_t size);
         };
     }
 }

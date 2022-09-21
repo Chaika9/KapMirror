@@ -56,9 +56,12 @@ namespace KapMirror {
             isConnected = false;
         }
 
-        void TcpClient::send() {
+        void TcpClient::send(char *data, size_t size) {
             if (!isConnected) {
                 throw SocketException("Socket not connected");
+            }
+            if ((::send(client_fd, data, size, 0)) < 0) {
+                throw SocketException("Send failed");
             }
         }
     }
