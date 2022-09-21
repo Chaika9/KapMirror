@@ -16,5 +16,12 @@ namespace Array {
             delete[] array;
             array = newArray;
         }
+
+        template <typename T>
+        static T *copyArray(T* array, int size) {
+            T* newArray = new T[size];
+            std::copy(array, array + size, newArray);
+            return newArray;
+        }
     };
 }

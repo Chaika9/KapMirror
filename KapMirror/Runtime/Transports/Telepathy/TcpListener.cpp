@@ -65,7 +65,7 @@ namespace KapMirror {
             if ((client_fd = accept(server_fd, (struct sockaddr*)&address, (socklen_t*)&addrlen)) < 0) {
                 throw SocketException("Socket accept error");
             }
-            return std::make_unique<TcpClient>(client_fd, server_fd);
+            return std::make_unique<TcpClient>(server_fd, client_fd);
         }
     }
 }

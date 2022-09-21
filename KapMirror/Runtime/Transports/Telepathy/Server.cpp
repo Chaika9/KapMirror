@@ -1,5 +1,6 @@
 #include "Server.hpp"
 #include "SocketException.hpp"
+#include "KapMirror/Runtime/ArraySegment.hpp"
 #include <iostream>
 
 namespace KapMirror {
@@ -21,7 +22,21 @@ namespace KapMirror {
                     auto client = listener->acceptTcpClient();
 
                     std::cout << "Server: new client" << std::endl;
-                    client->close();
+
+                    // TODO: Add thread
+                    while (client->connected()) {
+                        try {
+                            ArraySegment<char> data = client->receive(1024);
+                            std::string msg(data.toArray(), data.getSize());
+                            std::cout << "Server: received message=" << msg << std::endl;
+
+                            // send back
+                            client->send(data);
+                        } catch (SocketException& e) {
+                            std::cout << "Server: client disconnected" << std::endl;
+                            break;
+                        }
+                    }
                 }
 
                 listener->stop();

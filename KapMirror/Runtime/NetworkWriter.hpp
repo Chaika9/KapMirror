@@ -2,6 +2,7 @@
 
 #include "Array.hpp"
 #include <string>
+#include <stdexcept>
 
 #define BUFFER_SIZE 1024
 
@@ -38,9 +39,7 @@ namespace KapMirror {
         }
 
         inline char *toArray() {
-            char *array = new char[position];
-            std::copy(buffer, buffer + position, array);
-            return array;
+            return Array::Array::copyArray(buffer, position);
         }
 
         inline int size() {
@@ -48,7 +47,7 @@ namespace KapMirror {
         }
 
         private:
-        inline void ensureCapacity(size_t value) {
+        inline void ensureCapacity(int value) {
             if (position > bufferSize) {
                 Array::Array::resizeArray(buffer, bufferSize, bufferSize * 2);
                 bufferSize *= 2;
@@ -56,7 +55,13 @@ namespace KapMirror {
         }
 
         public:
-        void writeBytes(char *array, size_t offset, size_t count) {
+        void writeBytes(char *array, int offset, int count) {
+            if (offset < 0 || count < 0) {
+                throw std::invalid_argument("offset or count is less than 0");
+            }
+            if (count == 0) {
+                return;
+            }
             ensureCapacity(position + count);
             std::copy(array + offset, array + offset + count, buffer + position);
             position += count;

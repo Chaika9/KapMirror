@@ -9,8 +9,7 @@ namespace KapMirror {
             std::string _message;
 
         public:
-            SocketException(std::string const &message) : _message(message) {
-            }
+            SocketException(std::string const &message) : _message(message) {}
             ~SocketException() = default;
 
             char const *what() const noexcept {

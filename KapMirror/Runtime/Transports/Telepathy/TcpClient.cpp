@@ -3,20 +3,22 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <iostream>
 
 namespace KapMirror {
     namespace Transports {
-        TcpClient::TcpClient() : client_fd(-1), server_fd(-1), isOwner(true) {
+        TcpClient::TcpClient() : client_fd(-1), target_fd(-1), isOwner(true) {
         }
 
-        TcpClient::TcpClient(int _client_fd, int _server_fd) : client_fd(_client_fd), server_fd(_server_fd), isOwner(false) {
+        TcpClient::TcpClient(int _client_fd, int _target_fd) : client_fd(_client_fd), target_fd(_target_fd), isOwner(false) {
+            isConnected = true;
         }
 
         TcpClient::~TcpClient() {
             if (isConnected) {
                 ::close(client_fd);
                 if (isOwner) {
-                    ::close(server_fd);
+                    ::close(target_fd);
                 }
             }
         }
@@ -26,7 +28,7 @@ namespace KapMirror {
                 throw SocketException("Socket already connected");
             }
 
-            if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+            if ((target_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
                 throw SocketException("Socket creation error");
             }
 
@@ -39,7 +41,7 @@ namespace KapMirror {
                 throw SocketException("Invalid address");
             }
 
-            if ((client_fd = ::connect(server_fd, (struct sockaddr*)&address, sizeof(address))) < 0) {
+            if ((client_fd = ::connect(target_fd, (struct sockaddr*)&address, sizeof(address))) < 0) {
                 throw SocketException("Connection failed");
             }
             isConnected = true;
@@ -51,18 +53,39 @@ namespace KapMirror {
             }
             ::close(client_fd);
             if (isOwner) {
-                ::close(server_fd);
+                ::close(target_fd);
             }
             isConnected = false;
         }
 
-        void TcpClient::send(char *data, size_t size) {
+        void TcpClient::send(ArraySegment<char>& data) {
             if (!isConnected) {
                 throw SocketException("Socket not connected");
             }
-            if ((::send(client_fd, data, size, 0)) < 0) {
+
+            std::cout << "TcpClient: sending data=" << data.getSize() << std::endl;
+            char *buffer = data.toArray();
+            if ((::send(target_fd, buffer, data.getSize(), 0)) < 0) {
                 throw SocketException("Send failed");
             }
+        }
+
+        ArraySegment<char> TcpClient::receive(int size) {
+            if (size <= 0) {
+                throw std::invalid_argument("size must be greater than 0");
+            }
+            if (!isConnected) {
+                throw SocketException("Socket not connected");
+            }
+
+            char *buffer = new char[size];
+            int readSize = ::recv(target_fd, buffer, size, 0);
+            std::cout << "TcpClient: Received " << readSize << " bytes" << std::endl;
+            if (readSize <= 0) {
+                isConnected = false;
+                throw SocketException("Receive failed");
+            }
+            return ArraySegment<char>(buffer, readSize);
         }
     }
 }

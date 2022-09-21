@@ -1,13 +1,15 @@
 #pragma once
 
+#include "KapMirror/Runtime/ArraySegment.hpp"
 #include <string>
+#include <stdexcept>
 
 namespace KapMirror {
     namespace Transports {
         class TcpClient {
             private:
             int client_fd;
-            int server_fd;
+            int target_fd;
             bool isOwner;
 
             bool isConnected = false;
@@ -24,7 +26,9 @@ namespace KapMirror {
                 return isConnected;
             }
 
-            void send(char *data, size_t size);
+            void send(ArraySegment<char>& data);
+
+            ArraySegment<char> receive(int size);
         };
     }
 }

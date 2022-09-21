@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TcpClient.hpp"
+#include "KapMirror/Runtime/ArraySegment.hpp"
 #include <memory>
 #include <string>
 
@@ -20,6 +21,10 @@ namespace KapMirror {
             bool connected() {
                 return client.get() != nullptr && client->connected();
             }
+
+            bool send(ArraySegment<char>& data);
+
+            ArraySegment<char> receive(int size);
         };
     }
 }

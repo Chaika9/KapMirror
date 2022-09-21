@@ -3,6 +3,8 @@
 #include <iostream>
 #include <string.h>
 
+#include "KapMirror/Runtime/ArraySegment.hpp"
+
 void launchServer() {
     std::cout << "> Test Server" << std::endl;
     KapMirror::Transports::Server server;
@@ -13,6 +15,25 @@ void launchClient() {
     std::cout << "> Test Client" << std::endl;
     KapMirror::Transports::Client client;
     client.connect("127.0.0.1", 25565);
+
+    std::cout << "Client: connected" << std::endl;
+
+    std::cout << "Client: send packet" << std::endl;
+    std::string data = "Hello World!";
+    KapMirror::ArraySegment<char> segdata((char *)data.c_str(), data.length());
+    client.send(segdata);
+
+    while (client.connected()) {
+        std::cout << "Client: waiting for packet" << std::endl;
+        try {
+            KapMirror::ArraySegment<char> data = client.receive(1024);
+            std::string msg(data.toArray(), data.getSize());
+            std::cout << "Client: received message=" << msg << std::endl;
+        } catch (std::exception& e) {
+            std::cout << "Client: server disconnected" << std::endl;
+            break;
+        }
+    }
 }
 
 int main(int argc, char** argv) {
