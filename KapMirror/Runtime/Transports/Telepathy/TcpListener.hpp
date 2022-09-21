@@ -10,6 +10,8 @@ namespace KapMirror {
             int server_fd;
             int port;
 
+            int isConnected = false;
+
             public:
             TcpListener(int _port);
             ~TcpListener();

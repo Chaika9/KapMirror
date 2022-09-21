@@ -8,6 +8,9 @@ namespace KapMirror {
             private:
             int client_fd;
             int server_fd;
+            bool isOwner;
+
+            bool isConnected = false;
 
             public:
             TcpClient();
@@ -16,6 +19,8 @@ namespace KapMirror {
 
             void connect(std::string host, int port);
             void close();
+
+            void send();
         };
     }
 }
