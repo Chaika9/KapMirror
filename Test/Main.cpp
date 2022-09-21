@@ -3,8 +3,6 @@
 #include <iostream>
 #include <string.h>
 
-#include "KapMirror/Runtime/NetworkWriter.hpp"
-
 void launchServer() {
     std::cout << "> Test Server" << std::endl;
     KapMirror::Transports::Server server;
@@ -18,16 +16,6 @@ void launchClient() {
 }
 
 int main(int argc, char** argv) {
-    // KapMirror::NetworkWriter writer;
-    // writer.writeString("Tobiichi Origami");
-
-    // std::cout << "Size: " << writer.size() << std::endl;
-
-    // char *data = writer.toArray();
-    // std::cout << "Data: " << (data + 2) << std::endl;
-
-    // delete[] data;
-
     if (argc < 2) {
         std::cout << "Usage: " << argv[0] << " [server|client]" << std::endl;
         return 1;

@@ -3,7 +3,7 @@
 #include "Array.hpp"
 #include <string>
 
-#define BUFFER_SIZE 5
+#define BUFFER_SIZE 1024
 
 namespace KapMirror {
     class NetworkWriter {
