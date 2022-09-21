@@ -9,9 +9,19 @@ endif(${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR} AND NOT W
 
 project(KapMirror LANGUAGES CXX)
 
+option(IS_DEV "Dev" OFF)
+
 set(CMAKE_CXX_STANDARD 17)
 
 # KapMirror sources
-file(GLOB_RECURSE SOURCES ${KapMirror_SOURCE_DIR}/KapMirror/*.cpp)
+if(${IS_DEV})
+	file(GLOB_RECURSE SOURCES ${KapMirror_SOURCE_DIR}/KapMirror/*.cpp ${KapMirror_SOURCE_DIR}/Test/*.cpp)
 
-add_library(KapMirror SHARED ${SOURCES} ${HEADERS})
+	add_executable(KapMirror ${SOURCES} ${HEADERS})
+else()
+	file(GLOB_RECURSE SOURCES ${KapMirror_SOURCE_DIR}/KapMirror/*.cpp)
+
+	add_library(KapMirror SHARED ${SOURCES} ${HEADERS})
+endif()
+
+include_directories(.)

@@ -1,3 +1,5 @@
+#pragma once
+
 namespace KapMirror {
     class NetworkManager {
         public:
@@ -6,4 +8,4 @@ namespace KapMirror {
 
         void testFunction();
     };
-};
+}
