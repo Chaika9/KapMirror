@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TcpClient.hpp"
+#include <memory>
 
 namespace KapMirror {
     namespace Transports {
@@ -16,7 +17,7 @@ namespace KapMirror {
             void start();
             void stop();
 
-            TcpClient acceptTcpClient();
+            std::unique_ptr<TcpClient> acceptTcpClient();
         };
     }
 }
