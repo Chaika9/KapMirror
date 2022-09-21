@@ -16,6 +16,10 @@ namespace KapMirror {
 
             void connect(std::string host, int port);
             void dispose();
+
+            bool connected() {
+                return client.get() != nullptr && client->connected();
+            }
         };
     }
 }
