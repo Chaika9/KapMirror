@@ -21,13 +21,28 @@ namespace KapMirror {
                     auto client = listener->acceptTcpClient();
 
                     std::cout << "Server: new client" << std::endl;
-                    client.get()->close();
+                    client->close();
                 }
 
                 listener->stop();
             } catch (SocketException& e) {
                 std::cout << "Server: " << e.what() << std::endl;
             }
+        }
+
+        bool Server::start(int port) {
+            std::cout << "Server: Start port=" << port << std::endl;
+
+            // TODO: Add thread
+            listen(port);
+            return true;
+        }
+
+        void Server::stop() {
+            std::cout << "Server: stopping..." << std::endl;
+
+            // stop listening to connections
+            listener->stop();
         }
     }
 }

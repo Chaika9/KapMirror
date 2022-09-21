@@ -13,6 +13,10 @@ namespace KapMirror {
             Server();
             ~Server() = default;
 
+            bool start(int port);
+            void stop();
+
+            private:
             void listen(int port);
         };
     }
