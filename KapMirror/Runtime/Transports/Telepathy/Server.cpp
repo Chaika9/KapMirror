@@ -1,65 +1,47 @@
 #include "Server.hpp"
-#include "SocketException.hpp"
-#include "KapMirror/Runtime/ArraySegment.hpp"
-#include "KapMirror/Runtime/NetworkReader.hpp"
 #include <iostream>
 
-namespace KapMirror {
-    namespace Transports {
-        Server::Server() {
+using namespace KapMirror::Transports;
+
+Server::Server() {
+}
+
+void Server::start(int port) {
+    if (port < 0 || port > 65535) {
+        throw std::runtime_error("Invalid port number");
+    }
+
+    listenerThread = std::thread(&Server::listen, this, port);
+}
+
+void Server::listen(int port) {
+    std::cout << "Server: Listening on port " << port << std::endl;
+
+    auto address = std::make_shared<Address>(port);
+    listener = std::make_shared<TcpListener>(address);
+    listener->setBlocking(false);
+
+    try {
+        listener->start();
+    } catch (SocketException& e) {
+        std::cout << "Server: Error=" << e.what() << std::endl;
+        return;
+    }
+
+    while (true) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+        if (!listener->isReadable()) {
+            continue;
         }
 
-        void Server::listen(int port) {
-            try {
-                // start listener
-                listener = std::make_shared<TcpListener>(port);
+        try {
+            auto client = listener->acceptTcpClient();
+            std::cout << "Server: Client connected" << std::endl;
 
-                listener->start();
-                std::cout << "Server: listening port=" << port << std::endl;
-
-                // keep accepting new clients
-                while (true) {
-                    // wait and accept new client
-                    auto client = listener->acceptTcpClient();
-
-                    std::cout << "Server: new client" << std::endl;
-
-                    // TODO: Add thread
-                    while (client->connected()) {
-                        try {
-                            auto segment = client->receive(1024);
-                            NetworkReader reader(segment);
-                            std::string msg = reader.readString();
-                            std::cout << "Server: received message=" << msg << std::endl;
-
-                            // send back
-                            client->send(segment);
-                        } catch (SocketException& e) {
-                            std::cout << "Server: client disconnected" << std::endl;
-                            break;
-                        }
-                    }
-                }
-
-                listener->stop();
-            } catch (SocketException& e) {
-                std::cout << "Server: " << e.what() << std::endl;
-            }
-        }
-
-        bool Server::start(int port) {
-            std::cout << "Server: Start port=" << port << std::endl;
-
-            // TODO: Add thread
-            listen(port);
-            return true;
-        }
-
-        void Server::stop() {
-            std::cout << "Server: stopping..." << std::endl;
-
-            // stop listening to connections
-            listener->stop();
+            while (true);
+        } catch (SocketException& e) {
+            std::cout << "Server: Error=" << e.what() << std::endl;
         }
     }
 }

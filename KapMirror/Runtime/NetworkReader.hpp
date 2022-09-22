@@ -2,22 +2,21 @@
 
 #include "Array.hpp"
 #include "ArraySegment.hpp"
+#include "Platform.hpp"
 #include <string>
-
-#include <iostream>
 
 namespace KapMirror {
     class NetworkReader {
         private:
-        char *buffer;
+        byte *buffer;
         int position;
 
         public:
-        NetworkReader(char *_buffer) : buffer(_buffer) {
+        NetworkReader(byte *_buffer) : buffer(_buffer) {
             position = 0;
         }
 
-        NetworkReader(ArraySegment<char>& segment) {
+        NetworkReader(ArraySegment<byte>& segment) {
             buffer = segment;
             position = 0;
         }
@@ -49,8 +48,8 @@ namespace KapMirror {
          *
          * @return Value
          */
-        char *readBytes(size_t count) {
-            char *array = new char[count];
+        char *readBytes(int count) {
+            byte* array = new byte[count];
             std::copy(buffer + position, buffer + position + count, array);
             position += count;
             return array;

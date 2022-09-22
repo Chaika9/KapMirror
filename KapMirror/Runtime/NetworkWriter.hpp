@@ -2,6 +2,7 @@
 
 #include "Array.hpp"
 #include "ArraySegment.hpp"
+#include "Platform.hpp"
 #include <string>
 #include <stdexcept>
 
@@ -10,13 +11,13 @@
 namespace KapMirror {
     class NetworkWriter {
         private:
-        char *buffer;
+        byte *buffer;
         int bufferSize;
         int position;
 
         public:
         NetworkWriter() {
-            buffer = new char[BUFFER_SIZE];
+            buffer = new byte[BUFFER_SIZE];
             bufferSize = BUFFER_SIZE;
             position = 0;
         }
@@ -40,7 +41,7 @@ namespace KapMirror {
          */
         template <typename T>
         inline void write(T value) {
-            size_t size = sizeof(T);
+            int size = sizeof(T);
 
             ensureCapacity(position + size);
 
@@ -52,11 +53,11 @@ namespace KapMirror {
          * @brief Get the buffer
          * @return Array of bytes
          */
-        inline char *toArray() {
+        inline byte *toArray() {
             return Array::copyArray(buffer, position);
         }
 
-        operator char*() {
+        operator byte*() {
             return toArray();
         }
 
@@ -64,11 +65,11 @@ namespace KapMirror {
          * @brief Get the buffer
          * @return ArraySegment<char>
          */
-        inline ArraySegment<char> toArraySegment() {
-            return ArraySegment<char>(buffer, position);
+        inline ArraySegment<byte> toArraySegment() {
+            return ArraySegment<byte>(buffer, position);
         }
 
-        operator ArraySegment<char>() {
+        operator ArraySegment<byte>() {
             return toArraySegment();
         }
 

@@ -1,38 +1,29 @@
 #pragma once
 
 #include "TcpClient.hpp"
-#include <memory>
+#include "SocketException.hpp"
 
 namespace KapMirror {
     namespace Transports {
         class TcpListener {
             private:
-            int server_fd;
-            int port;
-
-            int isConnected = false;
+            std::shared_ptr<Socket> socket;
 
             public:
-            TcpListener(int _port);
+            TcpListener(std::shared_ptr<Address> address);
             ~TcpListener();
 
-            /**
-             * @brief Start listening
-             * @throws SocketException
-             */
+            void close();
+
             void start();
 
-            /**
-             * @brief Stop listening
-             */
-            void stop();
+            std::shared_ptr<TcpClient> acceptTcpClient();
 
-            /**
-             * @brief Accept a new client
-             * @return New client
-             * @throws SocketException
-             */
-            std::unique_ptr<TcpClient> acceptTcpClient();
+            bool isReadable() const;
+
+            bool isWritable() const;
+
+            void setBlocking(bool blocking);
         };
     }
 }

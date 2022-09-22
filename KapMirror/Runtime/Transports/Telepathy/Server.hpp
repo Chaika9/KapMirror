@@ -1,21 +1,20 @@
 #pragma once
 
 #include "TcpListener.hpp"
-#include <memory>
+#include <thread>
 
 namespace KapMirror {
     namespace Transports {
         class Server {
             private:
             std::shared_ptr<TcpListener> listener;
+            std::thread listenerThread;
 
             public:
             Server();
             ~Server() = default;
 
-            bool start(int port);
-
-            void stop();
+            void start(int port);
 
             private:
             void listen(int port);

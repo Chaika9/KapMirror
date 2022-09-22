@@ -1,23 +1,25 @@
 #pragma once
 
+#include "Socket.hpp"
+#include "SocketException.hpp"
 #include "KapMirror/Runtime/ArraySegment.hpp"
-#include <string>
-#include <stdexcept>
 
 namespace KapMirror {
     namespace Transports {
         class TcpClient {
             private:
-            int client_fd;
-            int target_fd;
-            bool isOwner;
-
-            volatile bool isConnected = false;
+            std::shared_ptr<Socket> socket;
+            bool isConnected;
 
             public:
-            TcpClient();
-            TcpClient(int _client_fd, int _server_fd);
+            TcpClient(std::shared_ptr<Address> address);
+            TcpClient(std::shared_ptr<Socket> socket);
             ~TcpClient();
+
+            /**
+             * @brief Close the connection
+             */
+            void close();
 
             /**
              * @brief Connect to a server
@@ -25,12 +27,7 @@ namespace KapMirror {
              * @param port Port number
              * @throws SocketException
              */
-            void connect(std::string host, int port);
-
-            /**
-             * @brief Close the connection
-             */
-            void close();
+            void connect();
 
             /**
              * @brief Is the client connected to a server
@@ -45,15 +42,20 @@ namespace KapMirror {
              * @param data Data to send
              * @throws SocketException
              */
-            void send(ArraySegment<char>& data);
+            void send(ArraySegment<byte>& message);
 
             /**
              * @brief Receive data from the server
              * @param size Maximum size of the data to receive
              * @return Received data
              * @throws SocketException
+             * throw SocketException if the connection is closed
              */
-            ArraySegment<char> receive(int size);
+            ArraySegment<byte> receive(int size);
+
+            bool isReadable() const;
+
+            bool isWritable() const;
         };
     }
 }
