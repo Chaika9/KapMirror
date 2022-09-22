@@ -28,16 +28,28 @@ namespace KapMirror {
             delete[] array;
         };
 
+        /**
+         * @brief Get the array
+         * @return Array
+         */
         T *toArray() const {
             return array;
         }
 
-        int getSize() const {
-            return size;
-        }
-
+        /**
+         * @brief Get the offset of the array
+         * @return Offset
+         */
         int getOffset() const {
             return offset;
+        }
+
+        /**
+         * @brief Get the size of the array
+         * @return Size
+         */
+        int getSize() const {
+            return size;
         }
 
         T &operator[](int index) {
