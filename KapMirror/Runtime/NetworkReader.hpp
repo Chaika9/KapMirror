@@ -17,7 +17,7 @@ namespace KapMirror {
             position = 0;
         }
 
-        NetworkReader(ArraySegment<char> segment) {
+        NetworkReader(ArraySegment<char>& segment) {
             buffer = segment;
             position = 0;
         }

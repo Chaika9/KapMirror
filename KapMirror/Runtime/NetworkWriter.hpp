@@ -56,12 +56,20 @@ namespace KapMirror {
             return Array::copyArray(buffer, position);
         }
 
+        operator char*() {
+            return toArray();
+        }
+
         /**
          * @brief Get the buffer
          * @return ArraySegment<char>
          */
         inline ArraySegment<char> toArraySegment() {
             return ArraySegment<char>(buffer, position);
+        }
+
+        operator ArraySegment<char>() {
+            return toArraySegment();
         }
 
         /**
@@ -72,14 +80,10 @@ namespace KapMirror {
             return position;
         }
 
-        operator ArraySegment<char>() {
-            return toArraySegment();
-        }
-
         private:
         inline void ensureCapacity(int value) {
             if (position > bufferSize) {
-                Array::Array::resizeArray(buffer, bufferSize, bufferSize * 2);
+                Array::resizeArray(buffer, bufferSize, bufferSize * 2);
                 bufferSize *= 2;
             }
         }

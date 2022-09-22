@@ -5,6 +5,7 @@
 
 #include "KapMirror/Runtime/ArraySegment.hpp"
 #include "KapMirror/Runtime/NetworkWriter.hpp"
+#include "KapMirror/Runtime/NetworkReader.hpp"
 
 void launchServer() {
     std::cout << "> Test Server" << std::endl;
@@ -20,15 +21,19 @@ void launchClient() {
     std::cout << "Client: connected" << std::endl;
 
     std::cout << "Client: send packet" << std::endl;
-    std::string data = "Tobiichi Origami";
-    KapMirror::ArraySegment<char> segment((char *)data.c_str(), data.length());
+    std::string msg = "Tobiichi Origami";
+    KapMirror::NetworkWriter writer;
+    writer.writeString(msg);
+    writer.write((int)39);
+    KapMirror::ArraySegment<char> segment = writer;
     client.send(segment);
 
     while (client.connected()) {
         std::cout << "Client: waiting for packet" << std::endl;
         try {
             KapMirror::ArraySegment<char> data = client.receive(1024);
-            std::string msg(data.toArray(), data.getSize());
+            KapMirror::NetworkReader reader(data);
+            std::string msg = reader.readString();
             std::cout << "Client: received message=" << msg << std::endl;
         } catch (std::exception& e) {
             std::cout << "Client: server disconnected" << std::endl;
@@ -36,6 +41,18 @@ void launchClient() {
         }
     }
 }
+
+// void test() {
+//     std::string msg("Tobiichi Origami");
+//     KapMirror::NetworkWriter writer;
+//     writer.writeString(msg);
+
+//     KapMirror::ArraySegment<char> segment = writer;
+
+//     KapMirror::NetworkReader reader(segment);
+//     std::string msg2 = reader.readString();
+//     std::cout << "msg=" << msg << std::endl;
+// }
 
 int main(int argc, char** argv) {
     if (argc < 2) {

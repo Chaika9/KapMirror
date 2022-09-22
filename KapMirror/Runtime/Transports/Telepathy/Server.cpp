@@ -28,8 +28,9 @@ namespace KapMirror {
                     while (client->connected()) {
                         try {
                             ArraySegment<char> segment = client->receive(1024);
-                            std::string msg(segment.toArray(), segment.getSize());
-                            std::cout << "Server: received message=" << msg << std::endl;
+                            NetworkReader reader(segment);
+                            std::string msg = reader.readString();
+                            std::cout << "Server: received message=" << msg << " int=" << reader.read<int>() << std::endl;
 
                             // send back
                             client->send(segment);

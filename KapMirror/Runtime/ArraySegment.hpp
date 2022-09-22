@@ -36,6 +36,10 @@ namespace KapMirror {
             return array;
         }
 
+        operator T*() const {
+            return array;
+        }
+
         /**
          * @brief Get the offset of the array
          * @return Offset
@@ -77,10 +81,6 @@ namespace KapMirror {
             offset = other.offset;
             size = other.size;
             return *this;
-        }
-
-        operator T*() const {
-            return array;
         }
     };
 }
