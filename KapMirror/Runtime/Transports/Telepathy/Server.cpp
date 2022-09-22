@@ -27,10 +27,10 @@ namespace KapMirror {
                     // TODO: Add thread
                     while (client->connected()) {
                         try {
-                            ArraySegment<char> segment = client->receive(1024);
+                            auto segment = client->receive(1024);
                             NetworkReader reader(segment);
                             std::string msg = reader.readString();
-                            std::cout << "Server: received message=" << msg << " int=" << reader.read<int>() << std::endl;
+                            std::cout << "Server: received message=" << msg << std::endl;
 
                             // send back
                             client->send(segment);

@@ -4,7 +4,7 @@
 
 namespace KapMirror {
     namespace Transports {
-        Client::Client() {
+        Client::Client(int _maxMessageSize) : maxMessageSize(_maxMessageSize) {
         }
 
         void Client::connect(std::string host, int port) {
@@ -19,13 +19,18 @@ namespace KapMirror {
             client->close();
         }
 
-        bool Client::send(ArraySegment<char>& data) {
+        bool Client::send(ArraySegment<char>& message) {
             if (!connected()) {
+                std::cout << "Client: not connected" << std::endl;
+                return false;
+            }
+            if (message.getSize() > maxMessageSize) {
+                std::cout << "Client: message size is too big" << std::endl;
                 return false;
             }
 
             // send data
-            client->send(data);
+            client->send(message);
             return true;
         }
 

@@ -14,6 +14,7 @@ namespace KapMirror {
             ~Server() = default;
 
             bool start(int port);
+
             void stop();
 
             private:

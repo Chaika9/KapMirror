@@ -10,19 +10,21 @@ namespace KapMirror {
         class Client {
             private:
             std::shared_ptr<TcpClient> client;
+            int maxMessageSize;
 
             public:
-            Client();
+            Client(int _maxMessageSize = 4096);
             ~Client() = default;
 
             void connect(std::string host, int port);
+
             void dispose();
 
             bool connected() const {
                 return client.get() != nullptr && client->connected();
             }
 
-            bool send(ArraySegment<char>& data);
+            bool send(ArraySegment<char>& message);
 
             ArraySegment<char> receive(int size);
         };

@@ -24,7 +24,6 @@ void launchClient() {
     std::string msg = "Tobiichi Origami";
     KapMirror::NetworkWriter writer;
     writer.writeString(msg);
-    writer.write((int)39);
     KapMirror::ArraySegment<char> segment = writer;
     client.send(segment);
 
