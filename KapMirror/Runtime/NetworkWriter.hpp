@@ -25,10 +25,19 @@ namespace KapMirror {
             delete[] buffer;
         }
 
+        /**
+         * @brief Reset the position to 0
+         */
         inline void reset() {
             position = 0;
         }
 
+        /**
+         * @brief Write a value to the buffer
+         *
+         * @tparam T The type of the value
+         * @param value Value
+         */
         template <typename T>
         inline void write(T value) {
             size_t size = sizeof(T);
@@ -39,14 +48,26 @@ namespace KapMirror {
             position += size;
         }
 
+        /**
+         * @brief Get the buffer
+         * @return Array of bytes
+         */
         inline char *toArray() {
-            return Array::Array::copyArray(buffer, position);
+            return Array::copyArray(buffer, position);
         }
 
+        /**
+         * @brief Get the buffer
+         * @return ArraySegment<char>
+         */
         inline ArraySegment<char> toArraySegment() {
             return ArraySegment<char>(buffer, position);
         }
 
+        /**
+         * @brief Get the size of the buffer
+         * @return Size
+         */
         inline int size() const {
             return position;
         }
@@ -64,6 +85,13 @@ namespace KapMirror {
         }
 
         public:
+        /**
+         * @brief Write a byte array to the buffer
+         *
+         * @param array Array
+         * @param offset Offset
+         * @param count Count
+         */
         void writeBytes(char *array, int offset, int count) {
             if (offset < 0 || count < 0) {
                 throw std::invalid_argument("offset or count is less than 0");
@@ -76,6 +104,11 @@ namespace KapMirror {
             position += count;
         }
 
+        /**
+         * @brief Write a string to the buffer
+         *
+         * @param value Value
+         */
         void writeString(std::string value) {
             write((short)value.length());
             writeBytes((char *)value.c_str(), 0, value.length());

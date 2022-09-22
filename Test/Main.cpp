@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "KapMirror/Runtime/ArraySegment.hpp"
+#include "KapMirror/Runtime/NetworkWriter.hpp"
 
 void launchServer() {
     std::cout << "> Test Server" << std::endl;
@@ -19,9 +20,9 @@ void launchClient() {
     std::cout << "Client: connected" << std::endl;
 
     std::cout << "Client: send packet" << std::endl;
-    std::string data = "Hello World!";
-    KapMirror::ArraySegment<char> segdata((char *)data.c_str(), data.length());
-    client.send(segdata);
+    std::string data = "Tobiichi Origami";
+    KapMirror::ArraySegment<char> segment((char *)data.c_str(), data.length());
+    client.send(segment);
 
     while (client.connected()) {
         std::cout << "Client: waiting for packet" << std::endl;

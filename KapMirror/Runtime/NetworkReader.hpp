@@ -18,16 +18,25 @@ namespace KapMirror {
         }
 
         NetworkReader(ArraySegment<char> segment) {
-            buffer = segment.toArray();
+            buffer = segment;
             position = 0;
         }
 
         ~NetworkReader() = default;
 
+        /**
+         * @brief Reset the position to 0
+         */
         inline void reset() {
             position = 0;
         }
 
+        /**
+         * @brief Read a value from the buffer
+         *
+         * @tparam T The type of the value
+         * @return Value
+         */
         template <typename T>
         inline T read() {
             T value = *(T*)(buffer + position);
@@ -35,6 +44,11 @@ namespace KapMirror {
             return value;
         }
 
+        /**
+         * @brief Read a byte array from the buffer
+         *
+         * @return Value
+         */
         char *readBytes(size_t count) {
             char *array = new char[count];
             std::copy(buffer + position, buffer + position + count, array);
@@ -42,6 +56,11 @@ namespace KapMirror {
             return array;
         }
 
+        /**
+         * @brief Read a string from the buffer
+         *
+         * @return Value
+         */
         std::string readString() {
             short length = read<short>();
             char *array = readBytes(length);

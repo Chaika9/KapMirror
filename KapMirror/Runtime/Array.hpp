@@ -2,9 +2,16 @@
 
 #include <algorithm>
 
-namespace Array {
+namespace KapMirror {
     class Array {
         public:
+        /**
+         * @brief Resize an array
+         *
+         * @param array Array
+         * @param size Old size
+         * @param newSize New size
+         */
         template <typename T>
         static void resizeArray(T*& array, int size, int newSize) {
             T* newArray = new T[newSize];
@@ -17,6 +24,13 @@ namespace Array {
             array = newArray;
         }
 
+        /**
+         * @brief Copy an array
+         *
+         * @param array Array
+         * @param size Size
+         * @return Copy of the array
+         */
         template <typename T>
         static T *copyArray(T* array, int size) {
             T* newArray = new T[size];

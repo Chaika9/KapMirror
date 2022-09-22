@@ -16,9 +16,22 @@ namespace KapMirror {
             TcpListener(int _port);
             ~TcpListener();
 
+            /**
+             * @brief Start listening
+             * @throws SocketException
+             */
             void start();
+
+            /**
+             * @brief Stop listening
+             */
             void stop();
 
+            /**
+             * @brief Accept a new client
+             * @return New client
+             * @throws SocketException
+             */
             std::unique_ptr<TcpClient> acceptTcpClient();
         };
     }

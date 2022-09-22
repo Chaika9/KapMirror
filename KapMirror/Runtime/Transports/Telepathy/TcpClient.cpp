@@ -24,6 +24,10 @@ namespace KapMirror {
         }
 
         void TcpClient::connect(std::string host, int port) {
+            if (port < 0 || port > 65535) {
+                throw std::invalid_argument("Invalid port number");
+            }
+
             if (isConnected) {
                 throw SocketException("Socket already connected");
             }
@@ -85,7 +89,10 @@ namespace KapMirror {
                 isConnected = false;
                 throw SocketException("Receive failed");
             }
-            return ArraySegment<char>(buffer, readSize);
+
+            ArraySegment<char> segment(buffer, readSize);
+            delete[] buffer;
+            return segment;
         }
     }
 }

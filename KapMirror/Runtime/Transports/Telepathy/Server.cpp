@@ -1,6 +1,7 @@
 #include "Server.hpp"
 #include "SocketException.hpp"
 #include "KapMirror/Runtime/ArraySegment.hpp"
+#include "KapMirror/Runtime/NetworkReader.hpp"
 #include <iostream>
 
 namespace KapMirror {
@@ -26,12 +27,12 @@ namespace KapMirror {
                     // TODO: Add thread
                     while (client->connected()) {
                         try {
-                            ArraySegment<char> data = client->receive(1024);
-                            std::string msg(data.toArray(), data.getSize());
+                            ArraySegment<char> segment = client->receive(1024);
+                            std::string msg(segment.toArray(), segment.getSize());
                             std::cout << "Server: received message=" << msg << std::endl;
 
                             // send back
-                            client->send(data);
+                            client->send(segment);
                         } catch (SocketException& e) {
                             std::cout << "Server: client disconnected" << std::endl;
                             break;
