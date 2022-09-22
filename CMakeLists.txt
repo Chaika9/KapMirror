@@ -25,3 +25,6 @@ else()
 endif()
 
 include_directories(.)
+
+# Linker flags
+set_target_properties(KapMirror PROPERTIES LINK_FLAGS "-pthread")

@@ -12,7 +12,7 @@ namespace KapMirror {
             int target_fd;
             bool isOwner;
 
-            bool isConnected = false;
+            volatile bool isConnected = false;
 
             public:
             TcpClient();

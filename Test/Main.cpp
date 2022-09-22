@@ -18,6 +18,7 @@ void launchClient() {
     KapMirror::Transports::Client client;
     client.connect("127.0.0.1", 25565);
 
+    // std::this_thread::sleep_for(std::chrono::milliseconds(4000));
     std::cout << "Client: connected" << std::endl;
 
     std::cout << "Client: send packet" << std::endl;
