@@ -1,7 +1,7 @@
 #include "Address.hpp"
 #include <iostream>
 
-using namespace KapMirror::Transports;
+using namespace KapMirror;
 
 Address::Address(std::string host, int port) {
     addrinfo hints = {0};

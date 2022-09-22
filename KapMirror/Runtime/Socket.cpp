@@ -2,7 +2,7 @@
 #include "SocketException.hpp"
 #include <stdexcept>
 
-using namespace KapMirror::Transports;
+using namespace KapMirror;
 
 Socket::Socket(std::shared_ptr<Address> _address) : address(_address), socket_fd(INVALID_SOCKET) {
     if (address == nullptr) {
@@ -31,14 +31,7 @@ Socket::Socket(std::shared_ptr<Address> _address, SOCKET _socket_fd) : address(_
 }
 
 Socket::~Socket() {
-    if (socket_fd != INVALID_SOCKET) {
-        ::shutdown(socket_fd, SD_SEND);
-#ifdef __WINDOWS__
-        ::closesocket(socket_fd);
-#else
-        ::close(socket_fd);
-#endif
-    }
+    close();
 }
 
 void Socket::close() {

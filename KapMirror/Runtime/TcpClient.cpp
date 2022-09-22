@@ -2,7 +2,7 @@
 #include "SocketException.hpp"
 #include <iostream>
 
-using namespace KapMirror::Transports;
+using namespace KapMirror;
 
 TcpClient::TcpClient(std::shared_ptr<Address> address) {
     if (address == nullptr) {
