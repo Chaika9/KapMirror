@@ -12,7 +12,6 @@ Server::~Server() {
 }
 
 void Server::close() {
-    std::cout << "Server: Closing server" << std::endl;
     running = false;
     if (listenerThread.joinable()) {
         listenerThread.join();
@@ -33,8 +32,6 @@ void Server::start(int port) {
 }
 
 void Server::listen(int port) {
-    std::cout << "Server: Listening on port " << port << std::endl;
-
     auto address = std::make_shared<Address>(port);
     listener = std::make_shared<TcpListener>(address);
 

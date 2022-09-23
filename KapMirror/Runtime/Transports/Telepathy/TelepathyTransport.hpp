@@ -12,6 +12,8 @@ namespace KapMirror {
         std::shared_ptr<Telepathy::Server> server;
 
         public:
+        int port = 7777;
+
         int clientMaxMessageSize = 16 * 1024;
         int clientMaxReceivesPerTick = 1000;
         int clientSendQueueLimit = 10000;

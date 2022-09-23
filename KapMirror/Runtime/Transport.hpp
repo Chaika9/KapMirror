@@ -29,6 +29,8 @@ namespace KapMirror {
         virtual void serverEarlyUpdate() = 0;
 
         public:
+        static std::shared_ptr<Transport> activeTransport;
+
         std::function<void(Transport&)> onClientConnected;
         std::function<void(Transport&)> onClientDisconnected;
         std::function<void(Transport&, std::shared_ptr<ArraySegment<byte>>)> onClientDataReceived;

@@ -26,5 +26,7 @@ endif()
 
 include_directories(.)
 
+include(../KapEngine/CMake/engine_include.cmake)
+
 # Linker flags
 set_target_properties(KapMirror PROPERTIES LINK_FLAGS "-pthread")
