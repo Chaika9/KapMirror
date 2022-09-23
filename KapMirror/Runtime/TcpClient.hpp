@@ -43,14 +43,7 @@ namespace KapMirror {
          */
         void send(ArraySegment<byte>& message);
 
-        /**
-         * @brief Receive data from the server
-         * @param size Maximum size of the data to receive
-         * @return Received data
-         * @throws SocketException
-         * throw SocketException if the connection is closed
-         */
-        ArraySegment<byte> receive(int size);
+        bool receive(int maxMessageSize, byte* buffer, int& size);
 
         bool isReadable() const;
 

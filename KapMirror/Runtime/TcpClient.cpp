@@ -44,15 +44,15 @@ void TcpClient::send(ArraySegment<byte>& message) {
     socket->send(message.toArray(), message.getSize());
 }
 
-KapMirror::ArraySegment<byte> TcpClient::receive(int size) {
+bool TcpClient::receive(int maxMessageSize, byte* buffer, int& size) {
     if (!isConnected) {
         throw SocketException("Not connected");
     }
-    byte* buffer = new byte[size];
-    int received = socket->receive(buffer, size);
-    ArraySegment<byte> message(buffer, received);
-    delete[] buffer;
-    return message;
+    size = socket->receive(buffer, maxMessageSize);
+    if (size <= 0) {
+        return false;
+    }
+    return true;
 }
 
 bool TcpClient::isReadable() const {

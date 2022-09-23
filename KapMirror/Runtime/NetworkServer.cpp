@@ -1,9 +1,11 @@
 #include "NetworkServer.hpp"
+#include "ArraySegment.hpp"
 #include <iostream>
+#include <memory>
 
 using namespace KapMirror;
 
-NetworkServer::NetworkServer() {
+NetworkServer::NetworkServer(int _maxMessageSize) : maxMessageSize(_maxMessageSize) {
 }
 
 NetworkServer::~NetworkServer() {
@@ -25,6 +27,8 @@ void NetworkServer::start(int port) {
     }
 
     running = true;
+    counter = 0;
+
     listenerThread = std::thread([this, port]() { this->listen(port); });
 }
 
@@ -51,9 +55,10 @@ void NetworkServer::listen(int port) {
 
         try {
             auto client = listener->acceptTcpClient();
-            std::cout << "Server: Client connected" << std::endl;
 
+            // Create a new connection object
             auto connection = std::make_shared<ClientConnection>();
+            connection->id = ++counter;
             connection->client = client;
             connection->thread = std::thread([this, connection]() { this->handleConnection(connection); });
 
@@ -74,7 +79,37 @@ void NetworkServer::listen(int port) {
     connectionList.clear();
 }
 
+int NetworkServer::tick(int processLimit) {
+    if (receivePipe.isEmpty()) {
+        return 0;
+    }
+
+    for (int i = 0; i < processLimit; i++) {
+        int connectionId;
+        EventType eventType;
+        std::shared_ptr<ArraySegment<byte>> message;
+        if (receivePipe.pop(connectionId, eventType, message)) {
+            switch (eventType) {
+                case EventType::Connected:
+                    std::cout << "Server: Client " << connectionId << " connected" << std::endl;
+                    break;
+                case EventType::Disconnected:
+                    std::cout << "Server: Client " << connectionId << " disconnected" << std::endl;
+                    break;
+                case EventType::Data:
+                    std::cout << "Server: Client " << connectionId << " Received message Size=" << message->getSize() << std::endl;
+                    break;
+            }
+        } else {
+            break;
+        }
+    }
+    return receivePipe.getSize();
+}
+
 void NetworkServer::handleConnection(std::shared_ptr<ClientConnection> connection) {
+    receivePipe.push(connection->id, EventType::Connected);
+
     while (connection->client->connected() && running) {
         // Don't burn too much CPU while idling
         std::this_thread::sleep_for(std::chrono::microseconds(1));
@@ -84,8 +119,23 @@ void NetworkServer::handleConnection(std::shared_ptr<ClientConnection> connectio
 
         if (connection->client->isReadable()) {
             try {
-                auto message = connection->client->receive(1024);
-                std::cout << "Server: Received message Size=" << message.getSize() << std::endl;
+                byte* buffer = new byte[4 + maxMessageSize];
+                int size = 0;
+                if (!connection->client->receive(4 + maxMessageSize, buffer, size)) {
+                    // Connection closed
+                    delete[] buffer;
+                    break;
+                }
+
+                auto message = ArraySegment<byte>::createArraySegment(buffer, size);
+
+                // Push the message to the receive pipe
+                receivePipe.push(connection->id, EventType::Data, message);
+
+                if (receivePipe.getSize() >= receiveQueueLimit) {
+                    std::cout << "Server: Receive pipe is full, dropping messages" << std::endl;
+                    break;
+                }
             } catch(SocketException& e) {
                 std::cout << "Server: Client Error=" << e.what() << std::endl;
                 break;
@@ -93,5 +143,5 @@ void NetworkServer::handleConnection(std::shared_ptr<ClientConnection> connectio
         }
     }
 
-    std::cout << "Server: Client disconnected" << std::endl;
+    receivePipe.push(connection->id, EventType::Disconnected);
 }

@@ -95,7 +95,7 @@ void Socket::send(byte* buffer, int size, uint32_t flags) {
 int Socket::receive(byte* buffer, int size, uint32_t flags) {
     auto received = ::recv(socket_fd, buffer, size, flags);
     if (received == SOCKET_ERROR || received <= 0) {
-        throw SocketException("Socket receive error");
+        return 0;
     }
     return static_cast<int>(received);
 }

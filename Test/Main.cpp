@@ -8,6 +8,8 @@
 #include "KapMirror/Runtime/NetworkReader.hpp"
 #include "KapMirror/Runtime/NetworkServer.hpp"
 
+#include "KapMirror/Runtime/MagnificentReceivePipe.hpp"
+
 void launchServer() {
     std::cout << "[Server] > Launch Test" << std::endl;
     KapMirror::NetworkServer server;
@@ -15,11 +17,14 @@ void launchServer() {
 
     std::cout << "[Server] > Wait" << std::endl;
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(6000));
+    while (true) {
+        std::this_thread::sleep_for(std::chrono::microseconds(1));
+        server.tick(100);
+    }
 
-    server.close();
+    // std::this_thread::sleep_for(std::chrono::milliseconds(6000));
 
-    //while (true);
+    // server.close();
 }
 
 void launchClient() {
@@ -39,6 +44,9 @@ void launchClient() {
     std::cout << "[Client] > Sent Message: Size=" << message.getSize() << std::endl;
 
     while (true);
+}
+
+void launchTest() {
 }
 
 int main(int argc, char** argv) {

@@ -82,5 +82,9 @@ namespace KapMirror {
             size = other.size;
             return *this;
         }
+
+        static std::shared_ptr<ArraySegment<T>> createArraySegment(T* array, int size) {
+            return std::make_shared<ArraySegment<T>>(array, size);
+        }
     };
 }

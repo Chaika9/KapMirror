@@ -5,6 +5,7 @@
 
 namespace KapMirror {
     struct ClientConnection {
+        int id;
         std::shared_ptr<TcpClient> client;
         std::thread thread;
     };
