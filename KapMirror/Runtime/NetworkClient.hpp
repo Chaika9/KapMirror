@@ -2,6 +2,7 @@
 
 #include "TcpClient.hpp"
 #include "MagnificentReceivePipe.hpp"
+#include "MagnificentSendPipe.hpp"
 #include <thread>
 #include <mutex>
 #include <memory>
@@ -20,6 +21,9 @@ namespace KapMirror {
         MagnificentReceivePipe receivePipe;
         int receiveQueueLimit = 10000;
 
+        MagnificentSendPipe sendPipe;
+        int sendQueueLimit = 10000;
+
         public:
         NetworkClient(int _maxMessageSize = 1024);
         ~NetworkClient();
@@ -37,6 +41,8 @@ namespace KapMirror {
         }
 
         int tick(int processLimit);
+
+        void send(std::shared_ptr<ArraySegment<byte>> message);
 
         private:
         void dispose();

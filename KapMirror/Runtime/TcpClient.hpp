@@ -41,7 +41,7 @@ namespace KapMirror {
          * @param data Data to send
          * @throws SocketException
          */
-        void send(ArraySegment<byte>& message);
+        void send(std::shared_ptr<ArraySegment<byte>> message);
 
         bool receive(int maxMessageSize, byte* buffer, int& size);
 

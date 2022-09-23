@@ -36,11 +36,11 @@ void TcpClient::connect() {
     isConnected = true;
 }
 
-void TcpClient::send(ArraySegment<byte>& message) {
+void TcpClient::send(std::shared_ptr<ArraySegment<byte>> message) {
     if (!isConnected) {
         throw SocketException("Not connected");
     }
-    socket->send(message.toArray(), message.getSize());
+    socket->send(message->toArray(), message->getSize());
 }
 
 bool TcpClient::receive(int maxMessageSize, byte* buffer, int& size) {

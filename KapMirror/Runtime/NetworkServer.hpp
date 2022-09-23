@@ -24,6 +24,8 @@ namespace KapMirror {
         MagnificentReceivePipe receivePipe;
         int receiveQueueLimit = 10000;
 
+        int sendQueueLimit = 10000;
+
         int counter;
 
         public:

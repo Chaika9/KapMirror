@@ -22,6 +22,7 @@ void NetworkClient::dispose() {
         clientThread.join();
     }
     client->close();
+    receivePipe.clear();
 }
 
 void NetworkClient::connect(std::string ip, int port) {
@@ -79,6 +80,26 @@ int NetworkClient::tick(int processLimit) {
     return receivePipe.getSize();
 }
 
+void NetworkClient::send(std::shared_ptr<ArraySegment<byte>> message) {
+    if (!connected()) {
+        std::cerr << "Client: Not connected" << std::endl;
+        return;
+    }
+    if (message->getSize() > maxMessageSize) {
+        std::cerr << "Client: Message too large" << std::endl;
+        return;
+    }
+    if (sendPipe.getSize() > sendQueueLimit) {
+        std::cerr << "Client: Send queue full" << std::endl;
+
+        // Disconnect if the send queue is full
+        disconnect();
+        return;
+    }
+
+    sendPipe.push(message);
+}
+
 void NetworkClient::run(std::string ip, int port) {
     auto address = std::make_shared<Address>(ip, port);
     client = std::make_shared<TcpClient>(address);
@@ -101,6 +122,15 @@ void NetworkClient::run(std::string ip, int port) {
         std::this_thread::sleep_for(std::chrono::microseconds(1));
 
         if (client->isWritable()) {
+            if (!sendPipe.isEmpty()) {
+                std::shared_ptr<ArraySegment<byte>> message;
+                if (sendPipe.pop(message)) {
+                    client->send(message);
+                }
+
+                // We need to throttle our connection transmission rate
+                std::this_thread::sleep_for(std::chrono::milliseconds(10)); // Throttle
+            }
         }
 
         // Check for incoming data

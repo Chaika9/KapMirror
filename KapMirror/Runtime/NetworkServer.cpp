@@ -19,6 +19,7 @@ void NetworkServer::close() {
         listenerThread.join();
     }
     listener->close();
+    receivePipe.clear();
 }
 
 void NetworkServer::start(int port) {
@@ -134,9 +135,22 @@ void NetworkServer::send(int clientId, std::shared_ptr<ArraySegment<byte>> messa
     if (connectionList.empty()) {
         return;
     }
+    if (message->getSize() > maxMessageSize) {
+        std::cerr << "Client: Message too large Size=" << message->getSize() << std::endl;
+        return;
+    }
+
     for (auto& connection : connectionList) {
         if (connection->id == clientId) {
-            // TODO: Send the message
+            if (connection->sendPipe.getSize() > sendQueueLimit) {
+                std::cerr << "Client: Send queue full" << std::endl;
+
+                // Disconnect the client if the send queue is full
+                disconnectClient(clientId);
+                break;
+            }
+
+            connection->sendPipe.push(message);
             break;
         }
     }
@@ -151,6 +165,15 @@ void NetworkServer::handleConnection(std::shared_ptr<ClientConnection> connectio
         std::this_thread::sleep_for(std::chrono::microseconds(1));
 
         if (connection->client->isWritable()) {
+            if (!connection->sendPipe.isEmpty()) {
+                std::shared_ptr<ArraySegment<byte>> message;
+                if (connection->sendPipe.pop(message)) {
+                    connection->client->send(message);
+                }
+
+                // We need to throttle our connection transmission rate
+                std::this_thread::sleep_for(std::chrono::milliseconds(10)); // Throttle
+            }
         }
 
         // Check for incoming data

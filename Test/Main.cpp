@@ -1,13 +1,8 @@
-#include <iostream>
-#include <string.h>
-#include <thread>
-
-#include "KapMirror/Runtime/TcpListener.hpp"
-#include "KapMirror/Runtime/TcpClient.hpp"
-#include "KapMirror/Runtime/NetworkWriter.hpp"
-#include "KapMirror/Runtime/NetworkReader.hpp"
 #include "KapMirror/Runtime/NetworkServer.hpp"
 #include "KapMirror/Runtime/NetworkClient.hpp"
+#include "KapMirror/Runtime/NetworkWriter.hpp"
+#include <iostream>
+#include <string.h>
 
 void launchServer() {
     std::cout << "[Server] > Launch Test" << std::endl;
@@ -25,6 +20,13 @@ void launchClient() {
     std::cout << "[Client] > Launch Test" << std::endl;
     KapMirror::NetworkClient client;
     client.connect("127.0.0.1", 25565);
+
+    // std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+    // KapMirror::NetworkWriter writer;
+    // writer.writeString("Tobiichi Origami");
+    // KapMirror::ArraySegment<byte> message = writer;
+    // auto data = std::make_shared<KapMirror::ArraySegment<byte>>(message);
+    // client.send(data);
 
     std::cout << "[Client] > Waiting for server" << std::endl;
     while (client.connected() || client.connecting()) {
