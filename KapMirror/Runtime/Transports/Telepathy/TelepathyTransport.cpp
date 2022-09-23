@@ -18,8 +18,10 @@ TelepathyTransport::~TelepathyTransport() {
 
 void TelepathyTransport::createClient() {
     std::cout << "TelepathyTransport: Creating client" << std::endl;
+    client = std::make_shared<Telepathy::Client>(clientMaxMessageSize);
+    client->sendQueueLimit = clientSendQueueLimit;
+    client->receiveQueueLimit = clientReceiveQueueLimit;
 
-    client = std::make_shared<Telepathy::Client>(1024);
     client->onConnected = [this]() {
         if (onClientConnected) {
             onClientConnected(*this);
@@ -62,7 +64,7 @@ void TelepathyTransport::clientSend(std::shared_ptr<ArraySegment<byte>> data) {
 
 void TelepathyTransport::clientEarlyUpdate() {
     if (client) {
-        client->tick(100);
+        client->tick(clientMaxReceivesPerTick);
     }
 }
 
@@ -74,7 +76,9 @@ void TelepathyTransport::serverStart() {
     std::cout << "TelepathyTransport: Starting server" << std::endl;
 
     // Create server
-    server = std::make_shared<Telepathy::Server>(1024);
+    server = std::make_shared<Telepathy::Server>(serverMaxMessageSize);
+    server->sendQueueLimit = serverSendQueueLimitPerConnection;
+    server->receiveQueueLimit = serverSendQueueLimitPerConnection;
 
     // Servers Hooks
     server->onConnected = [this](int connectionId) {
@@ -110,6 +114,6 @@ void TelepathyTransport::serverSend(int connectionId, std::shared_ptr<ArraySegme
 
 void TelepathyTransport::serverEarlyUpdate() {
     if (server != nullptr) {
-        server->tick(100);
+        server->tick(serverMaxReceivesPerTick);
     }
 }

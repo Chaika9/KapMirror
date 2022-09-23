@@ -20,10 +20,11 @@ namespace Telepathy {
         std::thread clientThread;
 
         MagnificentReceivePipe receivePipe;
-        int receiveQueueLimit = 10000;
-
         MagnificentSendPipe sendPipe;
+
+        public:
         int sendQueueLimit = 10000;
+        int receiveQueueLimit = 10000;
 
         public:
         Client(int _maxMessageSize = 1024);

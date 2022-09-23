@@ -32,11 +32,12 @@ namespace Telepathy {
         std::mutex connectionListMutex;
 
         MagnificentReceivePipe receivePipe;
-        int receiveQueueLimit = 10000;
-
-        int sendQueueLimit = 10000;
 
         int counter;
+
+        public:
+        int sendQueueLimit = 10000;
+        int receiveQueueLimit = 10000;
 
         public:
         Server(int _maxMessageSize = 1024);
