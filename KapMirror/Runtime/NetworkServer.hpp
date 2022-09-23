@@ -35,6 +35,8 @@ namespace KapMirror {
 
         int tick(int processLimit);
 
+        void disconnectClient(int clientId);
+
         private:
         void listen(int port);
 

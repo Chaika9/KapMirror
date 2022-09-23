@@ -35,13 +35,27 @@ void launchClient() {
 
     std::cout << "[Client} > Connected" << std::endl;
 
-    std::string msg = "Tobiichi Origami";
-    KapMirror::NetworkWriter writer;
-    writer.writeString(msg);
+    {
+        std::string msg = "Tobiichi Origami";
+        KapMirror::NetworkWriter writer;
+        writer.writeString(msg);
 
-    KapMirror::ArraySegment<byte> message = writer;
-    client.send(message);
-    std::cout << "[Client] > Sent Message: Size=" << message.getSize() << std::endl;
+        KapMirror::ArraySegment<byte> message = writer;
+        client.send(message);
+        std::cout << "[Client] > Sent Message: Size=" << message.getSize() << std::endl;
+    }
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(4000));
+
+    {
+        std::string msg = "Setsuna";
+        KapMirror::NetworkWriter writer;
+        writer.writeString(msg);
+
+        KapMirror::ArraySegment<byte> message = writer;
+        client.send(message);
+        std::cout << "[Client] > Sent Message: Size=" << message.getSize() << std::endl;
+    }
 
     while (true);
 }

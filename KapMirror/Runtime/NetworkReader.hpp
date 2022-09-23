@@ -4,6 +4,7 @@
 #include "ArraySegment.hpp"
 #include "Platform.hpp"
 #include <string>
+#include <memory>
 
 namespace KapMirror {
     class NetworkReader {
@@ -18,6 +19,11 @@ namespace KapMirror {
 
         NetworkReader(ArraySegment<byte>& segment) {
             buffer = segment;
+            position = 0;
+        }
+
+        NetworkReader(std::shared_ptr<ArraySegment<byte>> segment) {
+            buffer = segment->toArray();
             position = 0;
         }
 

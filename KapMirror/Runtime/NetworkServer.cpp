@@ -2,6 +2,7 @@
 #include "ArraySegment.hpp"
 #include <iostream>
 #include <memory>
+#include <cstring>
 
 using namespace KapMirror;
 
@@ -80,6 +81,10 @@ void NetworkServer::listen(int port) {
 }
 
 int NetworkServer::tick(int processLimit) {
+    if (processLimit < 0) {
+        throw std::runtime_error("Invalid process limit");
+    }
+
     if (receivePipe.isEmpty()) {
         return 0;
     }
@@ -95,6 +100,7 @@ int NetworkServer::tick(int processLimit) {
                     break;
                 case EventType::Disconnected:
                     std::cout << "Server: Client " << connectionId << " disconnected" << std::endl;
+                    disconnectClient(connectionId);
                     break;
                 case EventType::Data:
                     std::cout << "Server: Client " << connectionId << " Received message Size=" << message->getSize() << std::endl;
@@ -107,9 +113,28 @@ int NetworkServer::tick(int processLimit) {
     return receivePipe.getSize();
 }
 
+void NetworkServer::disconnectClient(int clientId) {
+    std::lock_guard<std::mutex> lock(connectionListMutex);
+    if (connectionList.empty()) {
+        return;
+    }
+    for (auto it = connectionList.begin(); it != connectionList.end(); it++) {
+        std::shared_ptr<ClientConnection> connection = *it;
+        if (connection->id == clientId) {
+            connection->client->close();
+            if (connection->thread.joinable()) {
+                connection->thread.join();
+            }
+            connectionList.erase(it);
+            break;
+        }
+    }
+}
+
 void NetworkServer::handleConnection(std::shared_ptr<ClientConnection> connection) {
     receivePipe.push(connection->id, EventType::Connected);
 
+    byte* buffer = new byte[4 + maxMessageSize];
     while (connection->client->connected() && running) {
         // Don't burn too much CPU while idling
         std::this_thread::sleep_for(std::chrono::microseconds(1));
@@ -119,11 +144,12 @@ void NetworkServer::handleConnection(std::shared_ptr<ClientConnection> connectio
 
         if (connection->client->isReadable()) {
             try {
-                byte* buffer = new byte[4 + maxMessageSize];
+                // Clear the buffer
+                std::memset(buffer, 0, 4 + maxMessageSize);
+
                 int size = 0;
                 if (!connection->client->receive(4 + maxMessageSize, buffer, size)) {
                     // Connection closed
-                    delete[] buffer;
                     break;
                 }
 
@@ -142,6 +168,9 @@ void NetworkServer::handleConnection(std::shared_ptr<ClientConnection> connectio
             }
         }
     }
+
+    // Free buffer
+    delete[] buffer;
 
     receivePipe.push(connection->id, EventType::Disconnected);
 }
