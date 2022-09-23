@@ -78,7 +78,7 @@ void TelepathyTransport::serverStart() {
     // Create server
     server = std::make_shared<Telepathy::Server>(serverMaxMessageSize);
     server->sendQueueLimit = serverSendQueueLimitPerConnection;
-    server->receiveQueueLimit = serverSendQueueLimitPerConnection;
+    server->receiveQueueLimit = serverReceiveQueueLimitPerConnection;
 
     // Servers Hooks
     server->onConnected = [this](int connectionId) {

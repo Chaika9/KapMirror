@@ -16,10 +16,11 @@ namespace KapMirror {
         int clientMaxReceivesPerTick = 1000;
         int clientSendQueueLimit = 10000;
         int clientReceiveQueueLimit = 10000;
-        int serverSendQueueLimitPerConnection = 10000;
 
         int serverMaxMessageSize = 16 * 1024;
         int serverMaxReceivesPerTick = 10000;
+        int serverSendQueueLimitPerConnection = 10000;
+        int serverReceiveQueueLimitPerConnection = 10000;
 
         public:
         TelepathyTransport();
