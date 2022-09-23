@@ -1,15 +1,25 @@
 #pragma once
 
 #include "TcpListener.hpp"
-#include "ClientConnection.hpp"
 #include "MagnificentReceivePipe.hpp"
+#include "MagnificentSendPipe.hpp"
+#include "KapMirror/Runtime/ArraySegment.hpp"
 #include <thread>
 #include <mutex>
 #include <list>
 #include <memory>
+#include <functional>
 
 namespace KapMirror {
-    class NetworkServer {
+namespace Telepathy {
+    struct ClientConnection {
+        int id;
+        std::shared_ptr<TcpClient> client;
+        std::thread thread;
+        MagnificentSendPipe sendPipe;
+    };
+
+    class Server {
         private:
         volatile bool running;
 
@@ -29,8 +39,8 @@ namespace KapMirror {
         int counter;
 
         public:
-        NetworkServer(int _maxMessageSize = 1024);
-        ~NetworkServer();
+        Server(int _maxMessageSize = 1024);
+        ~Server();
 
         void close();
 
@@ -46,5 +56,11 @@ namespace KapMirror {
         void listen(int port);
 
         void handleConnection(std::shared_ptr<ClientConnection> connection);
+
+        public:
+        std::function<void(int)> onConnected;
+        std::function<void(int)> onDisconnected;
+        std::function<void(int, std::shared_ptr<ArraySegment<byte>>)> onData;
     };
+}
 }

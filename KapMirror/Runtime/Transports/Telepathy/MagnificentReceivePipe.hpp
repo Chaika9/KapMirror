@@ -1,13 +1,14 @@
 #pragma once
 
 #include "EventType.hpp"
-#include "ArraySegment.hpp"
-#include "Platform.hpp"
+#include "KapMirror/Runtime/ArraySegment.hpp"
+#include "KapMirror/Runtime/Platform.hpp"
 #include <memory>
 #include <queue>
 #include <mutex>
 
 namespace KapMirror {
+namespace Telepathy {
     class MagnificentReceivePipe {
         struct Entry {
             int connectionId;
@@ -63,4 +64,5 @@ namespace KapMirror {
             }
         }
     };
+}
 }

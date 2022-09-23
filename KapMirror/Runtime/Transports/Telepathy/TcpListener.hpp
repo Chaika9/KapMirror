@@ -4,6 +4,7 @@
 #include "SocketException.hpp"
 
 namespace KapMirror {
+namespace Telepathy {
     class TcpListener {
         private:
         std::shared_ptr<Socket> socket;
@@ -24,4 +25,5 @@ namespace KapMirror {
 
         void setBlocking(bool blocking);
     };
+}
 }

@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <iostream>
 
-using namespace KapMirror;
+using namespace KapMirror::Telepathy;
 
 Socket::Socket(std::shared_ptr<Address> _address) : address(_address), socket_fd(INVALID_SOCKET) {
     if (address == nullptr) {

@@ -1,18 +1,17 @@
-#include "NetworkServer.hpp"
-#include "ArraySegment.hpp"
+#include "Server.hpp"
 #include <iostream>
 #include <cstring>
 
-using namespace KapMirror;
+using namespace KapMirror::Telepathy;
 
-NetworkServer::NetworkServer(int _maxMessageSize) : maxMessageSize(_maxMessageSize) {
+Server::Server(int _maxMessageSize) : maxMessageSize(_maxMessageSize) {
 }
 
-NetworkServer::~NetworkServer() {
+Server::~Server() {
     close();
 }
 
-void NetworkServer::close() {
+void Server::close() {
     std::cout << "Server: Closing server" << std::endl;
     running = false;
     if (listenerThread.joinable()) {
@@ -22,7 +21,7 @@ void NetworkServer::close() {
     receivePipe.clear();
 }
 
-void NetworkServer::start(int port) {
+void Server::start(int port) {
     if (port < 0 || port > 65535) {
         throw std::runtime_error("Invalid port number");
     }
@@ -33,7 +32,7 @@ void NetworkServer::start(int port) {
     listenerThread = std::thread([this, port]() { this->listen(port); });
 }
 
-void NetworkServer::listen(int port) {
+void Server::listen(int port) {
     std::cout << "Server: Listening on port " << port << std::endl;
 
     auto address = std::make_shared<Address>(port);
@@ -42,7 +41,7 @@ void NetworkServer::listen(int port) {
     try {
         listener->start();
     } catch (SocketException& e) {
-        std::cerr << "Server: Error=" << e.what() << std::endl;
+        std::cerr << "Server: Exception=" << e.what() << std::endl;
         return;
     }
 
@@ -65,7 +64,7 @@ void NetworkServer::listen(int port) {
             std::lock_guard<std::mutex> lock(connectionListMutex);
             connectionList.push_back(connection);
         } catch (SocketException& e) {
-            std::cout << "Server: Error=" << e.what() << std::endl;
+            std::cout << "Server: Exception=" << e.what() << std::endl;
         }
     }
 
@@ -79,7 +78,7 @@ void NetworkServer::listen(int port) {
     connectionList.clear();
 }
 
-int NetworkServer::tick(int processLimit) {
+int Server::tick(int processLimit) {
     if (processLimit < 0) {
         throw std::runtime_error("Invalid process limit");
     }
@@ -95,14 +94,20 @@ int NetworkServer::tick(int processLimit) {
         if (receivePipe.pop(connectionId, eventType, message)) {
             switch (eventType) {
                 case EventType::Connected:
-                    std::cout << "Server: Client " << connectionId << " connected" << std::endl;
+                    if (onConnected) {
+                        onConnected(connectionId);
+                    }
                     break;
                 case EventType::Disconnected:
-                    std::cout << "Server: Client " << connectionId << " disconnected" << std::endl;
+                    if (onDisconnected) {
+                        onDisconnected(connectionId);
+                    }
                     disconnectClient(connectionId);
                     break;
                 case EventType::Data:
-                    std::cout << "Server: Client " << connectionId << " Received message Size=" << message->getSize() << std::endl;
+                    if (onData) {
+                        onData(connectionId, message);
+                    }
                     break;
             }
         } else {
@@ -112,7 +117,7 @@ int NetworkServer::tick(int processLimit) {
     return receivePipe.getSize();
 }
 
-void NetworkServer::disconnectClient(int clientId) {
+void Server::disconnectClient(int clientId) {
     std::lock_guard<std::mutex> lock(connectionListMutex);
     if (connectionList.empty()) {
         return;
@@ -130,7 +135,7 @@ void NetworkServer::disconnectClient(int clientId) {
     }
 }
 
-void NetworkServer::send(int clientId, std::shared_ptr<ArraySegment<byte>> message) {
+void Server::send(int clientId, std::shared_ptr<ArraySegment<byte>> message) {
     std::lock_guard<std::mutex> lock(connectionListMutex);
     if (connectionList.empty()) {
         return;
@@ -156,7 +161,7 @@ void NetworkServer::send(int clientId, std::shared_ptr<ArraySegment<byte>> messa
     }
 }
 
-void NetworkServer::handleConnection(std::shared_ptr<ClientConnection> connection) {
+void Server::handleConnection(std::shared_ptr<ClientConnection> connection) {
     receivePipe.push(connection->id, EventType::Connected);
 
     byte* buffer = new byte[4 + maxMessageSize];
@@ -198,7 +203,7 @@ void NetworkServer::handleConnection(std::shared_ptr<ClientConnection> connectio
                     break;
                 }
             } catch(SocketException& e) {
-                std::cerr << "Server: Client Error=" << e.what() << std::endl;
+                std::cerr << "Server: Client Exception=" << e.what() << std::endl;
                 break;
             }
         }

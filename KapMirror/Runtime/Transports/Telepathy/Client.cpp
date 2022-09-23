@@ -1,21 +1,21 @@
-#include "NetworkClient.hpp"
+#include "Client.hpp"
 #include <iostream>
 #include <cstring>
 
-using namespace KapMirror;
+using namespace KapMirror::Telepathy;
 
-NetworkClient::NetworkClient(int _maxMessageSize) : maxMessageSize(_maxMessageSize) {
+Client::Client(int _maxMessageSize) : maxMessageSize(_maxMessageSize) {
     running = false;
     isConnecting = false;
 }
 
-NetworkClient::~NetworkClient() {
+Client::~Client() {
     if (running) {
         dispose();
     }
 }
 
-void NetworkClient::dispose() {
+void Client::dispose() {
     running = false;
     isConnecting = false;
     if (clientThread.joinable()) {
@@ -25,7 +25,7 @@ void NetworkClient::dispose() {
     receivePipe.clear();
 }
 
-void NetworkClient::connect(std::string ip, int port) {
+void Client::connect(std::string ip, int port) {
     if (connecting() || connected()) {
         std::cerr << "Client: Already connecting or connected" << std::endl;
         return;
@@ -41,13 +41,13 @@ void NetworkClient::connect(std::string ip, int port) {
     clientThread = std::thread([this, ip, port]() { this->run(ip, port); });
 }
 
-void NetworkClient::disconnect() {
+void Client::disconnect() {
     if (connecting() || connected()) {
         dispose();
     }
 }
 
-int NetworkClient::tick(int processLimit) {
+int Client::tick(int processLimit) {
     if (processLimit < 0) {
         throw std::runtime_error("Invalid process limit");
     }
@@ -63,14 +63,20 @@ int NetworkClient::tick(int processLimit) {
         if (receivePipe.pop(connectionId, eventType, message)) {
             switch (eventType) {
                 case EventType::Connected:
-                    std::cout << "Client: connected" << std::endl;
+                    if (onConnected) {
+                        onConnected();
+                    }
                     break;
                 case EventType::Disconnected:
-                    std::cout << "Client: disconnected" << std::endl;
+                    if (onDisconnected) {
+                        onDisconnected();
+                    }
                     dispose();
                     break;
                 case EventType::Data:
-                    std::cout << "Client: Received message Size=" << message->getSize() << std::endl;
+                    if (onData) {
+                        onData(message);
+                    }
                     break;
             }
         } else {
@@ -80,7 +86,7 @@ int NetworkClient::tick(int processLimit) {
     return receivePipe.getSize();
 }
 
-void NetworkClient::send(std::shared_ptr<ArraySegment<byte>> message) {
+void Client::send(std::shared_ptr<ArraySegment<byte>> message) {
     if (!connected()) {
         std::cerr << "Client: Not connected" << std::endl;
         return;
@@ -100,7 +106,7 @@ void NetworkClient::send(std::shared_ptr<ArraySegment<byte>> message) {
     sendPipe.push(message);
 }
 
-void NetworkClient::run(std::string ip, int port) {
+void Client::run(std::string ip, int port) {
     auto address = std::make_shared<Address>(ip, port);
     client = std::make_shared<TcpClient>(address);
 
@@ -155,7 +161,7 @@ void NetworkClient::run(std::string ip, int port) {
                     break;
                 }
             } catch (SocketException& e) {
-                std::cerr << "Client: Error=" << e.what() << std::endl;
+                std::cerr << "Client: Exception=" << e.what() << std::endl;
                 break;
             }
         }

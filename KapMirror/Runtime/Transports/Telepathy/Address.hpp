@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Internal.hpp"
-
 #include <memory>
 #include <string>
 
 namespace KapMirror {
+namespace Telepathy {
     class Address {
         private:
         addrinfo *address = nullptr;
@@ -23,4 +23,5 @@ namespace KapMirror {
 
         static std::shared_ptr<Address> createAddress(int port, bool passive = true);
     };
+}
 }

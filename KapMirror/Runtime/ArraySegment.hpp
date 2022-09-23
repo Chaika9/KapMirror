@@ -2,6 +2,7 @@
 
 #include "Array.hpp"
 #include <stdexcept>
+#include <memory>
 
 namespace KapMirror {
     template <typename T>
