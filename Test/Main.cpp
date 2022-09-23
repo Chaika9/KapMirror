@@ -21,12 +21,11 @@ void launchClient() {
     KapMirror::NetworkClient client;
     client.connect("127.0.0.1", 25565);
 
-    // std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-    // KapMirror::NetworkWriter writer;
-    // writer.writeString("Tobiichi Origami");
-    // KapMirror::ArraySegment<byte> message = writer;
-    // auto data = std::make_shared<KapMirror::ArraySegment<byte>>(message);
-    // client.send(data);
+    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+    KapMirror::NetworkWriter writer;
+    writer.writeString("Tobiichi Origami");
+    std::shared_ptr<KapMirror::ArraySegment<byte>> message = writer.toArraySegment();
+    client.send(message);
 
     std::cout << "[Client] > Waiting for server" << std::endl;
     while (client.connected() || client.connecting()) {

@@ -65,12 +65,8 @@ namespace KapMirror {
          * @brief Get the buffer
          * @return ArraySegment<char>
          */
-        inline ArraySegment<byte> toArraySegment() {
-            return ArraySegment<byte>(buffer, position);
-        }
-
-        operator ArraySegment<byte>() {
-            return toArraySegment();
+        inline std::shared_ptr<ArraySegment<byte>> toArraySegment() {
+            return ArraySegment<byte>::createArraySegment(buffer, position);
         }
 
         /**
