@@ -6,6 +6,7 @@
 #include <thread>
 #include <mutex>
 #include <list>
+#include <memory>
 
 namespace KapMirror {
     class NetworkServer {
@@ -36,6 +37,8 @@ namespace KapMirror {
         int tick(int processLimit);
 
         void disconnectClient(int clientId);
+
+        void send(int clientId, std::shared_ptr<ArraySegment<byte>> message);
 
         private:
         void listen(int port);

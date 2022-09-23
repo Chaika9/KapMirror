@@ -7,60 +7,30 @@
 #include "KapMirror/Runtime/NetworkWriter.hpp"
 #include "KapMirror/Runtime/NetworkReader.hpp"
 #include "KapMirror/Runtime/NetworkServer.hpp"
-
-#include "KapMirror/Runtime/MagnificentReceivePipe.hpp"
+#include "KapMirror/Runtime/NetworkClient.hpp"
 
 void launchServer() {
     std::cout << "[Server] > Launch Test" << std::endl;
     KapMirror::NetworkServer server;
     server.start(25565);
 
-    std::cout << "[Server] > Wait" << std::endl;
-
+    std::cout << "[Server] > Waiting for client" << std::endl;
     while (true) {
         std::this_thread::sleep_for(std::chrono::microseconds(1));
         server.tick(100);
     }
-
-    // std::this_thread::sleep_for(std::chrono::milliseconds(6000));
-
-    // server.close();
 }
 
 void launchClient() {
     std::cout << "[Client] > Launch Test" << std::endl;
-    auto address = KapMirror::Address::createAddress("127.0.0.1", 25565);
-    KapMirror::TcpClient client(address);
-    client.connect();
+    KapMirror::NetworkClient client;
+    client.connect("127.0.0.1", 25565);
 
-    std::cout << "[Client} > Connected" << std::endl;
-
-    {
-        std::string msg = "Tobiichi Origami";
-        KapMirror::NetworkWriter writer;
-        writer.writeString(msg);
-
-        KapMirror::ArraySegment<byte> message = writer;
-        client.send(message);
-        std::cout << "[Client] > Sent Message: Size=" << message.getSize() << std::endl;
+    std::cout << "[Client] > Waiting for server" << std::endl;
+    while (client.connected() || client.connecting()) {
+        std::this_thread::sleep_for(std::chrono::microseconds(1));
+        client.tick(100);
     }
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(4000));
-
-    {
-        std::string msg = "Setsuna";
-        KapMirror::NetworkWriter writer;
-        writer.writeString(msg);
-
-        KapMirror::ArraySegment<byte> message = writer;
-        client.send(message);
-        std::cout << "[Client] > Sent Message: Size=" << message.getSize() << std::endl;
-    }
-
-    while (true);
-}
-
-void launchTest() {
 }
 
 int main(int argc, char** argv) {

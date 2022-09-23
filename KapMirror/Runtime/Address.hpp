@@ -21,6 +21,6 @@ namespace KapMirror {
 
         static std::shared_ptr<Address> createAddress(std::string host, int port);
 
-        static std::shared_ptr<Address> createAddress(int port);
+        static std::shared_ptr<Address> createAddress(int port, bool passive = true);
     };
 }

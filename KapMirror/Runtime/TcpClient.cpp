@@ -1,6 +1,5 @@
 #include "TcpClient.hpp"
 #include "SocketException.hpp"
-#include <iostream>
 
 using namespace KapMirror;
 
@@ -67,4 +66,8 @@ bool TcpClient::isWritable() const {
         return false;
     }
     return socket->isWritable();
+}
+
+void TcpClient::setBlocking(bool blocking) {
+    socket->setBlocking(blocking);
 }

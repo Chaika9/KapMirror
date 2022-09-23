@@ -38,6 +38,6 @@ std::shared_ptr<Address> Address::createAddress(std::string host, int port) {
     return std::make_shared<Address>(host, port);
 }
 
-std::shared_ptr<Address> Address::createAddress(int port) {
-    return std::make_shared<Address>(port);
+std::shared_ptr<Address> Address::createAddress(int port, bool passive) {
+    return std::make_shared<Address>(port, passive);
 }

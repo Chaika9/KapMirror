@@ -1,7 +1,6 @@
 #include "NetworkServer.hpp"
 #include "ArraySegment.hpp"
 #include <iostream>
-#include <memory>
 #include <cstring>
 
 using namespace KapMirror;
@@ -38,12 +37,11 @@ void NetworkServer::listen(int port) {
 
     auto address = std::make_shared<Address>(port);
     listener = std::make_shared<TcpListener>(address);
-    listener->setBlocking(false);
 
     try {
         listener->start();
     } catch (SocketException& e) {
-        std::cout << "Server: Error=" << e.what() << std::endl;
+        std::cerr << "Server: Error=" << e.what() << std::endl;
         return;
     }
 
@@ -131,6 +129,19 @@ void NetworkServer::disconnectClient(int clientId) {
     }
 }
 
+void NetworkServer::send(int clientId, std::shared_ptr<ArraySegment<byte>> message) {
+    std::lock_guard<std::mutex> lock(connectionListMutex);
+    if (connectionList.empty()) {
+        return;
+    }
+    for (auto& connection : connectionList) {
+        if (connection->id == clientId) {
+            // TODO: Send the message
+            break;
+        }
+    }
+}
+
 void NetworkServer::handleConnection(std::shared_ptr<ClientConnection> connection) {
     receivePipe.push(connection->id, EventType::Connected);
 
@@ -142,6 +153,7 @@ void NetworkServer::handleConnection(std::shared_ptr<ClientConnection> connectio
         if (connection->client->isWritable()) {
         }
 
+        // Check for incoming data
         if (connection->client->isReadable()) {
             try {
                 // Clear the buffer
@@ -159,11 +171,11 @@ void NetworkServer::handleConnection(std::shared_ptr<ClientConnection> connectio
                 receivePipe.push(connection->id, EventType::Data, message);
 
                 if (receivePipe.getSize() >= receiveQueueLimit) {
-                    std::cout << "Server: Receive pipe is full, dropping messages" << std::endl;
+                    std::cerr << "Server: Receive pipe is full, dropping messages" << std::endl;
                     break;
                 }
             } catch(SocketException& e) {
-                std::cout << "Server: Client Error=" << e.what() << std::endl;
+                std::cerr << "Server: Client Error=" << e.what() << std::endl;
                 break;
             }
         }

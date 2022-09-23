@@ -1,6 +1,7 @@
 #include "Socket.hpp"
 #include "SocketException.hpp"
 #include <stdexcept>
+#include <iostream>
 
 using namespace KapMirror;
 
@@ -48,14 +49,16 @@ void Socket::close() {
 void Socket::bind() {
     addrinfo* addr = address->getAddress();
     int status = ::bind(socket_fd, addr->ai_addr, addr->ai_addrlen);
-    if (status == SOCKET_ERROR) {
+    int lastError = SocketLastError;
+    if (status == SOCKET_ERROR && lastError != EWOULDBLOCK && lastError != EAGAIN && lastError != EINPROGRESS) {
         throw SocketException("Socket bind error");
     }
 }
 
 void Socket::listen() {
     int status = ::listen(socket_fd, SOMAXCONN);
-    if (status == SOCKET_ERROR) {
+    int lastError = SocketLastError;
+    if (status == SOCKET_ERROR && lastError != EWOULDBLOCK && lastError != EAGAIN && lastError != EINPROGRESS) {
         throw SocketException("Socket listen error");
     }
 }
@@ -66,8 +69,12 @@ void Socket::connect() {
     }
 
     addrinfo* addr = address->getAddress();
-    int status = ::connect(socket_fd, addr->ai_addr, (int)addr->ai_addrlen);
-    if (status == SOCKET_ERROR) {
+    int status = ::connect(socket_fd, addr->ai_addr, static_cast<int>(addr->ai_addrlen));
+    if (status == 0) {
+        return;
+    }
+    int lastError = SocketLastError;
+    if (status == SOCKET_ERROR && lastError != EWOULDBLOCK && lastError != EAGAIN && lastError != EINPROGRESS) {
         throw SocketException("Socket connect error");
     }
 }
@@ -82,7 +89,14 @@ std::shared_ptr<Socket> Socket::accept() {
 
 void Socket::setBlocking(bool blocking) {
     u_long mode = blocking ? 0 : 1;
-    ioctl(socket_fd, FIONBIO, &mode);
+#ifdef __WINDOWS__
+    int status = ioctlsocket(socket_fd, FIONBIO, &mode);
+#else
+    int status = ioctl(socket_fd, FIONBIO, (char *)&mode);
+#endif
+    if (status == SOCKET_ERROR) {
+        throw SocketException("Socket set blocking error");
+    }
 }
 
 void Socket::send(byte* buffer, int size, uint32_t flags) {

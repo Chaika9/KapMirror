@@ -28,6 +28,7 @@
 #include <sys/ioctl.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <errno.h>
 
 #define SOCKET int
 #define INVALID_SOCKET  (SOCKET)(~0)
@@ -35,5 +36,6 @@
 #define SD_RECEIVE              0x00
 #define SD_SEND                 0x01
 #define SD_BOTH                 0x02
+#define SocketLastError		    errno
 
 #endif

@@ -48,5 +48,7 @@ namespace KapMirror {
         bool isReadable() const;
 
         bool isWritable() const;
+
+        void setBlocking(bool blocking);
     };
 }
