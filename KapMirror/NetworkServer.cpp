@@ -1,7 +1,7 @@
-#include "KapEngine.hpp"
-#include "Debug.hpp"
 #include "NetworkServer.hpp"
 #include "Runtime/Transport.hpp"
+#include "KapEngine.hpp"
+#include "Debug.hpp"
 
 using namespace KapMirror;
 

@@ -53,6 +53,12 @@ void NetworkManager::stopServer() {
 
 void NetworkManager::startClient() {
     KapEngine::Debug::log("NetworkManager: Starting client");
+    if (client->active()) {
+        KapEngine::Debug::warning("NetworkManager: Client already started.");
+        return;
+    }
+
+    client->connect("127.0.0.1", 7777);
 }
 
 void NetworkManager::stopClient() {
