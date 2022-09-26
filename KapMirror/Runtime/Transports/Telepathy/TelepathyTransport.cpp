@@ -107,6 +107,12 @@ void TelepathyTransport::serverSend(int connectionId, std::shared_ptr<ArraySegme
     }
 }
 
+void TelepathyTransport::serverDisconnect(int connectionId) {
+    if (server != nullptr) {
+        server->disconnectClient(connectionId);
+    }
+}
+
 void TelepathyTransport::serverEarlyUpdate() {
     if (server != nullptr) {
         server->tick(serverMaxReceivesPerTick);

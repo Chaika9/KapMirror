@@ -26,6 +26,8 @@ namespace KapMirror {
 
         virtual void serverSend(int connectionId, std::shared_ptr<ArraySegment<byte>> data) = 0;
 
+        virtual void serverDisconnect(int connectionId) = 0;
+
         virtual void serverEarlyUpdate() = 0;
 
         public:

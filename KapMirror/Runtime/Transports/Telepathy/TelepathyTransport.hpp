@@ -44,6 +44,8 @@ namespace KapMirror {
 
         void serverSend(int connectionId, std::shared_ptr<ArraySegment<byte>> data) override;
 
+        void serverDisconnect(int connectionId) override;
+
         void serverEarlyUpdate() override;
 
         private:
