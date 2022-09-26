@@ -31,11 +31,19 @@ void NetworkClient::disconnect() {
     Transport::activeTransport->clientDisconnect();
 }
 
+void NetworkClient::networkEarlyUpdate() {
+    if (Transport::activeTransport != nullptr) {
+        Transport::activeTransport->clientEarlyUpdate();
+    }
+}
+
 void NetworkClient::addTransportHandlers() {
     Transport::activeTransport->onClientConnected = [this](Transport& t) {
+        std::cout << "NetworkClient: Connected" << std::endl;
         onTransportConnect();
     };
     Transport::activeTransport->onClientDisconnected = [this](Transport& t) {
+        std::cout << "NetworkClient: Disconnected" << std::endl;
         onTransportDisconnect();
     };
     Transport::activeTransport->onClientDataReceived = [this](Transport& t, std::shared_ptr<ArraySegment<byte>> data) {

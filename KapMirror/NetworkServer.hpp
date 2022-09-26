@@ -20,6 +20,8 @@ namespace KapMirror {
 
         void shutdown();
 
+        void networkEarlyUpdate();
+
         private:
         void initialize();
 

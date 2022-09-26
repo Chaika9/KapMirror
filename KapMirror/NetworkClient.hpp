@@ -27,6 +27,8 @@ namespace KapMirror {
 
         void disconnect();
 
+        void networkEarlyUpdate();
+
         bool active() const {
             return connectState == ConnectState::Connecting || connectState == ConnectState::Connected;
         }

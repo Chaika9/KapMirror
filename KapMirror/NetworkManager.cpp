@@ -6,12 +6,14 @@ using namespace KapMirror;
 
 std::shared_ptr<Transport> Transport::activeTransport = nullptr;
 
-NetworkManager::NetworkManager(std::shared_ptr<KapEngine::GameObject> go) : Component(go, "NetworkManager", 2) {
+NetworkManager::NetworkManager(std::shared_ptr<KapEngine::GameObject> go) : Component(go, "NetworkManager") {
     server = std::make_shared<NetworkServer>();
     client = std::make_shared<NetworkClient>();
 }
 
 NetworkManager::~NetworkManager() {
+    server->shutdown();
+    client->disconnect();
 }
 
 void NetworkManager::onAwake() {
@@ -28,6 +30,8 @@ void NetworkManager::onStart() {
 }
 
 void NetworkManager::onUpdate() {
+    server->networkEarlyUpdate();
+    client->networkEarlyUpdate();
 }
 
 void NetworkManager::setTransport(std::shared_ptr<Transport> transport) {
@@ -46,9 +50,14 @@ void NetworkManager::setupServer() {
 
     server->listen(maxConnections);
     KapEngine::Debug::log("NetworkManager: Server started listening");
+
+    onStartServer();
 }
 
 void NetworkManager::stopServer() {
+    onStopServer();
+
+    server->shutdown();
 }
 
 void NetworkManager::startClient() {
@@ -59,8 +68,13 @@ void NetworkManager::startClient() {
     }
 
     client->connect("127.0.0.1", 7777);
+
+    onStartClient();
 }
 
 void NetworkManager::stopClient() {
+    onStopClient();
+
+    client->disconnect();
 }
 

@@ -41,6 +41,12 @@ void NetworkServer::shutdown() {
     }
 }
 
+void NetworkServer::networkEarlyUpdate() {
+    if (initialized) {
+        Transport::activeTransport->serverEarlyUpdate();
+    }
+}
+
 void NetworkServer::addTransportHandlers() {
     Transport::activeTransport->onServerConnected = [this](Transport& t, int connectionId) {
         onTransportConnect(connectionId);

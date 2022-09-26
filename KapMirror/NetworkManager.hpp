@@ -35,6 +35,13 @@ namespace KapMirror {
 
         void stopClient();
 
+        // Events
+        virtual void onStartServer() {}
+        virtual void onStopServer() {}
+
+        virtual void onStartClient() {}
+        virtual void onStopClient() {}
+
         private:
         void setupServer();
     };
