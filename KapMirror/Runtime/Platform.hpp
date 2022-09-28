@@ -18,3 +18,10 @@
 #ifndef byte
 typedef char byte;
 #endif
+
+#ifdef __WINDOWS__
+
+#define NOMINMAX
+
+#endif
+

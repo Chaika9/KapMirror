@@ -6,6 +6,7 @@
 #include <thread>
 #include <mutex>
 #include <memory>
+#include <functional>
 
 namespace KapMirror {
 namespace Telepathy {

@@ -17,6 +17,8 @@
 #pragma comment (lib, "Mswsock.lib")
 #pragma comment (lib, "AdvApi32.lib")
 
+#define SocketLastError errno
+
 #endif
 
 #if defined(__LINUX__) || defined(__MACOS__)
