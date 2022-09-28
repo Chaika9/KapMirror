@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Runtime/Compression/ICompressionMethod.hpp"
 #include "Runtime/ArraySegment.hpp"
 #include "Runtime/Platform.hpp"
 #include <memory>
@@ -8,12 +9,13 @@
 namespace KapMirror {
     class NetworkServer {
         private:
+        std::shared_ptr<Compression::ICompressionMethod> compression;
         bool initialized;
 
         int maxConnections;
 
         public:
-        NetworkServer();
+        NetworkServer(std::shared_ptr<Compression::ICompressionMethod> &compression);
         ~NetworkServer() = default;
 
         void listen(int maxConnections);

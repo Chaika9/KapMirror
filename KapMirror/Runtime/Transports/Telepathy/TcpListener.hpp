@@ -1,5 +1,6 @@
 #pragma once
 
+#include "KapMirror/Runtime/Compression/ICompressionMethod.hpp"
 #include "TcpClient.hpp"
 #include "SocketException.hpp"
 
@@ -17,7 +18,7 @@ namespace Telepathy {
 
         void start();
 
-        std::shared_ptr<TcpClient> acceptTcpClient();
+        std::shared_ptr<TcpClient> acceptTcpClient(std::shared_ptr<Compression::ICompressionMethod>);
 
         bool isReadable() const;
 

@@ -6,8 +6,8 @@ using namespace KapMirror;
 
 std::shared_ptr<Transport> Transport::activeTransport = nullptr;
 
-NetworkManager::NetworkManager(std::shared_ptr<KapEngine::GameObject> go) : Component(go, "NetworkManager") {
-    server = std::make_shared<NetworkServer>();
+NetworkManager::NetworkManager(std::shared_ptr<KapEngine::GameObject> go, std::shared_ptr<Compression::ICompressionMethod> &compression) : Component(go, "NetworkManager") {
+    server = std::make_shared<NetworkServer>(compression);
     client = std::make_shared<NetworkClient>();
 }
 
@@ -21,7 +21,7 @@ void NetworkManager::onAwake() {
 
     if (transport == nullptr) {
         KapEngine::Debug::log("NetworkManager: No transport set, using default transport (TelepathyTransport)");
-        setTransport(std::make_shared<KapMirror::TelepathyTransport>());
+        setTransport(std::make_shared<KapMirror::TelepathyTransport>(this->compression));
     }
 }
 

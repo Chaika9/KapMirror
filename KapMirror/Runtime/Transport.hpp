@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Compression/ICompressionMethod.hpp"
 #include "ArraySegment.hpp"
 #include "Platform.hpp"
 #include <functional>
@@ -20,7 +21,7 @@ namespace KapMirror {
 
         virtual void clientEarlyUpdate() = 0;
 
-        virtual void serverStart() = 0;
+        virtual void serverStart(std::shared_ptr<Compression::ICompressionMethod> &compression) = 0;
 
         virtual void serverStop() = 0;
 

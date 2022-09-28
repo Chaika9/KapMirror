@@ -4,7 +4,7 @@
 
 using namespace KapMirror::Telepathy;
 
-Client::Client(int _maxMessageSize) : maxMessageSize(_maxMessageSize) {
+Client::Client(std::shared_ptr<Compression::ICompressionMethod> &_compression, int _maxMessageSize) : compression(_compression), maxMessageSize(_maxMessageSize) {
     running = false;
     isConnecting = false;
 }
@@ -108,7 +108,7 @@ void Client::send(std::shared_ptr<ArraySegment<byte>> message) {
 
 void Client::run(std::string ip, int port) {
     auto address = std::make_shared<Address>(ip, port);
-    client = std::make_shared<TcpClient>(address);
+    client = std::make_shared<TcpClient>(address, this->compression);
 
     try {
         client->connect();

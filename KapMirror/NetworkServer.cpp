@@ -5,7 +5,8 @@
 
 using namespace KapMirror;
 
-NetworkServer::NetworkServer() {
+NetworkServer::NetworkServer(std::shared_ptr<Compression::ICompressionMethod> &compression) {
+    this->compression = compression;
     initialized = false;
 }
 
@@ -28,7 +29,7 @@ void NetworkServer::listen(int maxConnections) {
     initialize();
 
     this->maxConnections = maxConnections;
-    Transport::activeTransport->serverStart();
+    Transport::activeTransport->serverStart(this->compression);
 }
 
 void NetworkServer::shutdown() {

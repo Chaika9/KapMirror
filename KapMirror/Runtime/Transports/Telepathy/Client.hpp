@@ -5,6 +5,7 @@
 #include "MagnificentSendPipe.hpp"
 #include <thread>
 #include <mutex>
+#include <functional>
 #include <memory>
 
 namespace KapMirror {
@@ -15,6 +16,8 @@ namespace Telepathy {
         volatile bool isConnecting;
 
         int maxMessageSize;
+
+        std::shared_ptr<Compression::ICompressionMethod> compression;
 
         std::shared_ptr<TcpClient> client;
         std::thread clientThread;
@@ -27,7 +30,7 @@ namespace Telepathy {
         int receiveQueueLimit = 10000;
 
         public:
-        Client(int _maxMessageSize = 1024);
+        Client(std::shared_ptr<Compression::ICompressionMethod> &compression, int _maxMessageSize = 1024);
         ~Client();
 
         void connect(std::string ip, int port);

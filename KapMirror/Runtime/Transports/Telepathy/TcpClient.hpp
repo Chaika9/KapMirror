@@ -1,5 +1,6 @@
 #pragma once
 
+#include "KapMirror/Runtime/Compression/ICompressionMethod.hpp"
 #include "Socket.hpp"
 #include "SocketException.hpp"
 #include "KapMirror/Runtime/ArraySegment.hpp"
@@ -9,11 +10,12 @@ namespace Telepathy {
     class TcpClient {
         private:
         std::shared_ptr<Socket> socket;
+        std::shared_ptr<Compression::ICompressionMethod> compression;
         bool isConnected;
 
         public:
-        TcpClient(std::shared_ptr<Address> address);
-        TcpClient(std::shared_ptr<Socket> socket);
+        TcpClient(std::shared_ptr<Address> address, std::shared_ptr<Compression::ICompressionMethod> &compression);
+        TcpClient(std::shared_ptr<Socket> socket, std::shared_ptr<Compression::ICompressionMethod> &compression);
         ~TcpClient();
 
         /**

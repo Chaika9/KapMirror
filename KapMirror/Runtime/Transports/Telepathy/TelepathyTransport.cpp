@@ -3,7 +3,8 @@
 
 using namespace KapMirror;
 
-TelepathyTransport::TelepathyTransport() {
+TelepathyTransport::TelepathyTransport(std::shared_ptr<Compression::ICompressionMethod> &_compression) {
+    compression = _compression;
 }
 
 TelepathyTransport::~TelepathyTransport() {
@@ -17,7 +18,7 @@ TelepathyTransport::~TelepathyTransport() {
  */
 
 void TelepathyTransport::createClient() {
-    client = std::make_shared<Telepathy::Client>(clientMaxMessageSize);
+    client = std::make_shared<Telepathy::Client>(compression, clientMaxMessageSize);
     client->sendQueueLimit = clientSendQueueLimit;
     client->receiveQueueLimit = clientReceiveQueueLimit;
 
@@ -69,9 +70,9 @@ void TelepathyTransport::clientEarlyUpdate() {
  * Server
  */
 
-void TelepathyTransport::serverStart() {
+void TelepathyTransport::serverStart(std::shared_ptr<Compression::ICompressionMethod> &compression) {
     // Create server
-    server = std::make_shared<Telepathy::Server>(serverMaxMessageSize);
+    server = std::make_shared<Telepathy::Server>(compression, serverMaxMessageSize);
     server->sendQueueLimit = serverSendQueueLimitPerConnection;
     server->receiveQueueLimit = serverReceiveQueueLimitPerConnection;
 

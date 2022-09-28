@@ -4,7 +4,7 @@
 
 using namespace KapMirror::Telepathy;
 
-Server::Server(int _maxMessageSize) : maxMessageSize(_maxMessageSize) {
+Server::Server(std::shared_ptr<Compression::ICompressionMethod> &_compression, int _maxMessageSize) : compression(_compression), maxMessageSize(_maxMessageSize) {
 }
 
 Server::~Server() {
@@ -50,7 +50,7 @@ void Server::listen(int port) {
         }
 
         try {
-            auto client = listener->acceptTcpClient();
+            auto client = listener->acceptTcpClient(this->compression);
 
             // Create a new connection object
             auto connection = std::make_shared<ClientConnection>();

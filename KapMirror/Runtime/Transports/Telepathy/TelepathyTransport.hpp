@@ -1,5 +1,6 @@
 #pragma once
 
+#include "KapMirror/Runtime/Compression/ICompressionMethod.hpp"
 #include "KapMirror/Runtime/Transport.hpp"
 #include "Client.hpp"
 #include "Server.hpp"
@@ -7,6 +8,7 @@
 namespace KapMirror {
     class TelepathyTransport : public Transport {
         private:
+        std::shared_ptr<Compression::ICompressionMethod> compression;
         std::shared_ptr<Telepathy::Client> client;
 
         std::shared_ptr<Telepathy::Server> server;
@@ -25,7 +27,7 @@ namespace KapMirror {
         int serverReceiveQueueLimitPerConnection = 10000;
 
         public:
-        TelepathyTransport();
+        TelepathyTransport(std::shared_ptr<Compression::ICompressionMethod> &compression);
         ~TelepathyTransport();
 
         bool clientConnected() override;
@@ -38,7 +40,7 @@ namespace KapMirror {
 
         void clientEarlyUpdate() override;
 
-        void serverStart() override;
+        void serverStart(std::shared_ptr<Compression::ICompressionMethod> &compression) override;
 
         void serverStop() override;
 

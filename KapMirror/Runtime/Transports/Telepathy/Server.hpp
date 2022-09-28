@@ -1,5 +1,6 @@
 #pragma once
 
+#include "KapMirror/Runtime/Compression/ICompressionMethod.hpp"
 #include "TcpListener.hpp"
 #include "MagnificentReceivePipe.hpp"
 #include "MagnificentSendPipe.hpp"
@@ -24,6 +25,7 @@ namespace Telepathy {
         volatile bool running;
 
         int maxMessageSize;
+        std::shared_ptr<Compression::ICompressionMethod> compression;
 
         std::shared_ptr<TcpListener> listener;
         std::thread listenerThread;
@@ -40,7 +42,7 @@ namespace Telepathy {
         int receiveQueueLimit = 10000;
 
         public:
-        Server(int _maxMessageSize = 1024);
+        Server(std::shared_ptr<Compression::ICompressionMethod> &compression, int _maxMessageSize = 1024);
         ~Server();
 
         void close();

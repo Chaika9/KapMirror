@@ -11,12 +11,13 @@ namespace KapMirror {
         std::shared_ptr<Transport> transport;
         std::shared_ptr<NetworkServer> server;
         std::shared_ptr<NetworkClient> client;
+        std::shared_ptr<Compression::ICompressionMethod> compression;
 
         public:
         int maxConnections = 100;
 
         public:
-        NetworkManager(std::shared_ptr<KapEngine::GameObject> go);
+        NetworkManager(std::shared_ptr<KapEngine::GameObject> go, std::shared_ptr<Compression::ICompressionMethod> &compression);
         ~NetworkManager();
 
         void onAwake() override;

@@ -22,12 +22,12 @@ void TcpListener::start() {
     socket->listen();
 }
 
-std::shared_ptr<TcpClient> TcpListener::acceptTcpClient() {
+std::shared_ptr<TcpClient> TcpListener::acceptTcpClient(std::shared_ptr<Compression::ICompressionMethod> compression) {
     auto clientSocket = socket->accept();
     if (clientSocket->isInvalid()) {
         throw SocketException("Invalid socket");
     }
-    return std::make_shared<TcpClient>(clientSocket);
+    return std::make_shared<TcpClient>(clientSocket, compression);
 }
 
 bool TcpListener::isReadable() const {
