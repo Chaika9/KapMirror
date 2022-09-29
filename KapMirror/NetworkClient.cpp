@@ -1,6 +1,5 @@
 #include "NetworkClient.hpp"
 #include "Runtime/Transport.hpp"
-#include "NetworkConnectionToServer.hpp"
 #include "KapEngine.hpp"
 #include "Debug.hpp"
 
@@ -67,7 +66,7 @@ void NetworkClient::onTransportConnect() {
     connectState = ConnectState::Connected;
 
     if (onConnectedEvent != nullptr) {
-        onConnectedEvent();
+        onConnectedEvent(connection);
     }
 }
 
@@ -79,7 +78,7 @@ void NetworkClient::onTransportDisconnect() {
     }
 
     if (onDisconnectedEvent != nullptr) {
-        onDisconnectedEvent();
+        onDisconnectedEvent(connection);
     }
 
     connectState = ConnectState::Disconnected;

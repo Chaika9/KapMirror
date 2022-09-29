@@ -43,5 +43,9 @@ namespace KapMirror {
 
         bool addConnection(std::shared_ptr<NetworkConnectionToClient> connection);
         bool removeConnection(int connectionId);
+
+        public:
+        std::function<void(std::shared_ptr<NetworkConnection>)> onConnectedEvent;
+        std::function<void(std::shared_ptr<NetworkConnection>)> onDisconnectedEvent;
     };
 }

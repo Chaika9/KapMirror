@@ -38,9 +38,13 @@ namespace KapMirror {
         // Events
         virtual void onStartServer() {}
         virtual void onStopServer() {}
+        virtual void onServerClientConnected(std::shared_ptr<NetworkConnection> connection) {}
+        virtual void onServerClientDisconnected(std::shared_ptr<NetworkConnection> connection) {}
 
         virtual void onStartClient() {}
         virtual void onStopClient() {}
+        virtual void onClientConnected(std::shared_ptr<NetworkConnection> connection) {}
+        virtual void onClientDisconnected(std::shared_ptr<NetworkConnection> connection) {}
 
         private:
         void setupServer();

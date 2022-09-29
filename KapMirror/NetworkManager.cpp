@@ -48,6 +48,13 @@ void NetworkManager::setupServer() {
     // always >= 0
     maxConnections = std::max(maxConnections, 0);
 
+    server->onConnectedEvent = [this](std::shared_ptr<NetworkConnection> connection) {
+        onServerClientConnected(connection);
+    };
+    server->onDisconnectedEvent = [this](std::shared_ptr<NetworkConnection> connection) {
+        onServerClientDisconnected(connection);
+    };
+
     server->listen(maxConnections);
     KapEngine::Debug::log("NetworkManager: Server started listening");
 
@@ -66,6 +73,13 @@ void NetworkManager::startClient() {
         KapEngine::Debug::warning("NetworkManager: Client already started.");
         return;
     }
+
+    client->onConnectedEvent = [this](std::shared_ptr<NetworkConnection> connection) {
+        onClientConnected(connection);
+    };
+    client->onDisconnectedEvent = [this](std::shared_ptr<NetworkConnection> connection) {
+        onClientDisconnected(connection);
+    };
 
     client->connect("127.0.0.1", 7777);
 

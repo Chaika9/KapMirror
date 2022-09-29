@@ -49,6 +49,10 @@ void NetworkServer::shutdown() {
     active = false;
 
     connections.clear();
+
+    // clear events
+    onConnectedEvent = nullptr;
+    onDisconnectedEvent = nullptr;
 }
 
 void NetworkServer::networkEarlyUpdate() {
@@ -91,6 +95,10 @@ void NetworkServer::onTransportConnect(int connectionId) {
 
     auto connection = std::make_shared<NetworkConnectionToClient>(connectionId);
     addConnection(connection);
+
+    if (onConnectedEvent != nullptr) {
+        onConnectedEvent(connection);
+    }
 }
 
 void NetworkServer::onTransportDisconnect(int connectionId) {
@@ -99,6 +107,10 @@ void NetworkServer::onTransportDisconnect(int connectionId) {
     std::shared_ptr<NetworkConnectionToClient> connection;
     if (connections.tryGetValue(connectionId, connection)) {
         removeConnection(connectionId);
+
+        if (onDisconnectedEvent != nullptr) {
+            onDisconnectedEvent(connection);
+        }
     }
 }
 

@@ -2,7 +2,7 @@
 
 #include "Runtime/ArraySegment.hpp"
 #include "Runtime/Platform.hpp"
-#include "NetworkConnection.hpp"
+#include "NetworkConnectionToServer.hpp"
 #include <memory>
 #include <functional>
 
@@ -54,7 +54,7 @@ namespace KapMirror {
         void onTransportData(std::shared_ptr<ArraySegment<byte>> data);
 
         public:
-        std::function<void()> onConnectedEvent;
-        std::function<void()> onDisconnectedEvent;
+        std::function<void(std::shared_ptr<NetworkConnection>)> onConnectedEvent;
+        std::function<void(std::shared_ptr<NetworkConnection>)> onDisconnectedEvent;
     };
 }
