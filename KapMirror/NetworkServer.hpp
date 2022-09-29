@@ -2,10 +2,10 @@
 
 #include "Runtime/ArraySegment.hpp"
 #include "Runtime/Platform.hpp"
+#include "Runtime/Dictionary.hpp"
 #include "NetworkConnectionToClient.hpp"
 #include <memory>
 #include <functional>
-#include <list>
 
 namespace KapMirror {
     class NetworkServer {
@@ -15,7 +15,7 @@ namespace KapMirror {
 
         int maxConnections;
 
-        std::list<std::shared_ptr<NetworkConnectionToClient>> connections;
+        Dictionary<int, std::shared_ptr<NetworkConnectionToClient>> connections;
 
         public:
         NetworkServer();
@@ -43,7 +43,5 @@ namespace KapMirror {
 
         bool addConnection(std::shared_ptr<NetworkConnectionToClient> connection);
         bool removeConnection(int connectionId);
-        bool tryGetConnection(int connectionId, std::shared_ptr<NetworkConnectionToClient>& connection);
-        bool connectionExists(int connectionId);
     };
 }

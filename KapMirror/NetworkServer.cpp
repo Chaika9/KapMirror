@@ -78,7 +78,7 @@ void NetworkServer::removeTransportHandlers() {
 void NetworkServer::onTransportConnect(int connectionId) {
     KapEngine::Debug::log("NetworkServer: Client connected: " + std::to_string(connectionId));
 
-    if (connectionExists(connectionId)) {
+    if (connections.containsKey(connectionId)) {
         KapEngine::Debug::warning("NetworkServer: Client already connected: " + std::to_string(connectionId));
         return;
     }
@@ -97,7 +97,7 @@ void NetworkServer::onTransportDisconnect(int connectionId) {
     KapEngine::Debug::log("NetworkServer: Client " + std::to_string(connectionId) + " disconnected");
 
     std::shared_ptr<NetworkConnectionToClient> connection;
-    if (tryGetConnection(connectionId, connection)) {
+    if (connections.tryGetValue(connectionId, connection)) {
         removeConnection(connectionId);
     }
 }
@@ -107,44 +107,15 @@ void NetworkServer::onTransportData(int connectionId, std::shared_ptr<ArraySegme
 }
 
 bool NetworkServer::addConnection(std::shared_ptr<NetworkConnectionToClient> connection) {
-    // TODO: Optimize this with Map or Dictionary
-    for (auto& conn : connections) {
-        if (conn->getConnectionId() == connection->getConnectionId()) {
-            return false;
-        }
+    if (connections.containsKey(connection->getConnectionId())) {
+        return false;
     }
-    connections.push_back(connection);
+    connections[connection->getConnectionId()] = connection;
     return true;
 }
 
 bool NetworkServer::removeConnection(int connectionId) {
-    for (auto it = connections.begin(); it != connections.end(); it++) {
-        std::shared_ptr<NetworkConnectionToClient> conn = *it;
-        if (conn->getConnectionId() == connectionId) {
-            connections.erase(it);
-            return true;
-        }
-    }
-    return false;
-}
-
-bool NetworkServer::tryGetConnection(int connectionId, std::shared_ptr<NetworkConnectionToClient>& connection) {
-    for (auto& conn : connections) {
-        if (conn->getConnectionId() == connectionId) {
-            connection = conn;
-            return true;
-        }
-    }
-    return false;
-}
-
-bool NetworkServer::connectionExists(int connectionId) {
-    for (auto& conn : connections) {
-        if (conn->getConnectionId() == connectionId) {
-            return true;
-        }
-    }
-    return false;
+    return connections.remove(connectionId);
 }
 
 void NetworkServer::sendToAll(std::shared_ptr<KapMirror::ArraySegment<byte>> data) {
@@ -152,13 +123,14 @@ void NetworkServer::sendToAll(std::shared_ptr<KapMirror::ArraySegment<byte>> dat
         KapEngine::Debug::warning("NetworkServer: Cannot send data, server not active");
         return;
     }
-    for (auto& conn : connections) {
+
+    for (auto const& [id, conn] : connections) {
         conn->send(data);
     }
 }
 
 void NetworkServer::disconnectAll() {
-    for (auto& conn : connections) {
+    for (auto const& [id, conn] : connections) {
         conn->disconnect();
         onTransportDisconnect(conn->getConnectionId());
     }
