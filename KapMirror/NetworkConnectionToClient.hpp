@@ -1,7 +1,9 @@
 #pragma once
 
-#include "Runtime/Transport.hpp"
 #include "NetworkConnection.hpp"
+#include "Runtime/Transport.hpp"
+#include "Runtime/NetworkWriter.hpp"
+#include "MessagePacking.hpp"
 
 namespace KapMirror {
     class NetworkConnectionToClient : public NetworkConnection {
@@ -16,7 +18,10 @@ namespace KapMirror {
             Transport::activeTransport->serverDisconnect(connectionId);
         }
 
-        void send(std::shared_ptr<KapMirror::ArraySegment<byte>> data) override {
+        void send(NetworkMessage& message) override {
+            NetworkWriter writer;
+            MessagePacking::pack(message, writer);
+            std::shared_ptr<ArraySegment<byte>> data = writer.toArraySegment();
             Transport::activeTransport->serverSend(connectionId, data);
         }
 

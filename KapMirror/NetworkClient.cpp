@@ -3,6 +3,8 @@
 #include "KapEngine.hpp"
 #include "Debug.hpp"
 
+#include "KapMirror/Runtime/NetworkReader.hpp"
+
 using namespace KapMirror;
 
 NetworkClient::NetworkClient() {
@@ -89,13 +91,13 @@ void NetworkClient::onTransportDisconnect() {
 }
 
 void NetworkClient::onTransportData(std::shared_ptr<ArraySegment<byte>> data) {
-    KapEngine::Debug::log("NetworkClient: Data received");
+    KapEngine::Debug::log("NetworkClient: Data received from server Size=" + std::to_string(data->getSize()));
 }
 
-void NetworkClient::send(std::shared_ptr<KapMirror::ArraySegment<byte>> data) {
+void NetworkClient::send(NetworkMessage& message) {
     if (connection != nullptr) {
         if (connectState == ConnectState::Connected) {
-            connection->send(data);
+            connection->send(message);
         } else {
             KapEngine::Debug::error("NetworkClient: Send when not connected to a server");
         }

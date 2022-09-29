@@ -37,12 +37,7 @@ namespace Telepathy {
             return isConnected;
         }
 
-        /**
-         * @brief Send data to the server
-         * @param data Data to send
-         * @throws SocketException
-         */
-        void send(std::shared_ptr<ArraySegment<byte>> message);
+        void send(byte* buffer, int size);
 
         bool receive(int maxMessageSize, byte* buffer, int& size);
 

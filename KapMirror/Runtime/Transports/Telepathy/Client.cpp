@@ -1,4 +1,6 @@
 #include "Client.hpp"
+#include "KapMirror/Runtime/NetworkReader.hpp"
+#include "KapMirror/Runtime/NetworkWriter.hpp"
 #include <iostream>
 #include <cstring>
 
@@ -122,7 +124,9 @@ void Client::run(std::string ip, int port) {
 
     receivePipe.push(0, EventType::Connected);
 
-    byte* buffer = new byte[4 + maxMessageSize];
+    byte* header = new byte[4];
+    byte* buffer = new byte[maxMessageSize];
+
     while (client->connected() && running) {
         // Don't burn too much CPU while idling
         std::this_thread::sleep_for(std::chrono::microseconds(1));
@@ -131,7 +135,14 @@ void Client::run(std::string ip, int port) {
             if (!sendPipe.isEmpty()) {
                 std::shared_ptr<ArraySegment<byte>> message;
                 if (sendPipe.pop(message)) {
-                    client->send(message);
+                    NetworkWriter writer;
+                    // Write the message size
+                    writer.write(message->getSize());
+                    // Write the message
+                    writer.writeArraySegment(message);
+
+                    std::shared_ptr<ArraySegment<byte>> segment = writer.toArraySegment();
+                    client->send(segment->toArray(), segment->getSize());
                 }
 
                 // We need to throttle our connection transmission rate
@@ -143,10 +154,25 @@ void Client::run(std::string ip, int port) {
         if (client->isReadable()) {
             try {
                 // Clear the buffer
-                std::memset(buffer, 0, 4 + maxMessageSize);
+                std::memset(header, 0, 4);
+                std::memset(buffer, 0, maxMessageSize);
 
+                // Read the message size
                 int size = 0;
-                if (!client->receive(4 + maxMessageSize, buffer, size)) {
+                if (!client->receive(4, header, size)) {
+                    // Connection closed
+                    break;
+                }
+
+                NetworkReader reader(header);
+                int messageSize = reader.read<int>();
+
+                if (messageSize <= 0 || messageSize > maxMessageSize) {
+                    std::cerr << "Client: Invalid message size Size=" << messageSize << std::endl;
+                    break;
+                }
+
+                if (!client->receive(messageSize, buffer, size)) {
                     // Connection closed
                     break;
                 }
@@ -157,7 +183,7 @@ void Client::run(std::string ip, int port) {
                 receivePipe.push(0, EventType::Data, message);
 
                 if (receivePipe.getSize() >= receiveQueueLimit) {
-                    std::cerr << "Server: Receive pipe is full, dropping messages" << std::endl;
+                    std::cerr << "Client: Receive pipe is full, dropping messages" << std::endl;
                     break;
                 }
             } catch (SocketException& e) {

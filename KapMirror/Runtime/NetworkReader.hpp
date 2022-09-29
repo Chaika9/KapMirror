@@ -18,7 +18,7 @@ namespace KapMirror {
         }
 
         NetworkReader(ArraySegment<byte>& segment) {
-            buffer = segment;
+            buffer = segment.toArray();
             position = 0;
         }
 

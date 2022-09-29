@@ -93,7 +93,7 @@ namespace KapMirror {
          * @param offset Offset
          * @param count Count
          */
-        void writeBytes(char *array, int offset, int count) {
+        void writeBytes(byte *array, int offset, int count) {
             if (offset < 0 || count < 0) {
                 throw std::invalid_argument("offset or count is less than 0");
             }
@@ -112,7 +112,11 @@ namespace KapMirror {
          */
         void writeString(std::string value) {
             write((short)value.length());
-            writeBytes((char *)value.c_str(), 0, value.length());
+            writeBytes((byte *)value.c_str(), 0, value.length());
+        }
+
+        void writeArraySegment(std::shared_ptr<ArraySegment<byte>> value) {
+            writeBytes(value->toArray(), 0, value->getSize());
         }
     };
 }

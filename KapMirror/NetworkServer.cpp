@@ -130,14 +130,14 @@ bool NetworkServer::removeConnection(int connectionId) {
     return connections.remove(connectionId);
 }
 
-void NetworkServer::sendToAll(std::shared_ptr<KapMirror::ArraySegment<byte>> data) {
+void NetworkServer::sendToAll(NetworkMessage& message) {
     if (!active) {
         KapEngine::Debug::warning("NetworkServer: Cannot send data, server not active");
         return;
     }
 
     for (auto const& [id, conn] : connections) {
-        conn->send(data);
+        conn->send(message);
     }
 }
 

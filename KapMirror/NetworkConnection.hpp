@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Runtime/ArraySegment.hpp"
-#include "Runtime/Platform.hpp"
+#include "NetworkMessage.hpp"
 #include <memory>
 
 namespace KapMirror {
@@ -15,9 +14,8 @@ namespace KapMirror {
         virtual void disconnect() = 0;
 
         /**
-         * @brief Sends data to the remote host
-         * @param data The data to send
+         * @brief Send a NetworkMessage to this connection
          */
-        virtual void send(std::shared_ptr<KapMirror::ArraySegment<byte>> data) = 0;
+        virtual void send(NetworkMessage& message) = 0;
     };
 }

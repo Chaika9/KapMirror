@@ -4,6 +4,7 @@
 #include "Runtime/Transport.hpp"
 #include "NetworkClient.hpp"
 #include "NetworkServer.hpp"
+#include "NetworkMessage.hpp"
 
 namespace KapMirror {
     class NetworkManager : public KapEngine::Component {

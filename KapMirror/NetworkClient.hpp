@@ -3,6 +3,7 @@
 #include "Runtime/ArraySegment.hpp"
 #include "Runtime/Platform.hpp"
 #include "NetworkConnectionToServer.hpp"
+#include "NetworkMessage.hpp"
 #include <memory>
 #include <functional>
 
@@ -43,7 +44,7 @@ namespace KapMirror {
             return connectState == ConnectState::Connected;
         }
 
-        void send(std::shared_ptr<KapMirror::ArraySegment<byte>> data);
+        void send(NetworkMessage& message);
 
         private:
         void addTransportHandlers();

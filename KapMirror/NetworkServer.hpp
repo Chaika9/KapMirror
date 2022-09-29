@@ -4,6 +4,7 @@
 #include "Runtime/Platform.hpp"
 #include "Runtime/Dictionary.hpp"
 #include "NetworkConnectionToClient.hpp"
+#include "NetworkMessage.hpp"
 #include <memory>
 #include <functional>
 
@@ -27,7 +28,7 @@ namespace KapMirror {
 
         void networkEarlyUpdate();
 
-        void sendToAll(std::shared_ptr<KapMirror::ArraySegment<byte>> data);
+        void sendToAll(NetworkMessage& message);
 
         void disconnectAll();
 
