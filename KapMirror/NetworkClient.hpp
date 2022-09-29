@@ -2,6 +2,7 @@
 
 #include "Runtime/ArraySegment.hpp"
 #include "Runtime/Platform.hpp"
+#include "NetworkConnection.hpp"
 #include <memory>
 #include <functional>
 
@@ -18,6 +19,7 @@ namespace KapMirror {
 
     class NetworkClient {
         ConnectState connectState;
+        std::shared_ptr<NetworkConnection> connection;
 
         public:
         NetworkClient();
@@ -40,6 +42,8 @@ namespace KapMirror {
         bool isConnected() const {
             return connectState == ConnectState::Connected;
         }
+
+        void send(std::shared_ptr<KapMirror::ArraySegment<byte>> data);
 
         private:
         void addTransportHandlers();

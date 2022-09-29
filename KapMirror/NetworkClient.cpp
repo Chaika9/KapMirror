@@ -1,5 +1,6 @@
 #include "NetworkClient.hpp"
 #include "Runtime/Transport.hpp"
+#include "NetworkConnectionToServer.hpp"
 #include "KapEngine.hpp"
 #include "Debug.hpp"
 
@@ -7,6 +8,7 @@ using namespace KapMirror;
 
 NetworkClient::NetworkClient() {
     connectState = ConnectState::None;
+    connection = nullptr;
 }
 
 void NetworkClient::connect(std::string ip, int port) {
@@ -19,6 +21,8 @@ void NetworkClient::connect(std::string ip, int port) {
 
     connectState = ConnectState::Connecting;
     Transport::activeTransport->clientConnect(ip, port);
+
+    connection = std::make_shared<NetworkConnectionToServer>();
 }
 
 void NetworkClient::disconnect() {
@@ -80,9 +84,23 @@ void NetworkClient::onTransportDisconnect() {
 
     connectState = ConnectState::Disconnected;
 
+    connection = nullptr;
+
     removeTransportHandlers();
 }
 
 void NetworkClient::onTransportData(std::shared_ptr<ArraySegment<byte>> data) {
     KapEngine::Debug::log("NetworkClient: Data received");
+}
+
+void NetworkClient::send(std::shared_ptr<KapMirror::ArraySegment<byte>> data) {
+    if (connection != nullptr) {
+        if (connectState == ConnectState::Connected) {
+            connection->send(data);
+        } else {
+            KapEngine::Debug::error("NetworkClient: Send when not connected to a server");
+        }
+    } else {
+        KapEngine::Debug::error("NetworkClient: Send with no connection");
+    }
 }
