@@ -25,11 +25,14 @@ void Client::dispose() {
     }
     client->close();
     receivePipe.clear();
+
+    // clean values
+    client = nullptr;
 }
 
 void Client::connect(std::string ip, int port) {
     if (connecting() || connected()) {
-        std::cerr << "Client: Already connecting or connected" << std::endl;
+        std::cerr << "Client: Telepathy Client can not create connection because an existing connection is connecting or connected" << std::endl;
         return;
     }
 
@@ -46,6 +49,11 @@ void Client::connect(std::string ip, int port) {
 void Client::disconnect() {
     if (connecting() || connected()) {
         dispose();
+
+        // Call onDisconnected because the poll loop is not running anymore
+        if (onDisconnected) {
+            onDisconnected();
+        }
     }
 }
 
@@ -90,15 +98,15 @@ int Client::tick(int processLimit) {
 
 void Client::send(std::shared_ptr<ArraySegment<byte>> message) {
     if (!connected()) {
-        std::cerr << "Client: Not connected" << std::endl;
+        std::cerr << "Client.Send: not connected!" << std::endl;
         return;
     }
     if (message->getSize() > maxMessageSize) {
-        std::cerr << "Client: Message too large" << std::endl;
+        std::cerr << "Client.Send: message too big: " << message->getSize() << ", Limit: " << maxMessageSize << std::endl;
         return;
     }
     if (sendPipe.getSize() > sendQueueLimit) {
-        std::cerr << "Client: Send queue full" << std::endl;
+        std::cerr << "Client.Send: sendPipe reached limit of " << sendQueueLimit << ". This can happen if we call send faster than the network can process messages. Disconnecting to avoid ever growing memory & latency." << std::endl;
 
         // Disconnect if the send queue is full
         disconnect();
