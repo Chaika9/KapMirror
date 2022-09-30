@@ -2,8 +2,6 @@
 
 #include "NetworkConnection.hpp"
 #include "Runtime/Transport.hpp"
-#include "Runtime/NetworkWriter.hpp"
-#include "MessagePacking.hpp"
 
 namespace KapMirror {
     class NetworkConnectionToClient : public NetworkConnection {
@@ -18,10 +16,7 @@ namespace KapMirror {
             Transport::activeTransport->serverDisconnect(connectionId);
         }
 
-        void send(NetworkMessage& message) override {
-            NetworkWriter writer;
-            MessagePacking::pack(message, writer);
-            std::shared_ptr<ArraySegment<byte>> data = writer.toArraySegment();
+        void sendToTransport(std::shared_ptr<ArraySegment<byte>> data) override {
             Transport::activeTransport->serverSend(connectionId, data);
         }
 

@@ -1,7 +1,5 @@
 #include "NetworkServer.hpp"
 #include "Runtime/Transport.hpp"
-#include "KapEngine.hpp"
-#include "Debug.hpp"
 
 using namespace KapMirror;
 
@@ -115,7 +113,28 @@ void NetworkServer::onTransportDisconnect(int connectionId) {
 }
 
 void NetworkServer::onTransportData(int connectionId, std::shared_ptr<ArraySegment<byte>> data) {
-    KapEngine::Debug::log("NetworkServer: Client " + std::to_string(connectionId) + " sent data");
+    std::shared_ptr<NetworkConnectionToClient> connection;
+    if (connections.tryGetValue(connectionId, connection)) {
+        if (!unpackAndInvoke(connection, data)) {
+            KapEngine::Debug::warning("NetworkServer: failed to unpack and invoke message. Disconnecting " + std::to_string(connectionId));
+            connection->disconnect();
+            return;
+        }
+    }
+}
+
+bool NetworkServer::unpackAndInvoke(std::shared_ptr<NetworkConnectionToClient> connection, std::shared_ptr<ArraySegment<byte>> data) {
+    NetworkReader reader(data);
+
+    ushort messageType;
+    MessagePacking::unpack(reader, messageType);
+
+    std::shared_ptr<std::function<void(std::shared_ptr<NetworkConnectionToClient>, NetworkReader&)>> handler;
+    if (handlers.tryGetValue(messageType, handler)) {
+        (*handler)(connection, reader);
+        return true;
+    }
+    return false;
 }
 
 bool NetworkServer::addConnection(std::shared_ptr<NetworkConnectionToClient> connection) {
@@ -128,17 +147,6 @@ bool NetworkServer::addConnection(std::shared_ptr<NetworkConnectionToClient> con
 
 bool NetworkServer::removeConnection(int connectionId) {
     return connections.remove(connectionId);
-}
-
-void NetworkServer::sendToAll(NetworkMessage& message) {
-    if (!active) {
-        KapEngine::Debug::warning("NetworkServer: Cannot send data, server not active");
-        return;
-    }
-
-    for (auto const& [id, conn] : connections) {
-        conn->send(message);
-    }
 }
 
 void NetworkServer::disconnectAll() {

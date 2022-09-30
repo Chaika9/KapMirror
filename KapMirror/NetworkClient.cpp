@@ -1,7 +1,5 @@
 #include "NetworkClient.hpp"
 #include "Runtime/Transport.hpp"
-#include "KapEngine.hpp"
-#include "Debug.hpp"
 
 #include "KapMirror/Runtime/NetworkReader.hpp"
 
@@ -91,17 +89,23 @@ void NetworkClient::onTransportDisconnect() {
 }
 
 void NetworkClient::onTransportData(std::shared_ptr<ArraySegment<byte>> data) {
-    KapEngine::Debug::log("NetworkClient: Data received from server Size=" + std::to_string(data->getSize()));
+    if (!unpackAndInvoke(data)) {
+        KapEngine::Debug::warning("NetworkClient: failed to unpack and invoke message. Disconnecting");
+        connection->disconnect();
+        return;
+    }
 }
 
-void NetworkClient::send(NetworkMessage& message) {
-    if (connection != nullptr) {
-        if (connectState == ConnectState::Connected) {
-            connection->send(message);
-        } else {
-            KapEngine::Debug::error("NetworkClient: Send when not connected to a server");
-        }
-    } else {
-        KapEngine::Debug::error("NetworkClient: Send with no connection");
+bool NetworkClient::unpackAndInvoke(std::shared_ptr<ArraySegment<byte>> data) {
+    NetworkReader reader(data);
+
+    ushort messageType;
+    MessagePacking::unpack(reader, messageType);
+
+    std::shared_ptr<std::function<void(std::shared_ptr<NetworkConnectionToServer>, NetworkReader&)>> handler;
+    if (handlers.tryGetValue(messageType, handler)) {
+        (*handler)(connection, reader);
+        return true;
     }
+    return false;
 }

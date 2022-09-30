@@ -2,8 +2,11 @@
 
 #include "Runtime/ArraySegment.hpp"
 #include "Runtime/Platform.hpp"
-#include "NetworkConnectionToServer.hpp"
+#include "Runtime/Dictionary.hpp"
 #include "NetworkMessage.hpp"
+#include "NetworkConnectionToServer.hpp"
+#include "KapEngine.hpp"
+#include "Debug.hpp"
 #include <memory>
 #include <functional>
 
@@ -20,7 +23,9 @@ namespace KapMirror {
 
     class NetworkClient {
         ConnectState connectState;
-        std::shared_ptr<NetworkConnection> connection;
+        std::shared_ptr<NetworkConnectionToServer> connection;
+
+        Dictionary<ushort, std::shared_ptr<std::function<void(std::shared_ptr<NetworkConnectionToServer>, NetworkReader&)>>> handlers;
 
         public:
         NetworkClient();
@@ -44,7 +49,39 @@ namespace KapMirror {
             return connectState == ConnectState::Connected;
         }
 
-        void send(NetworkMessage& message);
+        template<typename T, typename = std::enable_if<std::is_base_of<NetworkMessage, T>::value>>
+        void send(T& message) {
+            if (connection != nullptr) {
+                if (connectState == ConnectState::Connected) {
+                    connection->send(message);
+                } else {
+                    KapEngine::Debug::error("NetworkClient: Send when not connected to a server");
+                }
+            } else {
+                KapEngine::Debug::error("NetworkClient: Send with no connection");
+            }
+        }
+
+        template<typename T, typename = std::enable_if<std::is_base_of<NetworkMessage, T>::value>>
+        void registerHandler(std::function<void(std::shared_ptr<NetworkConnectionToServer>, T&)> handler) {
+            ushort id = MessagePacking::getId<T>();
+            auto messageHandler = [handler](std::shared_ptr<NetworkConnectionToServer> connection, NetworkReader& reader) {
+                T message;
+                message.deserialize(reader);
+                handler(connection, message);
+            };
+            handlers[id] = std::make_shared<std::function<void(std::shared_ptr<NetworkConnectionToServer>, NetworkReader&)>>(messageHandler);
+        }
+
+        template<typename T, typename = std::enable_if<std::is_base_of<NetworkMessage, T>::value>>
+        void unregisterHandler(T& message) {
+            ushort id = MessagePacking::getId<T>();
+            handlers.remove(id);
+        }
+
+        void clearHandlers() {
+            handlers.clear();
+        }
 
         private:
         void addTransportHandlers();
@@ -53,6 +90,8 @@ namespace KapMirror {
         void onTransportConnect();
         void onTransportDisconnect();
         void onTransportData(std::shared_ptr<ArraySegment<byte>> data);
+
+        bool unpackAndInvoke(std::shared_ptr<ArraySegment<byte>> data);
 
         public:
         std::function<void(std::shared_ptr<NetworkConnection>)> onConnectedEvent;

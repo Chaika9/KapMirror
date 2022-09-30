@@ -20,6 +20,14 @@ namespace KapMirror {
         NetworkManager(std::shared_ptr<KapEngine::GameObject> go);
         ~NetworkManager();
 
+        std::shared_ptr<NetworkServer> getServer() const {
+            return server;
+        }
+
+        std::shared_ptr<NetworkClient> getClient() const {
+            return client;
+        }
+
         void onAwake() override;
 
         void onStart() override;
