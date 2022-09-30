@@ -14,10 +14,13 @@ Socket::Socket(std::shared_ptr<Address> _address) : address(_address), socket_fd
     if (addr == nullptr) {
         throw std::runtime_error("Address cannot be null");
     }
-    socket_fd = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
+    socket_fd = ::socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
     if (socket_fd == INVALID_SOCKET) {
         throw SocketException("Socket creation error");
     }
+
+    int opval = 1;
+    ::setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &opval, sizeof(int));
 }
 
 Socket::Socket(std::shared_ptr<Address> _address, SOCKET _socket_fd) : address(_address), socket_fd(_socket_fd) {

@@ -44,7 +44,15 @@ namespace KapMirror {
             }
         }
 
-        void disconnectAll();
+        void disconnectAll() {
+            for (auto const& [id, conn] : connections) {
+                conn->disconnect();
+                onTransportDisconnect(conn->getConnectionId());
+            }
+
+            // cleanup
+            connections.clear();
+        }
 
         template<typename T, typename = std::enable_if<std::is_base_of<NetworkMessage, T>::value>>
         void registerHandler(std::function<void(std::shared_ptr<NetworkConnectionToClient>, T&)> handler) {

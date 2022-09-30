@@ -42,11 +42,9 @@ void NetworkClient::networkEarlyUpdate() {
 
 void NetworkClient::addTransportHandlers() {
     Transport::activeTransport->onClientConnected = [this](Transport& t) {
-        std::cout << "NetworkClient: Connected" << std::endl;
         onTransportConnect();
     };
     Transport::activeTransport->onClientDisconnected = [this](Transport& t) {
-        std::cout << "NetworkClient: Disconnected" << std::endl;
         onTransportDisconnect();
     };
     Transport::activeTransport->onClientDataReceived = [this](Transport& t, std::shared_ptr<ArraySegment<byte>> data) {
@@ -61,8 +59,6 @@ void NetworkClient::removeTransportHandlers() {
 }
 
 void NetworkClient::onTransportConnect() {
-    KapEngine::Debug::log("NetworkClient: Connected");
-
     connectState = ConnectState::Connected;
 
     if (onConnectedEvent != nullptr) {
@@ -71,8 +67,6 @@ void NetworkClient::onTransportConnect() {
 }
 
 void NetworkClient::onTransportDisconnect() {
-    KapEngine::Debug::log("NetworkClient: Disconnected");
-
     if (connectState == ConnectState::Disconnected) {
         return;
     }

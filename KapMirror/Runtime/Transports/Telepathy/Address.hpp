@@ -15,6 +15,11 @@ namespace Telepathy {
         Address(int port, bool passive = true);
         ~Address();
 
+        /**
+         * @brief Get Address Info
+         *
+         * @return addrinfo*
+         */
         addrinfo* getAddress() const {
             return address;
         }

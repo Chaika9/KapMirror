@@ -148,13 +148,3 @@ bool NetworkServer::addConnection(std::shared_ptr<NetworkConnectionToClient> con
 bool NetworkServer::removeConnection(int connectionId) {
     return connections.remove(connectionId);
 }
-
-void NetworkServer::disconnectAll() {
-    for (auto const& [id, conn] : connections) {
-        conn->disconnect();
-        onTransportDisconnect(conn->getConnectionId());
-    }
-
-    // cleanup
-    connections.clear();
-}
