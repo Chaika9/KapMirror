@@ -46,6 +46,7 @@ void Socket::close() {
 #else
         ::close(socket_fd);
 #endif
+        socket_fd = INVALID_SOCKET;
     }
 }
 

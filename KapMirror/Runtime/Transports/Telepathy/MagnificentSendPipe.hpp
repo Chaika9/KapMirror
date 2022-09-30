@@ -1,6 +1,5 @@
 #pragma once
 
-#include "EventType.hpp"
 #include "KapMirror/Runtime/ArraySegment.hpp"
 #include "KapMirror/Runtime/Platform.hpp"
 #include <memory>

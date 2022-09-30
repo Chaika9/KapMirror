@@ -20,7 +20,7 @@ namespace KapMirror {
 
         virtual void clientEarlyUpdate() = 0;
 
-        virtual void serverStart() = 0;
+        virtual void serverStart(int port) = 0;
 
         virtual void serverStop() = 0;
 

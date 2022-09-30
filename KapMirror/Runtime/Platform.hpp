@@ -24,4 +24,3 @@ typedef char byte;
 #define NOMINMAX
 
 #endif
-

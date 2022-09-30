@@ -26,7 +26,11 @@ namespace KapMirror {
         NetworkServer();
         ~NetworkServer() = default;
 
-        void listen(int maxConnections);
+        bool isActivated() const {
+            return active;
+        }
+
+        void listen(int maxConnections, int port);
 
         void shutdown();
 

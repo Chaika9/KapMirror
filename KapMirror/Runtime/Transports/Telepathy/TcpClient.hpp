@@ -23,22 +23,39 @@ namespace Telepathy {
 
         /**
          * @brief Connect to a server
+         *
          * @param host Hostname or IP address
          * @param port Port number
+         *
          * @throws SocketException
          */
         void connect();
 
         /**
          * @brief Is the client connected to a server
+         *
          * @return True if connected
          */
         bool connected() const {
             return isConnected;
         }
 
+        /**
+         * @brief Send data to the server
+         *
+         * @param buffer Buffer to send
+         * @param size Size of the buffer
+         */
         void send(byte* buffer, int size);
 
+        /**
+         * @brief Receive data from the server
+         *
+         * @param buffer Buffer to receive into
+         * @param size Size of the buffer
+         *
+         * @return Connection is closed
+         */
         bool receive(int maxMessageSize, byte* buffer, int& size);
 
         bool isReadable() const;

@@ -88,22 +88,22 @@ int Server::tick(int processLimit) {
 
     for (int i = 0; i < processLimit; i++) {
         int connectionId;
-        EventType eventType;
+        MagnificentReceivePipe::EventType eventType;
         std::shared_ptr<ArraySegment<byte>> message;
         if (receivePipe.pop(connectionId, eventType, message)) {
             switch (eventType) {
-                case EventType::Connected:
+                case MagnificentReceivePipe::EventType::Connected:
                     if (onConnected) {
                         onConnected(connectionId);
                     }
                     break;
-                case EventType::Disconnected:
+                case MagnificentReceivePipe::EventType::Disconnected:
                     if (onDisconnected) {
                         onDisconnected(connectionId);
                     }
                     disconnectClient(connectionId);
                     break;
-                case EventType::Data:
+                case MagnificentReceivePipe::EventType::Data:
                     if (onData) {
                         onData(connectionId, message);
                     }
@@ -161,7 +161,7 @@ void Server::send(int clientId, std::shared_ptr<ArraySegment<byte>> message) {
 }
 
 void Server::handleConnection(std::shared_ptr<ClientConnection> connection) {
-    receivePipe.push(connection->id, EventType::Connected);
+    receivePipe.push(connection->id, MagnificentReceivePipe::EventType::Connected);
 
     byte* header = new byte[4];
     byte* buffer = new byte[maxMessageSize];
@@ -219,7 +219,7 @@ void Server::handleConnection(std::shared_ptr<ClientConnection> connection) {
                 auto message = ArraySegment<byte>::createArraySegment(buffer, size);
 
                 // Push the message to the receive pipe
-                receivePipe.push(connection->id, EventType::Data, message);
+                receivePipe.push(connection->id, MagnificentReceivePipe::EventType::Data, message);
 
                 if (receivePipe.getSize() >= receiveQueueLimit) {
                     std::cerr << "Server: Receive pipe is full, dropping messages" << std::endl;
@@ -236,5 +236,5 @@ void Server::handleConnection(std::shared_ptr<ClientConnection> connection) {
     delete[] header;
     delete[] buffer;
 
-    receivePipe.push(connection->id, EventType::Disconnected);
+    receivePipe.push(connection->id, MagnificentReceivePipe::EventType::Disconnected);
 }

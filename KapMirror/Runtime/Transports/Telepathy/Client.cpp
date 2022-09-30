@@ -60,22 +60,22 @@ int Client::tick(int processLimit) {
 
     for (int i = 0; i < processLimit; i++) {
         int connectionId;
-        EventType eventType;
+        MagnificentReceivePipe::EventType eventType;
         std::shared_ptr<ArraySegment<byte>> message;
         if (receivePipe.pop(connectionId, eventType, message)) {
             switch (eventType) {
-                case EventType::Connected:
+                case MagnificentReceivePipe::EventType::Connected:
                     if (onConnected) {
                         onConnected();
                     }
                     break;
-                case EventType::Disconnected:
+                case MagnificentReceivePipe::EventType::Disconnected:
                     if (onDisconnected) {
                         onDisconnected();
                     }
                     dispose();
                     break;
-                case EventType::Data:
+                case MagnificentReceivePipe::EventType::Data:
                     if (onData) {
                         onData(message);
                     }
@@ -117,12 +117,14 @@ void Client::run(std::string ip, int port) {
     } catch (SocketException& e) {
         std::cerr << "Client: Error=" << e.what() << std::endl;
         isConnecting = false;
+
+        receivePipe.push(0, MagnificentReceivePipe::EventType::Disconnected);
         return;
     }
 
     isConnecting = false;
 
-    receivePipe.push(0, EventType::Connected);
+    receivePipe.push(0, MagnificentReceivePipe::EventType::Connected);
 
     byte* header = new byte[4];
     byte* buffer = new byte[maxMessageSize];
@@ -180,7 +182,7 @@ void Client::run(std::string ip, int port) {
                 auto message = ArraySegment<byte>::createArraySegment(buffer, size);
 
                 // Push the message to the receive pipe
-                receivePipe.push(0, EventType::Data, message);
+                receivePipe.push(0, MagnificentReceivePipe::EventType::Data, message);
 
                 if (receivePipe.getSize() >= receiveQueueLimit) {
                     std::cerr << "Client: Receive pipe is full, dropping messages" << std::endl;
@@ -196,5 +198,5 @@ void Client::run(std::string ip, int port) {
     // Free buffer
     delete[] buffer;
 
-    receivePipe.push(0, EventType::Disconnected);
+    receivePipe.push(0, MagnificentReceivePipe::EventType::Disconnected);
 }

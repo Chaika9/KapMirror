@@ -13,10 +13,21 @@ namespace Telepathy {
         TcpListener(std::shared_ptr<Address> address);
         ~TcpListener();
 
+        /**
+         * @brief Close the listener
+         */
         void close();
 
+        /**
+         * @brief Start listening for connections
+         */
         void start();
 
+        /**
+         * @brief Accept a connection
+         *
+         * @return The client socket
+         */
         std::shared_ptr<TcpClient> acceptTcpClient();
 
         bool isReadable() const;

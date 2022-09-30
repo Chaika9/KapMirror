@@ -41,13 +41,13 @@ void NetworkClient::networkEarlyUpdate() {
 }
 
 void NetworkClient::addTransportHandlers() {
-    Transport::activeTransport->onClientConnected = [this](Transport& t) {
+    Transport::activeTransport->onClientConnected = [this](Transport&) {
         onTransportConnect();
     };
-    Transport::activeTransport->onClientDisconnected = [this](Transport& t) {
+    Transport::activeTransport->onClientDisconnected = [this](Transport&) {
         onTransportDisconnect();
     };
-    Transport::activeTransport->onClientDataReceived = [this](Transport& t, std::shared_ptr<ArraySegment<byte>> data) {
+    Transport::activeTransport->onClientDataReceived = [this](Transport&, std::shared_ptr<ArraySegment<byte>> data) {
         onTransportData(data);
     };
 }

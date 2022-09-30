@@ -10,7 +10,10 @@ namespace KapMirror {
 
         public:
         Dictionary() = default;
-        ~Dictionary() = default;
+
+        ~Dictionary() {
+            map.clear();
+        };
 
         TValue& operator[](TKey key) {
             return map[key];

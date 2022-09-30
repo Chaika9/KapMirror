@@ -40,6 +40,11 @@ void NetworkManager::setTransport(std::shared_ptr<Transport> transport) {
 }
 
 void NetworkManager::startServer() {
+    if (server->isActivated()) {
+        KapEngine::Debug::warning("NetworkManager: Server already started");
+        return;
+    }
+
     KapEngine::Debug::log("NetworkManager: Starting server");
     setupServer();
 }
@@ -55,7 +60,7 @@ void NetworkManager::setupServer() {
         onServerClientDisconnected(connection);
     };
 
-    server->listen(maxConnections);
+    server->listen(maxConnections, networkPort);
     KapEngine::Debug::log("NetworkManager: Server started listening");
 
     onStartServer();
@@ -81,7 +86,7 @@ void NetworkManager::startClient() {
         onClientDisconnected(connection);
     };
 
-    client->connect("127.0.0.1", 7777);
+    client->connect(networkAddress, networkPort);
 
     onStartClient();
 }

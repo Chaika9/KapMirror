@@ -7,7 +7,7 @@ TelepathyTransport::TelepathyTransport() {
 }
 
 TelepathyTransport::~TelepathyTransport() {
-    if (server) {
+    if (server != nullptr) {
         server->close();
     }
 }
@@ -48,19 +48,22 @@ void TelepathyTransport::clientConnect(std::string ip, int port) {
 }
 
 void TelepathyTransport::clientDisconnect() {
-    if (client) {
+    if (client != nullptr) {
         client->disconnect();
     }
+
+    // clean values
+    client = nullptr;
 }
 
 void TelepathyTransport::clientSend(std::shared_ptr<ArraySegment<byte>> data) {
-    if (client) {
+    if (client != nullptr) {
         client->send(data);
     }
 }
 
 void TelepathyTransport::clientEarlyUpdate() {
-    if (client) {
+    if (client != nullptr) {
         client->tick(clientMaxReceivesPerTick);
     }
 }
@@ -69,7 +72,7 @@ void TelepathyTransport::clientEarlyUpdate() {
  * Server
  */
 
-void TelepathyTransport::serverStart() {
+void TelepathyTransport::serverStart(int port) {
     // Create server
     server = std::make_shared<Telepathy::Server>(serverMaxMessageSize);
     server->sendQueueLimit = serverSendQueueLimitPerConnection;
@@ -99,6 +102,9 @@ void TelepathyTransport::serverStop() {
     if (server) {
         server->close();
     }
+
+    // clean values
+    server = nullptr;
 }
 
 void TelepathyTransport::serverSend(int connectionId, std::shared_ptr<ArraySegment<byte>> data) {

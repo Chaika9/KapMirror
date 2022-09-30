@@ -31,6 +31,7 @@ namespace KapMirror {
 
         /**
          * @brief Get the array
+         *
          * @return Array
          */
         T *toArray() const {
@@ -43,6 +44,7 @@ namespace KapMirror {
 
         /**
          * @brief Get the offset of the array
+         *
          * @return Offset
          */
         int getOffset() const {
@@ -51,6 +53,7 @@ namespace KapMirror {
 
         /**
          * @brief Get the size of the array
+         *
          * @return Size
          */
         int getSize() const {

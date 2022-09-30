@@ -29,6 +29,7 @@ namespace KapMirror {
          *
          * @param array Array
          * @param size Size
+         *
          * @return Copy of the array
          */
         template <typename T>

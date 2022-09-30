@@ -25,11 +25,11 @@ void NetworkServer::initialize() {
     initialized = true;
 }
 
-void NetworkServer::listen(int maxConnections) {
+void NetworkServer::listen(int maxConnections, int port) {
     initialize();
 
     this->maxConnections = maxConnections;
-    Transport::activeTransport->serverStart();
+    Transport::activeTransport->serverStart(port);
 
     active = true;
 }
@@ -60,13 +60,13 @@ void NetworkServer::networkEarlyUpdate() {
 }
 
 void NetworkServer::addTransportHandlers() {
-    Transport::activeTransport->onServerConnected = [this](Transport& t, int connectionId) {
+    Transport::activeTransport->onServerConnected = [this](Transport&, int connectionId) {
         onTransportConnect(connectionId);
     };
-    Transport::activeTransport->onServerDisconnected = [this](Transport& t, int connectionId) {
+    Transport::activeTransport->onServerDisconnected = [this](Transport&, int connectionId) {
         onTransportDisconnect(connectionId);
     };
-    Transport::activeTransport->onServerDataReceived = [this](Transport& t, int connectionId, std::shared_ptr<ArraySegment<byte>> data) {
+    Transport::activeTransport->onServerDataReceived = [this](Transport&, int connectionId, std::shared_ptr<ArraySegment<byte>> data) {
         onTransportData(connectionId, data);
     };
 }

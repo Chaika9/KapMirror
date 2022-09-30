@@ -1,6 +1,5 @@
 #pragma once
 
-#include "EventType.hpp"
 #include "KapMirror/Runtime/ArraySegment.hpp"
 #include "KapMirror/Runtime/Platform.hpp"
 #include <memory>
@@ -10,6 +9,13 @@
 namespace KapMirror {
 namespace Telepathy {
     class MagnificentReceivePipe {
+        public:
+        enum EventType {
+            Connected,
+            Data,
+            Disconnected
+        };
+
         struct Entry {
             int connectionId;
             EventType eventType;

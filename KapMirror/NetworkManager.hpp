@@ -16,6 +16,9 @@ namespace KapMirror {
         public:
         int maxConnections = 100;
 
+        std::string networkAddress = "127.0.0.1";
+        int networkPort = 7777;
+
         public:
         NetworkManager(std::shared_ptr<KapEngine::GameObject> go);
         ~NetworkManager();
