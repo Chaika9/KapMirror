@@ -13,6 +13,11 @@ KapMirror is a student project for learning and for use in network gaming projec
 ## Architecture
 The **Server & Client** are **ONE project** in order to achieve an order of magnitude gain in productivity.
 
+## Getting Started
+Get **KapEngine**, clone this repository in the **Packages** folder and let's go!
+
+Check out our [Documentation](https://chaika9.gitbook.io/kapmirror/) to learn how it all works.
+
 ## Low Level Transports
 * (built in) [Telepathy](): TCP
 
