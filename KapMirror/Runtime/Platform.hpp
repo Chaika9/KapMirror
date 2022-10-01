@@ -24,3 +24,7 @@ typedef unsigned char byte;
 #define NOMINMAX
 
 #endif
+
+#ifndef ushort
+typedef unsigned short ushort;
+#endif
