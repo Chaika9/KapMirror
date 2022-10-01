@@ -1,4 +1,4 @@
-[![KapEngine](https://img.shields.io/badge/asset_store-brightgreen.svg)](https://github.com/benji-35/KapEngine)
+[![KapEngine](https://img.shields.io/badge/KapEngine-brightgreen.svg)](https://github.com/benji-35/KapEngine)
 [![Documentation](https://img.shields.io/badge/docs-brightgreen.svg)]()
 
 **It's only the dreamers who ever move mountains.**
