@@ -1,5 +1,6 @@
 #include "NetworkClient.hpp"
 #include "Runtime/Transport.hpp"
+#include "Runtime/Compression.hpp"
 
 using namespace KapMirror;
 
@@ -89,6 +90,10 @@ void NetworkClient::onTransportData(std::shared_ptr<ArraySegment<byte>> data) {
 }
 
 bool NetworkClient::unpackAndInvoke(std::shared_ptr<ArraySegment<byte>> data) {
+    if (Compression::activeCompression != nullptr) {
+        data = Compression::activeCompression->decompress(data);
+    }
+
     NetworkReader reader(data);
 
     ushort messageType;

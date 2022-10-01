@@ -1,15 +1,18 @@
 #pragma once
 
-#include "Component.hpp"
 #include "Runtime/Transport.hpp"
+#include "Runtime/Compression.hpp"
 #include "Runtime/NetworkMessage.hpp"
 #include "NetworkClient.hpp"
 #include "NetworkServer.hpp"
+#include "Component.hpp"
 
 namespace KapMirror {
     class NetworkManager : public KapEngine::Component {
         private:
         std::shared_ptr<Transport> transport;
+        std::shared_ptr<Compression> compression;
+
         std::shared_ptr<NetworkServer> server;
         std::shared_ptr<NetworkClient> client;
 
@@ -38,6 +41,8 @@ namespace KapMirror {
         void onUpdate() override;
 
         void setTransport(std::shared_ptr<Transport> transport);
+
+        void setCompression(std::shared_ptr<Compression> compression);
 
         void startServer();
 

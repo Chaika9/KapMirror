@@ -2,6 +2,7 @@
 
 #include "NetworkConnection.hpp"
 #include "Transport.hpp"
+#include "Compression.hpp"
 
 namespace KapMirror {
     class NetworkConnectionToServer : public NetworkConnection {
@@ -13,6 +14,9 @@ namespace KapMirror {
         }
 
         void sendToTransport(std::shared_ptr<ArraySegment<byte>> data) override {
+            if (Compression::activeCompression != nullptr) {
+                data = Compression::activeCompression->compress(data);
+            }
             Transport::activeTransport->clientSend(data);
         }
     };

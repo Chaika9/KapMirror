@@ -54,7 +54,7 @@ namespace KapMirror {
          *
          * @return Value
          */
-        char *readBytes(int count) {
+        byte *readBytes(int count) {
             byte* array = new byte[count];
             std::copy(buffer + position, buffer + position + count, array);
             position += count;
@@ -68,8 +68,8 @@ namespace KapMirror {
          */
         std::string readString() {
             short length = read<short>();
-            char *array = readBytes(length);
-            std::string str(array, length);
+            byte *array = readBytes(length);
+            std::string str((char *)array, length);
             delete[] array;
             return str;
         }

@@ -5,6 +5,7 @@
 using namespace KapMirror;
 
 std::shared_ptr<Transport> Transport::activeTransport = nullptr;
+std::shared_ptr<Compression> Compression::activeCompression = nullptr;
 
 NetworkManager::NetworkManager(std::shared_ptr<KapEngine::GameObject> go) : KapEngine::Component(go, "NetworkManager") {
     server = std::make_shared<NetworkServer>();
@@ -37,6 +38,11 @@ void NetworkManager::onUpdate() {
 void NetworkManager::setTransport(std::shared_ptr<Transport> transport) {
     this->transport = transport;
     Transport::activeTransport = transport;
+}
+
+void NetworkManager::setCompression(std::shared_ptr<Compression> compression) {
+    this->compression = compression;
+    Compression::activeCompression = compression;
 }
 
 void NetworkManager::startServer() {
