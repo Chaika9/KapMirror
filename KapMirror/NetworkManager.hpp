@@ -2,9 +2,9 @@
 
 #include "Component.hpp"
 #include "Runtime/Transport.hpp"
+#include "Runtime/NetworkMessage.hpp"
 #include "NetworkClient.hpp"
 #include "NetworkServer.hpp"
-#include "NetworkMessage.hpp"
 
 namespace KapMirror {
     class NetworkManager : public KapEngine::Component {

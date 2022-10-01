@@ -1,8 +1,6 @@
 #include "NetworkClient.hpp"
 #include "Runtime/Transport.hpp"
 
-#include "KapMirror/Runtime/NetworkReader.hpp"
-
 using namespace KapMirror;
 
 NetworkClient::NetworkClient() {

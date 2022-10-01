@@ -6,7 +6,7 @@ using namespace KapMirror;
 
 std::shared_ptr<Transport> Transport::activeTransport = nullptr;
 
-NetworkManager::NetworkManager(std::shared_ptr<KapEngine::GameObject> go) : Component(go, "NetworkManager") {
+NetworkManager::NetworkManager(std::shared_ptr<KapEngine::GameObject> go) : KapEngine::Component(go, "NetworkManager") {
     server = std::make_shared<NetworkServer>();
     client = std::make_shared<NetworkClient>();
 }

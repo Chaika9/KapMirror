@@ -1,7 +1,7 @@
 #pragma once
 
 #include "NetworkConnection.hpp"
-#include "Runtime/Transport.hpp"
+#include "Transport.hpp"
 
 namespace KapMirror {
     class NetworkConnectionToServer : public NetworkConnection {

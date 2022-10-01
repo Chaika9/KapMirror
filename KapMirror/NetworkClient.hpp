@@ -3,8 +3,8 @@
 #include "Runtime/ArraySegment.hpp"
 #include "Runtime/Platform.hpp"
 #include "Runtime/Dictionary.hpp"
-#include "NetworkMessage.hpp"
-#include "NetworkConnectionToServer.hpp"
+#include "Runtime/NetworkMessage.hpp"
+#include "Runtime/NetworkConnectionToServer.hpp"
 #include "KapEngine.hpp"
 #include "Debug.hpp"
 #include <memory>

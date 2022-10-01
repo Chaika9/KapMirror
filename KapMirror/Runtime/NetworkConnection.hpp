@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Runtime/NetworkWriter.hpp"
-#include "Runtime/MessagePacking.hpp"
+#include "NetworkWriter.hpp"
+#include "MessagePacking.hpp"
 #include "NetworkMessage.hpp"
 #include <memory>
 
