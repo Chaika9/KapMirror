@@ -25,4 +25,6 @@ typedef unsigned char byte;
 
 #endif
 
+#ifdef __MACOS__
 typedef unsigned short ushort;
+#endif
