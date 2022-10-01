@@ -16,7 +16,7 @@
 #endif
 
 #ifndef byte
-typedef char byte;
+typedef unsigned char byte;
 #endif
 
 #ifdef __WINDOWS__
