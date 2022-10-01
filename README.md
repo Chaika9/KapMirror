@@ -1,5 +1,5 @@
-[![KapEngine](https://img.shields.io/badge/KapEngine-brightgreen.svg)](https://github.com/benji-35/KapEngine)
-[![Documentation](https://img.shields.io/badge/docs-brightgreen.svg)]()
+[![KapEngine](https://img.shields.io/badge/KapEngine-brightgreen.svg)](https://github.com/benji-35/KapEngine/)
+[![Documentation](https://img.shields.io/badge/docs-brightgreen.svg)](https://chaika9.gitbook.io/kapmirror/)
 
 **It's only the dreamers who ever move mountains.**
 
@@ -17,4 +17,4 @@ The **Server & Client** are **ONE project** in order to achieve an order of magn
 * (built in) [Telepathy](): TCP
 
 **Credits**
-* Thanks to [Mirror](https://github.com/vis2k/Mirror) for the inspiration and the code.
+* Thanks to [Mirror](https://github.com/vis2k/Mirror/) for the inspiration and the code.
