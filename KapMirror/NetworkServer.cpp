@@ -189,3 +189,38 @@ void NetworkServer::spawnObject(std::string prefabName, KapEngine::SceneManageme
     message.z = transform.getLocalPosition().getZ();
     sendToAll(message);
 }
+
+void NetworkServer::destroyObject(unsigned int networkId) {
+    KapEngine::Debug::log("NetworkServer: destroyObject");
+
+    std::shared_ptr<KapEngine::GameObject> gameObject;
+    if (!findObject(networkId, gameObject)) {
+        KapEngine::Debug::error("NetworkServer: destroyObject: GameObject not found");
+        return;
+    }
+
+    auto& scene = gameObject->getScene();
+    scene.destroyGameObject(gameObject);
+
+    ObjectDestroyMessage message;
+    message.networkId = networkId;
+    sendToAll(message);
+}
+
+bool NetworkServer::findObject(unsigned int networkId, std::shared_ptr<KapEngine::GameObject>& gameObject) {
+    //TODO: Keep a map of networkId to GameObject
+    for (auto& scene : engine.getSceneManager()->getAllScenes()) {
+        for (auto& object : scene->getAllObjects()) {
+            if (object->hasComponent<KapMirror::Experimental::NetworkIdentity>()) {
+                continue;
+            }
+
+            auto& networkIdentity = object->getComponent<KapMirror::Experimental::NetworkIdentity>();
+            if (networkIdentity.getNetworkId() == networkId) {
+                gameObject = object;
+                return true;
+            }
+        }
+    }
+    return false;
+}

@@ -8,6 +8,7 @@ namespace KapMirror {
         unsigned int networkId;
         // Sets hasAuthority on the spawned object
         bool isOwner;
+        std::size_t sceneId;
         // Prefab name
         std::string prefabName;
         float x;

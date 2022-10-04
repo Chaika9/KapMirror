@@ -99,6 +99,8 @@ namespace KapMirror {
             spawnObject(prefabName, scene, gameObject);
         }
 
+        void destroyObject(unsigned int networkId);
+
         private:
         void initialize();
 
@@ -113,6 +115,8 @@ namespace KapMirror {
         bool removeConnection(int connectionId);
 
         bool unpackAndInvoke(std::shared_ptr<NetworkConnectionToClient> connection, std::shared_ptr<ArraySegment<byte>> data);
+
+        bool findObject(unsigned int networkId, std::shared_ptr<KapEngine::GameObject>& gameObject);
 
         public:
         std::function<void(std::shared_ptr<NetworkConnection>)> onConnectedEvent;
