@@ -4,7 +4,9 @@
 #include "KapMirror/Experimental/Components/NetworkIdentity.hpp"
 #include "KapEngine.hpp"
 #include "Factory.hpp"
-#include "UiText.hpp"
+#include "Transform.hpp"
+
+#include "UiImage.hpp"
 
 using namespace KapMirror;
 
@@ -139,13 +141,15 @@ void NetworkClient::onObjectSpawn(ObjectSpawnMessage& message) {
         networkIdentityComponent->setNetworkId(message.networkId);
         object->addComponent(networkIdentityComponent);
 
-        auto textComponent = std::make_shared<KapEngine::UI::Text>(object);
-        object->addComponent(textComponent);
-        textComponent->setText("SpaceShip:Client");
+        auto imageComponent = std::make_shared<KapEngine::UI::Image>(object);
+        object->addComponent(imageComponent);
+        imageComponent->setPathSprite("Assets/Textures/SpaceShip.png");
+        imageComponent->setRectangle({0, 0, 99, 75});
     }
 
     auto& shipTransform = object->getComponent<KapEngine::Transform>();
     shipTransform.setPosition(KapEngine::Tools::Vector3(message.x, message.y, message.z));
+    shipTransform.setScale(KapEngine::Tools::Vector3(50.f, 50.f, 0.f));
     shipTransform.setParent(3);
 
     auto& networkIdentityComponent = object->getComponent<KapMirror::Experimental::NetworkIdentity>();

@@ -4,8 +4,9 @@
 #include "KapMirror/Experimental/Components/NetworkIdentity.hpp"
 #include "KapEngine.hpp"
 #include "Factory.hpp"
-#include "UiText.hpp"
+#include "Transform.hpp"
 
+#include "UiImage.hpp"
 #include "TestNetwork/SpaceShip.hpp"
 
 using namespace KapMirror;
@@ -173,18 +174,20 @@ void NetworkServer::spawnObject() {
 
     auto networkTransformComponent = std::make_shared<KapMirror::Experimental::NetworkTransform>(object);
     networkTransformComponent->setClientAuthority(false);
-    networkTransformComponent->setSendRate(10);
+    networkTransformComponent->setSendRate(30);
     object->addComponent(networkTransformComponent);
 
-    auto textComponent = std::make_shared<KapEngine::UI::Text>(object);
-    object->addComponent(textComponent);
-    textComponent->setText("SpaceShip:Server");
+    auto imageComponent = std::make_shared<KapEngine::UI::Image>(object);
+    object->addComponent(imageComponent);
+    imageComponent->setPathSprite("Assets/Textures/SpaceShip.png");
+    imageComponent->setRectangle({0, 0, 99, 75});
 
     auto shipComponent = std::make_shared<RType::Component::SpaceShip>(object);
     object->addComponent(shipComponent);
 
     auto& shipTransform = object->getComponent<KapEngine::Transform>();
-    shipTransform.setPosition(KapEngine::Tools::Vector3(10.f, 300.f, 0.f));
+    shipTransform.setPosition(KapEngine::Tools::Vector3(10.f, 200.f, 0.f));
+    shipTransform.setScale(KapEngine::Tools::Vector3(50.f, 50.f, 0.f));
     shipTransform.setParent(3);
 
     manager.__initGameObject(object);

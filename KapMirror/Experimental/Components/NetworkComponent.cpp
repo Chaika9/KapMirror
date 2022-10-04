@@ -5,7 +5,7 @@ using namespace KapMirror::Experimental;
 NetworkComponent::NetworkComponent(std::shared_ptr<KapEngine::GameObject> go, std::string name) : KapEngine::Component(go, name) {
 }
 
-void NetworkComponent::onStart() {
+void NetworkComponent::onAwake() {
     networkIdentity = &getGameObject().getComponent<NetworkIdentity>();
     if (networkIdentity == nullptr) {
         throw std::runtime_error("NetworkComponent: GameObject does not have a NetworkIdentity component");

@@ -41,7 +41,7 @@ namespace Experimental {
             client = _client;
         }
 
-        void onStart() override;
+        void onAwake() override;
 
         bool isServer() const;
 
