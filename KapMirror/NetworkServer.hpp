@@ -87,16 +87,16 @@ namespace KapMirror {
 
         // KapEngine
 
-        void spawnObject(std::string prefabName, KapEngine::SceneManagement::Scene &scene, std::shared_ptr<KapEngine::GameObject>& gameObject);
+        void spawnObject(std::string prefabName, KapEngine::SceneManagement::Scene &scene, KapEngine::Tools::Vector3 position, std::shared_ptr<KapEngine::GameObject>& gameObject);
 
-        void spawnObject(std::string prefabName, std::size_t sceneId, std::shared_ptr<KapEngine::GameObject>& gameObject) {
+        void spawnObject(std::string prefabName, std::size_t sceneId, KapEngine::Tools::Vector3 position, std::shared_ptr<KapEngine::GameObject>& gameObject) {
             auto& scene = engine.getSceneManager()->getScene(sceneId);
-            spawnObject(prefabName, scene, gameObject);
+            spawnObject(prefabName, scene, position, gameObject);
         }
 
-        void spawnObject(std::string prefabName, std::shared_ptr<KapEngine::GameObject>& gameObject) {
+        void spawnObject(std::string prefabName, KapEngine::Tools::Vector3 position, std::shared_ptr<KapEngine::GameObject>& gameObject) {
             auto& scene = engine.getSceneManager()->getCurrentScene();
-            spawnObject(prefabName, scene, gameObject);
+            spawnObject(prefabName, scene, position, gameObject);
         }
 
         void destroyObject(unsigned int networkId);

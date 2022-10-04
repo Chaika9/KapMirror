@@ -163,7 +163,7 @@ bool NetworkServer::removeConnection(int connectionId) {
 
 // KapEngine
 
-void NetworkServer::spawnObject(std::string prefabName, KapEngine::SceneManagement::Scene &scene, std::shared_ptr<KapEngine::GameObject>& gameObject) {
+void NetworkServer::spawnObject(std::string prefabName, KapEngine::SceneManagement::Scene &scene, KapEngine::Tools::Vector3 position, std::shared_ptr<KapEngine::GameObject>& gameObject) {
     KapEngine::Debug::log("NetworkServer: spawnObject");
     engine.getPrefabManager()->instantiatePrefab(prefabName, scene, gameObject);
 
@@ -179,14 +179,23 @@ void NetworkServer::spawnObject(std::string prefabName, KapEngine::SceneManageme
     networkIdentity.onStartServer();
 
     auto& transform = gameObject->getComponent<KapEngine::Transform>();
+    transform.setPosition(position);
 
     ObjectSpawnMessage message;
     message.networkId = networkIdentity.getNetworkId();
     message.isOwner = !networkIdentity.hasAuthority();
     message.prefabName = prefabName;
-    message.x = transform.getLocalPosition().getX();
-    message.y = transform.getLocalPosition().getY();
-    message.z = transform.getLocalPosition().getZ();
+    message.x = position.getX();
+    message.y = position.getY();
+    message.z = position.getZ();
+
+    KapEngine::Debug::log("NetworkServer: spawnObject: sending message");
+    KapEngine::Debug::log("NetworkServer: spawnObject: networkId: " + std::to_string(message.networkId));
+    KapEngine::Debug::log("NetworkServer: spawnObject: isOwner: " + std::to_string(message.isOwner));
+    KapEngine::Debug::log("NetworkServer: spawnObject: x: " + std::to_string(message.x));
+    KapEngine::Debug::log("NetworkServer: spawnObject: y: " + std::to_string(message.y));
+    KapEngine::Debug::log("NetworkServer: spawnObject: z: " + std::to_string(message.z));
+
     sendToAll(message);
 }
 
