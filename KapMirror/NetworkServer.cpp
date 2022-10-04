@@ -163,49 +163,29 @@ bool NetworkServer::removeConnection(int connectionId) {
 
 // KapEngine
 
-void NetworkServer::spawnObject() {
+void NetworkServer::spawnObject(std::string prefabName, KapEngine::SceneManagement::Scene &scene, std::shared_ptr<KapEngine::GameObject>& gameObject) {
     KapEngine::Debug::log("NetworkServer: spawnObject");
-    auto& scene = engine.getSceneManager()->getCurrentScene();
+    engine.getPrefabManager()->instantiatePrefab(prefabName, scene, gameObject);
 
-    auto object = KapEngine::Factory::createEmptyGameObject(scene, "SpaceShip");
+    if (!gameObject->hasComponent<KapMirror::Experimental::NetworkIdentity>()) {
+        KapEngine::Debug::error("NetworkServer: spawnObject: GameObject does not have NetworkIdentity component");
+        return;
+    }
 
-    auto networkIdentityComponent = std::make_shared<KapMirror::Experimental::NetworkIdentity>(object);
-    object->addComponent(networkIdentityComponent);
+    manager.__initGameObject(gameObject);
 
-    auto networkTransformComponent = std::make_shared<KapMirror::Experimental::NetworkTransform>(object);
-    networkTransformComponent->setClientAuthority(false);
-    networkTransformComponent->setSendRate(30);
-    object->addComponent(networkTransformComponent);
+    auto& networkIdentity = gameObject->getComponent<KapMirror::Experimental::NetworkIdentity>();
+    networkIdentity.setAuthority(true);
+    networkIdentity.onStartServer();
 
-    auto imageComponent = std::make_shared<KapEngine::UI::Image>(object);
-    object->addComponent(imageComponent);
-    imageComponent->setPathSprite("Assets/Textures/SpaceShip.png");
-    imageComponent->setRectangle({0, 0, 99, 75});
-
-    auto shipComponent = std::make_shared<RType::Component::SpaceShip>(object);
-    object->addComponent(shipComponent);
-
-    auto& shipTransform = object->getComponent<KapEngine::Transform>();
-    shipTransform.setPosition(KapEngine::Tools::Vector3(10.f, 200.f, 0.f));
-    shipTransform.setScale(KapEngine::Tools::Vector3(50.f, 50.f, 0.f));
-    shipTransform.setParent(3);
-
-    manager.__initGameObject(object);
-
-    networkIdentityComponent->setAuthority(true);
-    networkIdentityComponent->onStartServer();
+    auto& transform = gameObject->getComponent<KapEngine::Transform>();
 
     ObjectSpawnMessage message;
-    message.networkId = networkIdentityComponent->getNetworkId();
-    message.isOwner = !networkIdentityComponent->hasAuthority();
-    message.x = shipTransform.getLocalPosition().getX();
-    message.y = shipTransform.getLocalPosition().getY();
-    message.z = shipTransform.getLocalPosition().getZ();
-
-    KapEngine::Debug::log("NetworkServer: spawnObject:networkId: " + std::to_string(message.networkId));
-    KapEngine::Debug::log("NetworkServer: spawnObject:isOwner: " + std::to_string(message.isOwner));
-    KapEngine::Debug::log("NetworkServer: spawnObject:x: " + std::to_string(message.x));
-    KapEngine::Debug::log("NetworkServer: spawnObject:y: " + std::to_string(message.y));
-    KapEngine::Debug::log("NetworkServer: spawnObject:z: " + std::to_string(message.z));
+    message.networkId = networkIdentity.getNetworkId();
+    message.isOwner = !networkIdentity.hasAuthority();
+    message.prefabName = prefabName;
+    message.x = transform.getLocalPosition().getX();
+    message.y = transform.getLocalPosition().getY();
+    message.z = transform.getLocalPosition().getZ();
     sendToAll(message);
 }

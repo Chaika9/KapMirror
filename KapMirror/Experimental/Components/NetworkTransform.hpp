@@ -2,6 +2,7 @@
 
 #include "NetworkComponent.hpp"
 #include "KapMirror/Runtime/NetworkTime.hpp"
+#include "Vectors.hpp"
 
 namespace KapMirror {
 namespace Experimental {
@@ -14,6 +15,8 @@ namespace Experimental {
         int sendRate = 30;
 
         long long lastRefreshTime;
+
+        KapEngine::Tools::Vector3 lastPosition;
 
         public:
         NetworkTransform(std::shared_ptr<KapEngine::GameObject> go);

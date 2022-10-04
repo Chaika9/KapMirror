@@ -132,46 +132,44 @@ void NetworkClient::onObjectSpawn(ObjectSpawnMessage& message) {
     KapEngine::Debug::log("NetworkClient: onObjectSpawn");
     auto& scene = engine.getSceneManager()->getCurrentScene();
 
-    std::shared_ptr<KapEngine::GameObject> object;
-    if (!findObject(message.networkId, scene, object)) {
-        // TODO: Get Prefab
-        object = KapEngine::Factory::createEmptyGameObject(scene, "SpaceShip");
-
-        auto networkIdentityComponent = std::make_shared<KapMirror::Experimental::NetworkIdentity>(object);
-        networkIdentityComponent->setNetworkId(message.networkId);
-        object->addComponent(networkIdentityComponent);
-
-        auto imageComponent = std::make_shared<KapEngine::UI::Image>(object);
-        object->addComponent(imageComponent);
-        imageComponent->setPathSprite("Assets/Textures/SpaceShip.png");
-        imageComponent->setRectangle({0, 0, 99, 75});
+    std::shared_ptr<KapEngine::GameObject> gameObject;
+    if (!findObject(message.networkId, scene, gameObject)) {
+        if (!engine.getPrefabManager()->instantiatePrefab(message.prefabName, scene, gameObject)) {
+            KapEngine::Debug::error("NetworkClient: failed to instantiate prefab " + message.prefabName);
+            return;
+        }
     }
 
-    auto& shipTransform = object->getComponent<KapEngine::Transform>();
-    shipTransform.setPosition(KapEngine::Tools::Vector3(message.x, message.y, message.z));
-    shipTransform.setScale(KapEngine::Tools::Vector3(50.f, 50.f, 0.f));
-    shipTransform.setParent(3);
+    auto& transform = gameObject->getComponent<KapEngine::Transform>();
+    transform.setPosition(KapEngine::Tools::Vector3(message.x, message.y, message.z));
 
-    auto& networkIdentityComponent = object->getComponent<KapMirror::Experimental::NetworkIdentity>();
-    networkIdentityComponent.setAuthority(message.isOwner);
+    if (!gameObject->hasComponent<KapMirror::Experimental::NetworkIdentity>()) {
+        KapEngine::Debug::error("NetworkClient: object " + message.prefabName + " does not have NetworkIdentity component");
+        return;
+    }
+
+    auto& networkIdentity = gameObject->getComponent<KapMirror::Experimental::NetworkIdentity>();
+    networkIdentity.setNetworkId(message.networkId);
+    networkIdentity.setAuthority(message.isOwner);
+    networkIdentity.onStartClient();
 }
 
 void NetworkClient::onObjectDestroy(ObjectDestroyMessage& message) {
     KapEngine::Debug::log("NetworkClient: onObjectDestroy");
     auto& scene = engine.getSceneManager()->getCurrentScene();
 
-    std::shared_ptr<KapEngine::GameObject> object;
-    if (findObject(message.networkId, scene, object)) {
-        scene.destroyGameObject(object);
+    std::shared_ptr<KapEngine::GameObject> gameObject;
+    if (findObject(message.networkId, scene, gameObject)) {
+        scene.destroyGameObject(gameObject);
     }
 }
 
 void NetworkClient::onObjectTransformUpdate(ObjectTransformMessage& message) {
     auto& scene = engine.getSceneManager()->getCurrentScene();
 
-    std::shared_ptr<KapEngine::GameObject> object;
-    if (findObject(message.networkId, scene, object)) {
-        auto& transform = object->getComponent<KapEngine::Transform>();
+    std::shared_ptr<KapEngine::GameObject> gameObject;
+    if (findObject(message.networkId, scene, gameObject)) {
+        auto& transform = gameObject->getComponent<KapEngine::Transform>();
         transform.setPosition(KapEngine::Tools::Vector3(message.x, message.y, message.z));
     }
 }

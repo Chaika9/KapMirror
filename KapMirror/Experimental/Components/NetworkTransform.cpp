@@ -7,6 +7,7 @@ using namespace KapMirror::Experimental;
 
 NetworkTransform::NetworkTransform(std::shared_ptr<KapEngine::GameObject> go) : NetworkComponent(go, "NetworkTransform") {
     lastRefreshTime = 0;
+    lastPosition = KapEngine::Tools::Vector3(0, 0, 0);
 }
 
 void NetworkTransform::setClientAuthority(bool _clientAuthority) {
@@ -35,6 +36,10 @@ void NetworkTransform::updateServer() {
         lastRefreshTime = NetworkTime::localTime();
 
         auto& transform = getGameObject().getComponent<KapEngine::Transform>();
+        if (transform.getLocalPosition() == lastPosition) {
+            return;
+        }
+        lastPosition = transform.getLocalPosition();
 
         ObjectTransformMessage message;
         message.networkId = networkIdentity->getNetworkId();
