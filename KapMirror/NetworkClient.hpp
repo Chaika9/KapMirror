@@ -5,6 +5,7 @@
 #include "Runtime/Dictionary.hpp"
 #include "Runtime/NetworkMessage.hpp"
 #include "Runtime/NetworkConnectionToServer.hpp"
+#include "Messages.hpp"
 #include "KapEngine.hpp"
 #include "Debug.hpp"
 #include <memory>
@@ -22,13 +23,16 @@ namespace KapMirror {
     };
 
     class NetworkClient {
+        private:
+        KapEngine::KapEngine& engine;
+
         ConnectState connectState;
         std::shared_ptr<NetworkConnectionToServer> connection;
 
         Dictionary<ushort, std::shared_ptr<std::function<void(std::shared_ptr<NetworkConnectionToServer>, NetworkReader&)>>> handlers;
 
         public:
-        NetworkClient();
+        NetworkClient(KapEngine::KapEngine& _engine);
         ~NetworkClient() = default;
 
         void connect(std::string ip, int port);
@@ -86,12 +90,20 @@ namespace KapMirror {
         private:
         void addTransportHandlers();
         void removeTransportHandlers();
+        void registerSystemHandlers();
 
         void onTransportConnect();
         void onTransportDisconnect();
         void onTransportData(std::shared_ptr<ArraySegment<byte>> data);
 
         bool unpackAndInvoke(std::shared_ptr<ArraySegment<byte>> data);
+
+        // KapEngine
+        void onObjectSpawn(ObjectSpawnMessage& message);
+        void onObjectDestroy(ObjectDestroyMessage& message);
+        void onObjectTransformUpdate(ObjectTransformMessage& message);
+
+        bool findObject(unsigned int networkId, KapEngine::SceneManagement::Scene& scene, std::shared_ptr<KapEngine::GameObject>& gameObject);
 
         public:
         std::function<void(std::shared_ptr<NetworkConnection>)> onConnectedEvent;

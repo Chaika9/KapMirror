@@ -3,8 +3,7 @@
 #include "Runtime/Transport.hpp"
 #include "Runtime/Compression.hpp"
 #include "Runtime/NetworkMessage.hpp"
-#include "NetworkClient.hpp"
-#include "NetworkServer.hpp"
+#include "KapMirror.hpp"
 #include "Component.hpp"
 
 namespace KapMirror {
@@ -52,6 +51,9 @@ namespace KapMirror {
 
         void stopClient();
 
+        void __initGameObject(std::shared_ptr<KapEngine::GameObject> go);
+
+        protected:
         // Events
         virtual void onStartServer() {}
         virtual void onStopServer() {}

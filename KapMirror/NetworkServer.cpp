@@ -1,10 +1,16 @@
 #include "NetworkServer.hpp"
 #include "Runtime/Transport.hpp"
 #include "Runtime/Compression.hpp"
+#include "KapMirror/Experimental/Components/NetworkIdentity.hpp"
+#include "KapEngine.hpp"
+#include "Factory.hpp"
+#include "UiText.hpp"
+
+#include "TestNetwork/SpaceShip.hpp"
 
 using namespace KapMirror;
 
-NetworkServer::NetworkServer() {
+NetworkServer::NetworkServer(NetworkManager& _manager, KapEngine::KapEngine& _engine) : manager(_manager), engine(_engine) {
     initialized = false;
     active = false;
 }
@@ -152,4 +158,51 @@ bool NetworkServer::addConnection(std::shared_ptr<NetworkConnectionToClient> con
 
 bool NetworkServer::removeConnection(int connectionId) {
     return connections.remove(connectionId);
+}
+
+// KapEngine
+
+void NetworkServer::spawnObject() {
+    KapEngine::Debug::log("NetworkServer: spawnObject");
+    auto& scene = engine.getSceneManager()->getCurrentScene();
+
+    auto object = KapEngine::Factory::createEmptyGameObject(scene, "SpaceShip");
+
+    auto networkIdentityComponent = std::make_shared<KapMirror::Experimental::NetworkIdentity>(object);
+    object->addComponent(networkIdentityComponent);
+
+    auto networkTransformComponent = std::make_shared<KapMirror::Experimental::NetworkTransform>(object);
+    networkTransformComponent->setClientAuthority(false);
+    networkTransformComponent->setSendRate(10);
+    object->addComponent(networkTransformComponent);
+
+    auto textComponent = std::make_shared<KapEngine::UI::Text>(object);
+    object->addComponent(textComponent);
+    textComponent->setText("SpaceShip:Server");
+
+    auto shipComponent = std::make_shared<RType::Component::SpaceShip>(object);
+    object->addComponent(shipComponent);
+
+    auto& shipTransform = object->getComponent<KapEngine::Transform>();
+    shipTransform.setPosition(KapEngine::Tools::Vector3(10.f, 300.f, 0.f));
+    shipTransform.setParent(3);
+
+    manager.__initGameObject(object);
+
+    networkIdentityComponent->setAuthority(true);
+    networkIdentityComponent->onStartServer();
+
+    ObjectSpawnMessage message;
+    message.networkId = networkIdentityComponent->getNetworkId();
+    message.isOwner = !networkIdentityComponent->hasAuthority();
+    message.x = shipTransform.getLocalPosition().getX();
+    message.y = shipTransform.getLocalPosition().getY();
+    message.z = shipTransform.getLocalPosition().getZ();
+
+    KapEngine::Debug::log("NetworkServer: spawnObject:networkId: " + std::to_string(message.networkId));
+    KapEngine::Debug::log("NetworkServer: spawnObject:isOwner: " + std::to_string(message.isOwner));
+    KapEngine::Debug::log("NetworkServer: spawnObject:x: " + std::to_string(message.x));
+    KapEngine::Debug::log("NetworkServer: spawnObject:y: " + std::to_string(message.y));
+    KapEngine::Debug::log("NetworkServer: spawnObject:z: " + std::to_string(message.z));
+    sendToAll(message);
 }

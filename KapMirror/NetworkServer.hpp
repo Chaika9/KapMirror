@@ -5,6 +5,7 @@
 #include "Runtime/Dictionary.hpp"
 #include "Runtime/NetworkConnectionToClient.hpp"
 #include "Runtime/NetworkMessage.hpp"
+#include "Messages.hpp"
 #include "KapEngine.hpp"
 #include "Debug.hpp"
 #include <memory>
@@ -12,8 +13,13 @@
 #include <iostream>
 
 namespace KapMirror {
+    class NetworkManager;
+
     class NetworkServer {
         private:
+        NetworkManager& manager;
+        KapEngine::KapEngine& engine;
+
         bool initialized;
         bool active;
 
@@ -23,7 +29,7 @@ namespace KapMirror {
         Dictionary<ushort, std::shared_ptr<std::function<void(std::shared_ptr<NetworkConnectionToClient>, NetworkReader&)>>> handlers;
 
         public:
-        NetworkServer();
+        NetworkServer(NetworkManager& _manager, KapEngine::KapEngine& _engine);
         ~NetworkServer() = default;
 
         bool isActivated() const {
@@ -78,6 +84,10 @@ namespace KapMirror {
         void clearHandlers() {
             handlers.clear();
         }
+
+        // KapEngine
+
+        void spawnObject();
 
         private:
         void initialize();

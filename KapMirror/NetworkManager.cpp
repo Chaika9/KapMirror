@@ -8,8 +8,8 @@ std::shared_ptr<Transport> Transport::activeTransport = nullptr;
 std::shared_ptr<Compression> Compression::activeCompression = nullptr;
 
 NetworkManager::NetworkManager(std::shared_ptr<KapEngine::GameObject> go) : KapEngine::Component(go, "NetworkManager") {
-    server = std::make_shared<NetworkServer>();
-    client = std::make_shared<NetworkClient>();
+    server = std::make_shared<NetworkServer>(*this, go->getEngine());
+    client = std::make_shared<NetworkClient>(go->getEngine());
 }
 
 NetworkManager::~NetworkManager() {
@@ -70,6 +70,27 @@ void NetworkManager::setupServer() {
     KapEngine::Debug::log("NetworkManager: Server started listening");
 
     onStartServer();
+
+    // TODO: Move this
+    auto& scene = getGameObject().getEngine().getSceneManager()->getCurrentScene();
+
+    for (auto& go : scene.getAllObjects()) {
+        for (auto& component : go->getAllComponents()) {
+            auto comp = std::dynamic_pointer_cast<KapMirror::Experimental::NetworkComponent>(component);
+            if (comp) {
+                comp->__setServer(server);
+            }
+        }
+    }
+
+    for (auto& go : scene.getAllObjects()) {
+        for (auto& component : go->getAllComponents()) {
+            auto identity = std::dynamic_pointer_cast<KapMirror::Experimental::NetworkIdentity>(component); //TODO: to hasComponent in KapEngine
+            if (identity) {
+                identity->onStartServer();
+            }
+        }
+    }
 }
 
 void NetworkManager::stopServer() {
@@ -95,6 +116,22 @@ void NetworkManager::startClient() {
     client->connect(networkAddress, networkPort);
 
     onStartClient();
+
+    // TODO: Move this
+    auto& scene = getGameObject().getEngine().getSceneManager()->getCurrentScene();
+
+    for (auto& go : scene.getAllObjects()) {
+        __initGameObject(go);
+    }
+
+    for (auto& go : scene.getAllObjects()) {
+        for (auto& component : go->getAllComponents()) {
+            auto identity = std::dynamic_pointer_cast<KapMirror::Experimental::NetworkIdentity>(component);
+            if (identity) {
+                identity->onStartClient();
+            }
+        }
+    }
 }
 
 void NetworkManager::stopClient() {
@@ -103,3 +140,12 @@ void NetworkManager::stopClient() {
     client->disconnect();
 }
 
+void NetworkManager::__initGameObject(std::shared_ptr<KapEngine::GameObject> go) {
+    for (auto& component : go->getAllComponents()) {
+        auto comp = std::dynamic_pointer_cast<KapMirror::Experimental::NetworkComponent>(component);
+        if (comp) {
+            comp->__setServer(server);
+            comp->__setClient(client);
+        }
+    }
+}
