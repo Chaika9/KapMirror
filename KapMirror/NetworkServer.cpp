@@ -100,6 +100,11 @@ void NetworkServer::onTransportConnect(int connectionId) {
     auto connection = std::make_shared<NetworkConnectionToClient>(connectionId);
     addConnection(connection);
 
+    // Send all existing network objects to the client
+    for (auto const& [id, gameObject] : networkObjects) {
+        sendObject(gameObject, connection);
+    }
+
     if (onConnectedEvent != nullptr) {
         onConnectedEvent(connection);
     }
@@ -217,4 +222,24 @@ void NetworkServer::destroyObject(unsigned int networkId) {
 
 bool NetworkServer::findObject(unsigned int networkId, std::shared_ptr<KapEngine::GameObject>& gameObject) {
     return networkObjects.tryGetValue(networkId, gameObject);
+}
+
+void NetworkServer::sendObject(std::shared_ptr<KapEngine::GameObject> gameObject, std::shared_ptr<NetworkConnectionToClient> connection) {
+    if (!gameObject->hasComponent<KapMirror::Experimental::NetworkIdentity>()) {
+        KapEngine::Debug::error("NetworkServer: sendObject: GameObject does not have NetworkIdentity component");
+        return;
+    }
+
+    auto& networkIdentity = gameObject->getComponent<KapMirror::Experimental::NetworkIdentity>();
+    auto& transform = gameObject->getComponent<KapEngine::Transform>();
+
+    ObjectSpawnMessage message;
+    message.networkId = networkIdentity.getNetworkId();
+    message.isOwner = !networkIdentity.hasAuthority();
+    message.prefabName = gameObject->getPrefabName();
+    message.sceneId = gameObject->getScene().getId();
+    message.x = transform.getLocalPosition().getX();
+    message.y = transform.getLocalPosition().getY();
+    message.z = transform.getLocalPosition().getZ();
+    connection->send(message);
 }
