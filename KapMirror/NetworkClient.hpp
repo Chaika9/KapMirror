@@ -30,6 +30,7 @@ namespace KapMirror {
         std::shared_ptr<NetworkConnectionToServer> connection;
 
         Dictionary<ushort, std::shared_ptr<std::function<void(std::shared_ptr<NetworkConnectionToServer>, NetworkReader&)>>> handlers;
+        Dictionary<unsigned int, std::shared_ptr<KapEngine::GameObject>> networkObjects;
 
         public:
         NetworkClient(KapEngine::KapEngine& _engine);
@@ -103,7 +104,7 @@ namespace KapMirror {
         void onObjectDestroy(ObjectDestroyMessage& message);
         void onObjectTransformUpdate(ObjectTransformMessage& message);
 
-        bool findObject(unsigned int networkId, KapEngine::SceneManagement::Scene& scene, std::shared_ptr<KapEngine::GameObject>& gameObject);
+        bool findObject(unsigned int networkId, std::shared_ptr<KapEngine::GameObject>& gameObject);
 
         public:
         std::function<void(std::shared_ptr<NetworkConnection>)> onConnectedEvent;

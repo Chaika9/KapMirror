@@ -13,6 +13,12 @@ void NetworkComponent::onAwake() {
     }
 }
 
+void NetworkComponent::onDestroy() {
+    if (isServer()) {
+        getServer()->destroyObject(getNetworkId());
+    }
+}
+
 bool NetworkComponent::isServer() const {
     return networkIdentity->isServer();
 }

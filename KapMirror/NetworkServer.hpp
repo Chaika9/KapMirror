@@ -27,6 +27,7 @@ namespace KapMirror {
 
         Dictionary<int, std::shared_ptr<NetworkConnectionToClient>> connections;
         Dictionary<ushort, std::shared_ptr<std::function<void(std::shared_ptr<NetworkConnectionToClient>, NetworkReader&)>>> handlers;
+        Dictionary<unsigned int, std::shared_ptr<KapEngine::GameObject>> networkObjects;
 
         public:
         NetworkServer(NetworkManager& _manager, KapEngine::KapEngine& _engine);

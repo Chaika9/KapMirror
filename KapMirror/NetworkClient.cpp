@@ -6,8 +6,6 @@
 #include "Factory.hpp"
 #include "Transform.hpp"
 
-#include "UiImage.hpp"
-
 using namespace KapMirror;
 
 NetworkClient::NetworkClient(KapEngine::KapEngine& _engine) : engine(_engine) {
@@ -129,15 +127,20 @@ bool NetworkClient::unpackAndInvoke(std::shared_ptr<ArraySegment<byte>> data) {
 // KapEngine
 
 void NetworkClient::onObjectSpawn(ObjectSpawnMessage& message) {
-    KapEngine::Debug::log("NetworkClient: onObjectSpawn");
-    auto& scene = engine.getSceneManager()->getCurrentScene();
-
     std::shared_ptr<KapEngine::GameObject> gameObject;
-    if (!findObject(message.networkId, scene, gameObject)) {
+    if (!findObject(message.networkId, gameObject)) {
+        auto& scene = engine.getSceneManager()->getScene(message.sceneId);
         if (!engine.getPrefabManager()->instantiatePrefab(message.prefabName, scene, gameObject)) {
-            KapEngine::Debug::error("NetworkClient: failed to instantiate prefab " + message.prefabName);
+            KapEngine::Debug::error("NetworkClient: failed to instantiate prefab " + message.prefabName + " with networkId " + std::to_string(message.networkId));
             return;
         }
+
+        networkObjects[message.networkId] = gameObject;
+    }
+
+    if (gameObject == nullptr) {
+        KapEngine::Debug::error("NetworkClient: failed to find or instantiate object with network id " + std::to_string(message.networkId));
+        return;
     }
 
     auto& transform = gameObject->getComponent<KapEngine::Transform>();
@@ -155,36 +158,21 @@ void NetworkClient::onObjectSpawn(ObjectSpawnMessage& message) {
 }
 
 void NetworkClient::onObjectDestroy(ObjectDestroyMessage& message) {
-    KapEngine::Debug::log("NetworkClient: onObjectDestroy");
-    auto& scene = engine.getSceneManager()->getCurrentScene();
-
     std::shared_ptr<KapEngine::GameObject> gameObject;
-    if (findObject(message.networkId, scene, gameObject)) {
-        scene.destroyGameObject(gameObject);
+    if (findObject(message.networkId, gameObject)) {
+        networkObjects.remove(message.networkId);
+        gameObject->destroy();
     }
 }
 
 void NetworkClient::onObjectTransformUpdate(ObjectTransformMessage& message) {
-    auto& scene = engine.getSceneManager()->getCurrentScene();
-
     std::shared_ptr<KapEngine::GameObject> gameObject;
-    if (findObject(message.networkId, scene, gameObject)) {
+    if (findObject(message.networkId, gameObject)) {
         auto& transform = gameObject->getComponent<KapEngine::Transform>();
         transform.setPosition(KapEngine::Tools::Vector3(message.x, message.y, message.z));
     }
 }
 
-bool NetworkClient::findObject(unsigned int networkId, KapEngine::SceneManagement::Scene& scene, std::shared_ptr<KapEngine::GameObject>& gameObject) {
-    for (auto& go : scene.getAllObjects()) {
-        for (auto& component : go->getAllComponents()) {
-            auto identity = std::dynamic_pointer_cast<KapMirror::Experimental::NetworkIdentity>(component);
-            if (identity) {
-                if (identity->getNetworkId() == networkId) {
-                    gameObject = go;
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
+bool NetworkClient::findObject(unsigned int networkId, std::shared_ptr<KapEngine::GameObject>& gameObject) {
+    return networkObjects.tryGetValue(networkId, gameObject);
 }

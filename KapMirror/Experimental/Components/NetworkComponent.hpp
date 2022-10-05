@@ -43,9 +43,15 @@ namespace Experimental {
 
         void onAwake() override;
 
+        void onDestroy() override;
+
         bool isServer() const;
 
         bool isClient() const;
+
+        unsigned int getNetworkId() const {
+            return networkIdentity->getNetworkId();
+        }
 
         virtual void onStartServer() {}
         virtual void onStopServer() {}

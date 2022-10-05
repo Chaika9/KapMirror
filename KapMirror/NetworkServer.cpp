@@ -1,13 +1,11 @@
 #include "NetworkServer.hpp"
 #include "Runtime/Transport.hpp"
 #include "Runtime/Compression.hpp"
+#include "NetworkManager.hpp"
 #include "KapMirror/Experimental/Components/NetworkIdentity.hpp"
 #include "KapEngine.hpp"
 #include "Factory.hpp"
 #include "Transform.hpp"
-
-#include "UiImage.hpp"
-#include "TestNetwork/SpaceShip.hpp"
 
 using namespace KapMirror;
 
@@ -164,7 +162,6 @@ bool NetworkServer::removeConnection(int connectionId) {
 // KapEngine
 
 void NetworkServer::spawnObject(std::string prefabName, KapEngine::SceneManagement::Scene &scene, KapEngine::Tools::Vector3 position, std::shared_ptr<KapEngine::GameObject>& gameObject) {
-    KapEngine::Debug::log("NetworkServer: spawnObject");
     engine.getPrefabManager()->instantiatePrefab(prefabName, scene, gameObject);
 
     if (!gameObject->hasComponent<KapMirror::Experimental::NetworkIdentity>()) {
@@ -172,11 +169,20 @@ void NetworkServer::spawnObject(std::string prefabName, KapEngine::SceneManageme
         return;
     }
 
+    auto& networkIdentity = gameObject->getComponent<KapMirror::Experimental::NetworkIdentity>();
+
+    // Spawn should only be called once per netId
+    if (networkObjects.containsKey(networkIdentity.getNetworkId())) {
+        KapEngine::Debug::warning("NetworkServer: " + prefabName + " with networkId=" + std::to_string(networkIdentity.getNetworkId()) + " was already spawned.");
+        return;
+    }
+
     manager.__initGameObject(gameObject);
 
-    auto& networkIdentity = gameObject->getComponent<KapMirror::Experimental::NetworkIdentity>();
     networkIdentity.setAuthority(true);
     networkIdentity.onStartServer();
+
+    networkObjects[networkIdentity.getNetworkId()] = gameObject;
 
     auto& transform = gameObject->getComponent<KapEngine::Transform>();
     transform.setPosition(position);
@@ -185,28 +191,21 @@ void NetworkServer::spawnObject(std::string prefabName, KapEngine::SceneManageme
     message.networkId = networkIdentity.getNetworkId();
     message.isOwner = !networkIdentity.hasAuthority();
     message.prefabName = prefabName;
+    message.sceneId = scene.getId();
     message.x = position.getX();
     message.y = position.getY();
     message.z = position.getZ();
-
-    KapEngine::Debug::log("NetworkServer: spawnObject: sending message");
-    KapEngine::Debug::log("NetworkServer: spawnObject: networkId: " + std::to_string(message.networkId));
-    KapEngine::Debug::log("NetworkServer: spawnObject: isOwner: " + std::to_string(message.isOwner));
-    KapEngine::Debug::log("NetworkServer: spawnObject: x: " + std::to_string(message.x));
-    KapEngine::Debug::log("NetworkServer: spawnObject: y: " + std::to_string(message.y));
-    KapEngine::Debug::log("NetworkServer: spawnObject: z: " + std::to_string(message.z));
-
     sendToAll(message);
 }
 
 void NetworkServer::destroyObject(unsigned int networkId) {
-    KapEngine::Debug::log("NetworkServer: destroyObject");
-
     std::shared_ptr<KapEngine::GameObject> gameObject;
     if (!findObject(networkId, gameObject)) {
         KapEngine::Debug::error("NetworkServer: destroyObject: GameObject not found");
         return;
     }
+
+    networkObjects.remove(networkId);
 
     auto& scene = gameObject->getScene();
     scene.destroyGameObject(gameObject);
@@ -217,19 +216,5 @@ void NetworkServer::destroyObject(unsigned int networkId) {
 }
 
 bool NetworkServer::findObject(unsigned int networkId, std::shared_ptr<KapEngine::GameObject>& gameObject) {
-    //TODO: Keep a map of networkId to GameObject
-    for (auto& scene : engine.getSceneManager()->getAllScenes()) {
-        for (auto& object : scene->getAllObjects()) {
-            if (object->hasComponent<KapMirror::Experimental::NetworkIdentity>()) {
-                continue;
-            }
-
-            auto& networkIdentity = object->getComponent<KapMirror::Experimental::NetworkIdentity>();
-            if (networkIdentity.getNetworkId() == networkId) {
-                gameObject = object;
-                return true;
-            }
-        }
-    }
-    return false;
+    return networkObjects.tryGetValue(networkId, gameObject);
 }
