@@ -119,6 +119,8 @@ namespace KapMirror {
 
         bool findObject(unsigned int networkId, std::shared_ptr<KapEngine::GameObject>& gameObject);
 
+        void sendObject(std::shared_ptr<KapEngine::GameObject> gameObject, std::shared_ptr<NetworkConnectionToClient> connection);
+
         public:
         std::function<void(std::shared_ptr<NetworkConnection>)> onConnectedEvent;
         std::function<void(std::shared_ptr<NetworkConnection>)> onDisconnectedEvent;

@@ -36,6 +36,9 @@ void NetworkClient::disconnect() {
     connectState = ConnectState::Disconnecting;
 
     Transport::activeTransport->clientDisconnect();
+
+    // Clear all network objects
+    networkObjects.clear();
 }
 
 void NetworkClient::networkEarlyUpdate() {
