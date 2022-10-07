@@ -1,7 +1,7 @@
 #pragma once
 
 #include "KapMirror/Runtime/ArraySegment.hpp"
-#include "KapMirror/Runtime/Platform.hpp"
+#include "Platform.hpp"
 #include <memory>
 #include <queue>
 #include <mutex>

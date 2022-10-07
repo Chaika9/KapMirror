@@ -1,6 +1,6 @@
 #pragma once
 
-#include "KapMirror/Runtime/Platform.hpp"
+#include "Platform.hpp"
 
 #ifdef __WINDOWS__
 

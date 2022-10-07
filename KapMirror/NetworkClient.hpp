@@ -1,12 +1,12 @@
 #pragma once
 
 #include "Runtime/ArraySegment.hpp"
-#include "Runtime/Platform.hpp"
-#include "Runtime/Dictionary.hpp"
 #include "Runtime/NetworkMessage.hpp"
 #include "Runtime/NetworkConnectionToServer.hpp"
 #include "Messages.hpp"
 #include "KapEngine.hpp"
+#include "Platform.hpp"
+#include "Dictionary.hpp"
 #include "Debug.hpp"
 #include <memory>
 #include <functional>
@@ -29,8 +29,8 @@ namespace KapMirror {
         ConnectState connectState;
         std::shared_ptr<NetworkConnectionToServer> connection;
 
-        Dictionary<ushort, std::shared_ptr<std::function<void(std::shared_ptr<NetworkConnectionToServer>, NetworkReader&)>>> handlers;
-        Dictionary<unsigned int, std::shared_ptr<KapEngine::GameObject>> networkObjects;
+        KapEngine::Dictionary<ushort, std::shared_ptr<std::function<void(std::shared_ptr<NetworkConnectionToServer>, NetworkReader&)>>> handlers;
+        KapEngine::Dictionary<unsigned int, std::shared_ptr<KapEngine::GameObject>> networkObjects;
 
         public:
         NetworkClient(KapEngine::KapEngine& _engine);
