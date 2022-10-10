@@ -35,8 +35,6 @@ namespace KapMirror {
 
         void onAwake() override;
 
-        void onStart() override;
-
         void onUpdate() override;
 
         void setTransport(std::shared_ptr<Transport> transport);

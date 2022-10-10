@@ -26,10 +26,6 @@ void NetworkManager::onAwake() {
     }
 }
 
-void NetworkManager::onStart() {
-    startServer();
-}
-
 void NetworkManager::onUpdate() {
     server->networkEarlyUpdate();
     client->networkEarlyUpdate();
