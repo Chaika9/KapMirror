@@ -8,6 +8,11 @@ namespace KapMirror {
     class NetworkConnectionToServer : public NetworkConnection {
         public:
         NetworkConnectionToServer() {}
+        ~NetworkConnectionToServer() = default;
+
+        unsigned int getNetworkId() override {
+            return 0;
+        }
 
         void disconnect() override {
             Transport::activeTransport->clientDisconnect();

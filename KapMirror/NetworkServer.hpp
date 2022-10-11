@@ -102,6 +102,8 @@ namespace KapMirror {
 
         void destroyObject(unsigned int networkId);
 
+        void destroyObject(std::shared_ptr<KapEngine::GameObject> gameObject);
+
         private:
         void initialize();
 

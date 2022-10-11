@@ -167,10 +167,16 @@ bool NetworkServer::removeConnection(int connectionId) {
 // KapEngine
 
 void NetworkServer::spawnObject(std::string prefabName, KapEngine::SceneManagement::Scene &scene, KapEngine::Tools::Vector3 position, std::shared_ptr<KapEngine::GameObject>& gameObject) {
-    engine.getPrefabManager()->instantiatePrefab(prefabName, scene, gameObject);
+    KAP_DEBUG_LOG("NetworkServer: Spawning object " + prefabName);
+
+    if (!engine.getPrefabManager()->instantiatePrefab(prefabName, scene, gameObject)) {
+        KapEngine::Debug::error("NetworkServer: Failed to spawn object " + prefabName);
+        return;
+    }
 
     if (!gameObject->hasComponent<KapMirror::NetworkIdentity>()) {
         KapEngine::Debug::error("NetworkServer: spawnObject: GameObject does not have NetworkIdentity component");
+        gameObject->destroy();
         return;
     }
 
@@ -179,6 +185,7 @@ void NetworkServer::spawnObject(std::string prefabName, KapEngine::SceneManageme
     // Spawn should only be called once per netId
     if (networkObjects.containsKey(networkIdentity.getNetworkId())) {
         KapEngine::Debug::warning("NetworkServer: " + prefabName + " with networkId=" + std::to_string(networkIdentity.getNetworkId()) + " was already spawned.");
+        gameObject->destroy();
         return;
     }
 
@@ -204,6 +211,8 @@ void NetworkServer::spawnObject(std::string prefabName, KapEngine::SceneManageme
 }
 
 void NetworkServer::destroyObject(unsigned int networkId) {
+    KAP_DEBUG_LOG("NetworkServer: Destroying object " + std::to_string(networkId));
+
     std::shared_ptr<KapEngine::GameObject> gameObject;
     if (!findObject(networkId, gameObject)) {
         KapEngine::Debug::error("NetworkServer: destroyObject: GameObject not found");
@@ -211,13 +220,21 @@ void NetworkServer::destroyObject(unsigned int networkId) {
     }
 
     networkObjects.remove(networkId);
-
-    auto& scene = gameObject->getScene();
-    scene.destroyGameObject(gameObject);
+    gameObject->destroy();
 
     ObjectDestroyMessage message;
     message.networkId = networkId;
     sendToAll(message);
+}
+
+void NetworkServer::destroyObject(std::shared_ptr<KapEngine::GameObject> gameObject) {
+    if (!gameObject->hasComponent<KapMirror::NetworkIdentity>()) {
+        KapEngine::Debug::error("NetworkServer: destroyObject: GameObject does not have NetworkIdentity component");
+        return;
+    }
+
+    auto& networkIdentity = gameObject->getComponent<KapMirror::NetworkIdentity>();
+    destroyObject(networkIdentity.getNetworkId());
 }
 
 bool NetworkServer::findObject(unsigned int networkId, std::shared_ptr<KapEngine::GameObject>& gameObject) {

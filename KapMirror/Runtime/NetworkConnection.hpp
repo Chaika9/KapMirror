@@ -10,6 +10,8 @@ namespace KapMirror {
         public:
         virtual ~NetworkConnection() = default;
 
+        virtual unsigned int getNetworkId() = 0;
+
         /**
          * @brief Disconnects this connection
          */
