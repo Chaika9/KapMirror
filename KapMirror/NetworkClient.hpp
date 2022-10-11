@@ -24,7 +24,7 @@ namespace KapMirror {
 
     class NetworkClient {
         private:
-        KapEngine::KapEngine& engine;
+        KapEngine::KEngine& engine;
 
         ConnectState connectState;
         std::shared_ptr<NetworkConnectionToServer> connection;
@@ -33,7 +33,7 @@ namespace KapMirror {
         KapEngine::Dictionary<unsigned int, std::shared_ptr<KapEngine::GameObject>> networkObjects;
 
         public:
-        NetworkClient(KapEngine::KapEngine& _engine);
+        NetworkClient(KapEngine::KEngine& _engine);
         ~NetworkClient() = default;
 
         void connect(std::string ip, int port);

@@ -18,7 +18,7 @@ namespace KapMirror {
     class NetworkServer {
         private:
         NetworkManager& manager;
-        KapEngine::KapEngine& engine;
+        KapEngine::KEngine& engine;
 
         bool initialized;
         bool active;
@@ -30,7 +30,7 @@ namespace KapMirror {
         KapEngine::Dictionary<unsigned int, std::shared_ptr<KapEngine::GameObject>> networkObjects;
 
         public:
-        NetworkServer(NetworkManager& _manager, KapEngine::KapEngine& _engine);
+        NetworkServer(NetworkManager& _manager, KapEngine::KEngine& _engine);
         ~NetworkServer() = default;
 
         bool isActivated() const {

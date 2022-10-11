@@ -9,7 +9,7 @@
 
 using namespace KapMirror;
 
-NetworkServer::NetworkServer(NetworkManager& _manager, KapEngine::KapEngine& _engine) : manager(_manager), engine(_engine) {
+NetworkServer::NetworkServer(NetworkManager& _manager, KapEngine::KEngine& _engine) : manager(_manager), engine(_engine) {
     initialized = false;
     active = false;
 }

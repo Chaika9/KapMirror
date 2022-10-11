@@ -8,7 +8,7 @@
 
 using namespace KapMirror;
 
-NetworkClient::NetworkClient(KapEngine::KapEngine& _engine) : engine(_engine) {
+NetworkClient::NetworkClient(KapEngine::KEngine& _engine) : engine(_engine) {
     connectState = ConnectState::None;
     connection = nullptr;
 }

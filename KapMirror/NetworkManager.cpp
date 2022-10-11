@@ -63,7 +63,7 @@ void NetworkManager::setupServer() {
     };
 
     server->listen(maxConnections, networkPort);
-    KapEngine::Debug::log("NetworkManager: Server started listening");
+    KapEngine::Debug::log("NetworkManager: Server started listening on port " + std::to_string(networkPort));
 
     onStartServer();
 
@@ -109,6 +109,7 @@ void NetworkManager::startClient() {
         onClientDisconnected(connection);
     };
 
+    KapEngine::Debug::log("NetworkManager: Connecting to server \"" + networkAddress + ":" + std::to_string(networkPort) + "\"");
     client->connect(networkAddress, networkPort);
 
     onStartClient();
