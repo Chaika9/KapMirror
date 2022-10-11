@@ -3,6 +3,7 @@
 #include "Runtime/Compression.hpp"
 #include "NetworkManager.hpp"
 #include "Components/NetworkIdentity.hpp"
+#include "Components/NetworkComponent.hpp"
 #include "KapEngine.hpp"
 #include "Factory.hpp"
 #include "Transform.hpp"
@@ -166,7 +167,10 @@ bool NetworkServer::removeConnection(int connectionId) {
 
 // KapEngine
 
-void NetworkServer::spawnObject(std::string prefabName, KapEngine::SceneManagement::Scene &scene, KapEngine::Tools::Vector3 position, std::shared_ptr<KapEngine::GameObject>& gameObject) {
+void NetworkServer::spawnObject(std::string prefabName,
+    KapEngine::SceneManagement::Scene &scene, KapEngine::Tools::Vector3 position,
+    std::function<void(std::shared_ptr<KapEngine::GameObject>&)> playload,
+    std::shared_ptr<KapEngine::GameObject>& gameObject) {
     KAP_DEBUG_LOG("NetworkServer: Spawning object " + prefabName);
 
     if (!engine.getPrefabManager()->instantiatePrefab(prefabName, scene, gameObject)) {
@@ -174,13 +178,13 @@ void NetworkServer::spawnObject(std::string prefabName, KapEngine::SceneManageme
         return;
     }
 
-    if (!gameObject->hasComponent<KapMirror::NetworkIdentity>()) {
+    if (!gameObject->hasComponent<NetworkIdentity>()) {
         KapEngine::Debug::error("NetworkServer: spawnObject: GameObject does not have NetworkIdentity component");
         gameObject->destroy();
         return;
     }
 
-    auto& networkIdentity = gameObject->getComponent<KapMirror::NetworkIdentity>();
+    auto& networkIdentity = gameObject->getComponent<NetworkIdentity>();
 
     // Spawn should only be called once per netId
     if (networkObjects.containsKey(networkIdentity.getNetworkId())) {
@@ -199,6 +203,23 @@ void NetworkServer::spawnObject(std::string prefabName, KapEngine::SceneManageme
     auto& transform = gameObject->getComponent<KapEngine::Transform>();
     transform.setPosition(position);
 
+    if (playload != nullptr) {
+        playload(gameObject);
+    }
+
+    // @Beta - Custom Payload
+    NetworkWriter writer;
+    try {
+        for (auto& component : gameObject->getAllComponents()) {
+            auto comp = std::dynamic_pointer_cast<NetworkComponent>(component);
+            if (comp) {
+                comp->customPayloadSerialize(writer);
+            }
+        }
+    } catch (...) {
+        KapEngine::Debug::error("NetworkServer: Failed to serialize custom payload");
+    }
+
     ObjectSpawnMessage message;
     message.networkId = networkIdentity.getNetworkId();
     message.isOwner = !networkIdentity.hasAuthority();
@@ -207,6 +228,7 @@ void NetworkServer::spawnObject(std::string prefabName, KapEngine::SceneManageme
     message.x = position.getX();
     message.y = position.getY();
     message.z = position.getZ();
+    message.payload = writer.toArraySegment();
     sendToAll(message);
 }
 
@@ -228,12 +250,12 @@ void NetworkServer::destroyObject(unsigned int networkId) {
 }
 
 void NetworkServer::destroyObject(std::shared_ptr<KapEngine::GameObject> gameObject) {
-    if (!gameObject->hasComponent<KapMirror::NetworkIdentity>()) {
+    if (!gameObject->hasComponent<NetworkIdentity>()) {
         KapEngine::Debug::error("NetworkServer: destroyObject: GameObject does not have NetworkIdentity component");
         return;
     }
 
-    auto& networkIdentity = gameObject->getComponent<KapMirror::NetworkIdentity>();
+    auto& networkIdentity = gameObject->getComponent<NetworkIdentity>();
     destroyObject(networkIdentity.getNetworkId());
 }
 
@@ -242,12 +264,12 @@ bool NetworkServer::findObject(unsigned int networkId, std::shared_ptr<KapEngine
 }
 
 void NetworkServer::sendObject(std::shared_ptr<KapEngine::GameObject> gameObject, std::shared_ptr<NetworkConnectionToClient> connection) {
-    if (!gameObject->hasComponent<KapMirror::NetworkIdentity>()) {
+    if (!gameObject->hasComponent<NetworkIdentity>()) {
         KapEngine::Debug::error("NetworkServer: sendObject: GameObject does not have NetworkIdentity component");
         return;
     }
 
-    auto& networkIdentity = gameObject->getComponent<KapMirror::NetworkIdentity>();
+    auto& networkIdentity = gameObject->getComponent<NetworkIdentity>();
     auto& transform = gameObject->getComponent<KapEngine::Transform>();
 
     ObjectSpawnMessage message;

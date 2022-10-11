@@ -13,6 +13,12 @@ namespace KapMirror {
         int size;
 
         public:
+        ArraySegment() {
+            array = nullptr;
+            offset = 0;
+            size = 0;
+        }
+
         ArraySegment(T* _array, int _size) {
             array = Array::copyArray(_array, _size);
             offset = 0;
@@ -27,7 +33,7 @@ namespace KapMirror {
 
         ~ArraySegment() {
             delete[] array;
-        };
+        }
 
         /**
          * @brief Get the array
@@ -67,7 +73,7 @@ namespace KapMirror {
             return array[offset + index];
         }
 
-        bool operator==(ArraySegment<T> &other) {
+        bool operator==(ArraySegment<T> const &other) {
             for (int i = 0; i < std::min(size, other.size); i++) {
                 if (array[offset + i] != other.array[other.offset + i]) {
                     return false;
@@ -76,12 +82,12 @@ namespace KapMirror {
             return true;
         }
 
-        bool operator!=(ArraySegment<T> &other) {
+        bool operator!=(ArraySegment<T> const &other) {
             return !(*this == other);
         }
 
-        ArraySegment<T> &operator=(ArraySegment<T> &other) {
-            array = other.array;
+        ArraySegment<T> &operator=(ArraySegment<T> const &other) {
+            array = Array::copyArray(other.array, other.size);
             offset = other.offset;
             size = other.size;
             return *this;

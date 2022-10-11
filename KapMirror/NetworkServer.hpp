@@ -88,16 +88,29 @@ namespace KapMirror {
 
         // KapEngine
 
-        void spawnObject(std::string prefabName, KapEngine::SceneManagement::Scene &scene, KapEngine::Tools::Vector3 position, std::shared_ptr<KapEngine::GameObject>& gameObject);
+        void spawnObject(std::string prefabName, KapEngine::SceneManagement::Scene &scene,
+            KapEngine::Tools::Vector3 position,
+            std::function<void(std::shared_ptr<KapEngine::GameObject>&)> playload,
+            std::shared_ptr<KapEngine::GameObject>& gameObject);
 
-        void spawnObject(std::string prefabName, std::size_t sceneId, KapEngine::Tools::Vector3 position, std::shared_ptr<KapEngine::GameObject>& gameObject) {
+        void spawnObject(std::string prefabName, std::size_t sceneId, KapEngine::Tools::Vector3 position,
+            std::function<void(std::shared_ptr<KapEngine::GameObject>&)> playload,
+            std::shared_ptr<KapEngine::GameObject>& gameObject) {
             auto& scene = engine.getSceneManager()->getScene(sceneId);
-            spawnObject(prefabName, scene, position, gameObject);
+            spawnObject(prefabName, scene, position, playload, gameObject);
         }
 
-        void spawnObject(std::string prefabName, KapEngine::Tools::Vector3 position, std::shared_ptr<KapEngine::GameObject>& gameObject) {
+        void spawnObject(std::string prefabName, KapEngine::Tools::Vector3 position,
+            std::function<void(std::shared_ptr<KapEngine::GameObject>&)> playload,
+            std::shared_ptr<KapEngine::GameObject>& gameObject) {
             auto& scene = engine.getSceneManager()->getCurrentScene();
-            spawnObject(prefabName, scene, position, gameObject);
+            spawnObject(prefabName, scene, position, playload, gameObject);
+        }
+
+        void spawnObject(std::string prefabName, KapEngine::Tools::Vector3 position,
+            std::shared_ptr<KapEngine::GameObject>& gameObject) {
+            auto& scene = engine.getSceneManager()->getCurrentScene();
+            spawnObject(prefabName, scene, position, nullptr, gameObject);
         }
 
         void destroyObject(unsigned int networkId);

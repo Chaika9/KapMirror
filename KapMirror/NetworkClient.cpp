@@ -2,6 +2,7 @@
 #include "Runtime/Transport.hpp"
 #include "Runtime/Compression.hpp"
 #include "Components/NetworkIdentity.hpp"
+#include "Components/NetworkComponent.hpp"
 #include "KapEngine.hpp"
 #include "Factory.hpp"
 #include "Transform.hpp"
@@ -130,6 +131,8 @@ bool NetworkClient::unpackAndInvoke(std::shared_ptr<ArraySegment<byte>> data) {
 // KapEngine
 
 void NetworkClient::onObjectSpawn(ObjectSpawnMessage& message) {
+    KAP_DEBUG_LOG("NetworkClient: Spawning object " + message.prefabName);
+
     std::shared_ptr<KapEngine::GameObject> gameObject;
     if (!findObject(message.networkId, gameObject)) {
         auto& scene = engine.getSceneManager()->getScene(message.sceneName);
@@ -149,18 +152,33 @@ void NetworkClient::onObjectSpawn(ObjectSpawnMessage& message) {
     auto& transform = gameObject->getComponent<KapEngine::Transform>();
     transform.setPosition(KapEngine::Tools::Vector3(message.x, message.y, message.z));
 
-    if (!gameObject->hasComponent<KapMirror::NetworkIdentity>()) {
+    if (!gameObject->hasComponent<NetworkIdentity>()) {
         KapEngine::Debug::error("NetworkClient: object " + message.prefabName + " does not have NetworkIdentity component");
         return;
     }
 
-    auto& networkIdentity = gameObject->getComponent<KapMirror::NetworkIdentity>();
+    // @Beta - Custom Payload
+    NetworkReader reader(message.payload);
+    try {
+        for (auto& component : gameObject->getAllComponents()) {
+            auto comp = std::dynamic_pointer_cast<NetworkComponent>(component);
+            if (comp) {
+                comp->customPayloadDeserialize(reader);
+            }
+        }
+    } catch (...) {
+        KapEngine::Debug::error("NetworkClient: failed to deserialize custom payload for object " + message.prefabName);
+    }
+
+    auto& networkIdentity = gameObject->getComponent<NetworkIdentity>();
     networkIdentity.setNetworkId(message.networkId);
     networkIdentity.setAuthority(message.isOwner);
     networkIdentity.onStartClient();
 }
 
 void NetworkClient::onObjectDestroy(ObjectDestroyMessage& message) {
+    KAP_DEBUG_LOG("NetworkClient: Destroying object " + std::to_string(message.networkId));
+
     std::shared_ptr<KapEngine::GameObject> gameObject;
     if (findObject(message.networkId, gameObject)) {
         networkObjects.remove(message.networkId);

@@ -57,5 +57,11 @@ namespace KapMirror {
 
         virtual void onStartClient() {}
         virtual void onStopClient() {}
+
+        // @Beta
+        virtual void customPayloadSerialize(KapMirror::NetworkWriter& writer) {}
+
+        // @Beta
+        virtual void customPayloadDeserialize(KapMirror::NetworkReader& reader) {}
     };
 }

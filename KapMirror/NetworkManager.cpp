@@ -22,7 +22,7 @@ void NetworkManager::onAwake() {
 
     if (transport == nullptr) {
         KapEngine::Debug::log("NetworkManager: No transport set, using default transport (TelepathyTransport)");
-        setTransport(std::make_shared<KapMirror::TelepathyTransport>());
+        setTransport(std::make_shared<TelepathyTransport>());
     }
 }
 
@@ -72,7 +72,7 @@ void NetworkManager::setupServer() {
 
     for (auto& go : scene.getAllObjects()) {
         for (auto& component : go->getAllComponents()) {
-            auto comp = std::dynamic_pointer_cast<KapMirror::NetworkComponent>(component);
+            auto comp = std::dynamic_pointer_cast<NetworkComponent>(component);
             if (comp) {
                 comp->__setServer(server);
             }
@@ -81,7 +81,7 @@ void NetworkManager::setupServer() {
 
     for (auto& go : scene.getAllObjects()) {
         for (auto& component : go->getAllComponents()) {
-            auto identity = std::dynamic_pointer_cast<KapMirror::NetworkIdentity>(component); //TODO: to hasComponent in KapEngine
+            auto identity = std::dynamic_pointer_cast<NetworkIdentity>(component); //TODO: to hasComponent in KapEngine
             if (identity) {
                 identity->onStartServer();
             }
@@ -123,7 +123,7 @@ void NetworkManager::startClient() {
 
     for (auto& go : scene.getAllObjects()) {
         for (auto& component : go->getAllComponents()) {
-            auto identity = std::dynamic_pointer_cast<KapMirror::NetworkIdentity>(component);
+            auto identity = std::dynamic_pointer_cast<NetworkIdentity>(component);
             if (identity) {
                 identity->onStartClient();
             }
@@ -139,7 +139,7 @@ void NetworkManager::stopClient() {
 
 void NetworkManager::__initGameObject(std::shared_ptr<KapEngine::GameObject> go) {
     for (auto& component : go->getAllComponents()) {
-        auto comp = std::dynamic_pointer_cast<KapMirror::NetworkComponent>(component);
+        auto comp = std::dynamic_pointer_cast<NetworkComponent>(component);
         if (comp) {
             comp->__setServer(server);
             comp->__setClient(client);
