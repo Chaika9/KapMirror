@@ -8,7 +8,7 @@ namespace KapMirror {
         unsigned int networkId;
         // Sets hasAuthority on the spawned object
         bool isOwner;
-        std::size_t sceneId;
+        std::string sceneName;
         // Prefab name
         std::string prefabName;
         float x;
@@ -18,7 +18,7 @@ namespace KapMirror {
         void serialize(KapMirror::NetworkWriter& writer) {
             writer.write(networkId);
             writer.write(isOwner);
-            writer.write(sceneId);
+            writer.writeString(sceneName);
             writer.writeString(prefabName);
             writer.write(x);
             writer.write(y);
@@ -28,7 +28,7 @@ namespace KapMirror {
         void deserialize(KapMirror::NetworkReader& reader) {
             networkId = reader.read<unsigned int>();
             isOwner = reader.read<bool>();
-            sceneId = reader.read<std::size_t>();
+            sceneName = reader.readString();
             prefabName = reader.readString();
             x = reader.read<float>();
             y = reader.read<float>();

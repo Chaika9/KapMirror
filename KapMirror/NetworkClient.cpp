@@ -132,7 +132,7 @@ bool NetworkClient::unpackAndInvoke(std::shared_ptr<ArraySegment<byte>> data) {
 void NetworkClient::onObjectSpawn(ObjectSpawnMessage& message) {
     std::shared_ptr<KapEngine::GameObject> gameObject;
     if (!findObject(message.networkId, gameObject)) {
-        auto& scene = engine.getSceneManager()->getScene(message.sceneId);
+        auto& scene = engine.getSceneManager()->getScene(message.sceneName);
         if (!engine.getPrefabManager()->instantiatePrefab(message.prefabName, scene, gameObject)) {
             KapEngine::Debug::error("NetworkClient: failed to instantiate prefab " + message.prefabName + " with networkId " + std::to_string(message.networkId));
             return;

@@ -196,7 +196,7 @@ void NetworkServer::spawnObject(std::string prefabName, KapEngine::SceneManageme
     message.networkId = networkIdentity.getNetworkId();
     message.isOwner = !networkIdentity.hasAuthority();
     message.prefabName = prefabName;
-    message.sceneId = scene.getId();
+    message.sceneName = scene.getName();
     message.x = position.getX();
     message.y = position.getY();
     message.z = position.getZ();
@@ -237,7 +237,7 @@ void NetworkServer::sendObject(std::shared_ptr<KapEngine::GameObject> gameObject
     message.networkId = networkIdentity.getNetworkId();
     message.isOwner = !networkIdentity.hasAuthority();
     message.prefabName = gameObject->getPrefabName();
-    message.sceneId = gameObject->getScene().getId();
+    message.sceneName = gameObject->getScene().getName();
     message.x = transform.getLocalPosition().getX();
     message.y = transform.getLocalPosition().getY();
     message.z = transform.getLocalPosition().getZ();
