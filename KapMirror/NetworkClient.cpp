@@ -1,7 +1,7 @@
 #include "NetworkClient.hpp"
 #include "Runtime/Transport.hpp"
 #include "Runtime/Compression.hpp"
-#include "KapMirror/Experimental/Components/NetworkIdentity.hpp"
+#include "Components/NetworkIdentity.hpp"
 #include "KapEngine.hpp"
 #include "Factory.hpp"
 #include "Transform.hpp"
@@ -149,12 +149,12 @@ void NetworkClient::onObjectSpawn(ObjectSpawnMessage& message) {
     auto& transform = gameObject->getComponent<KapEngine::Transform>();
     transform.setPosition(KapEngine::Tools::Vector3(message.x, message.y, message.z));
 
-    if (!gameObject->hasComponent<KapMirror::Experimental::NetworkIdentity>()) {
+    if (!gameObject->hasComponent<KapMirror::NetworkIdentity>()) {
         KapEngine::Debug::error("NetworkClient: object " + message.prefabName + " does not have NetworkIdentity component");
         return;
     }
 
-    auto& networkIdentity = gameObject->getComponent<KapMirror::Experimental::NetworkIdentity>();
+    auto& networkIdentity = gameObject->getComponent<KapMirror::NetworkIdentity>();
     networkIdentity.setNetworkId(message.networkId);
     networkIdentity.setAuthority(message.isOwner);
     networkIdentity.onStartClient();

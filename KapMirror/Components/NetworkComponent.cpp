@@ -1,6 +1,6 @@
 #include "NetworkComponent.hpp"
 
-using namespace KapMirror::Experimental;
+using namespace KapMirror;
 
 NetworkComponent::NetworkComponent(std::shared_ptr<KapEngine::GameObject> go, std::string name) : KapEngine::Component(go, name) {
     addRequireComponent("NetworkIdentity");

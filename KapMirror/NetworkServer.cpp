@@ -2,7 +2,7 @@
 #include "Runtime/Transport.hpp"
 #include "Runtime/Compression.hpp"
 #include "NetworkManager.hpp"
-#include "KapMirror/Experimental/Components/NetworkIdentity.hpp"
+#include "Components/NetworkIdentity.hpp"
 #include "KapEngine.hpp"
 #include "Factory.hpp"
 #include "Transform.hpp"
@@ -169,12 +169,12 @@ bool NetworkServer::removeConnection(int connectionId) {
 void NetworkServer::spawnObject(std::string prefabName, KapEngine::SceneManagement::Scene &scene, KapEngine::Tools::Vector3 position, std::shared_ptr<KapEngine::GameObject>& gameObject) {
     engine.getPrefabManager()->instantiatePrefab(prefabName, scene, gameObject);
 
-    if (!gameObject->hasComponent<KapMirror::Experimental::NetworkIdentity>()) {
+    if (!gameObject->hasComponent<KapMirror::NetworkIdentity>()) {
         KapEngine::Debug::error("NetworkServer: spawnObject: GameObject does not have NetworkIdentity component");
         return;
     }
 
-    auto& networkIdentity = gameObject->getComponent<KapMirror::Experimental::NetworkIdentity>();
+    auto& networkIdentity = gameObject->getComponent<KapMirror::NetworkIdentity>();
 
     // Spawn should only be called once per netId
     if (networkObjects.containsKey(networkIdentity.getNetworkId())) {
@@ -225,12 +225,12 @@ bool NetworkServer::findObject(unsigned int networkId, std::shared_ptr<KapEngine
 }
 
 void NetworkServer::sendObject(std::shared_ptr<KapEngine::GameObject> gameObject, std::shared_ptr<NetworkConnectionToClient> connection) {
-    if (!gameObject->hasComponent<KapMirror::Experimental::NetworkIdentity>()) {
+    if (!gameObject->hasComponent<KapMirror::NetworkIdentity>()) {
         KapEngine::Debug::error("NetworkServer: sendObject: GameObject does not have NetworkIdentity component");
         return;
     }
 
-    auto& networkIdentity = gameObject->getComponent<KapMirror::Experimental::NetworkIdentity>();
+    auto& networkIdentity = gameObject->getComponent<KapMirror::NetworkIdentity>();
     auto& transform = gameObject->getComponent<KapEngine::Transform>();
 
     ObjectSpawnMessage message;

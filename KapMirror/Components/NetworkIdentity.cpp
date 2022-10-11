@@ -2,7 +2,7 @@
 #include "Debug.hpp"
 #include "NetworkComponent.hpp"
 
-using namespace KapMirror::Experimental;
+using namespace KapMirror;
 
 int NetworkIdentity::nextNetworkId = 1;
 

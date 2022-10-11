@@ -3,7 +3,7 @@
 #include "Debug.hpp"
 #include "Transform.hpp"
 
-using namespace KapMirror::Experimental;
+using namespace KapMirror;
 
 NetworkTransform::NetworkTransform(std::shared_ptr<KapEngine::GameObject> go) : NetworkComponent(go, "NetworkTransform") {
     lastRefreshTime = 0;
@@ -24,10 +24,6 @@ void NetworkTransform::onUpdate() {
     } else if (isClient()) {
         updateClient();
     }
-}
-
-void NetworkTransform::onStartServer() {
-    KapEngine::Debug::log("NetworkTransform::onStartServer");
 }
 
 void NetworkTransform::updateServer() {
@@ -57,6 +53,6 @@ void NetworkTransform::updateClient() {
 
     if (KapMirror::NetworkTime::localTime() - lastRefreshTime > 1000 / sendRate) {
         lastRefreshTime = NetworkTime::localTime();
-        KapEngine::Debug::log("NetworkTransform::updateClient");
+        // TODO: Implement client authority
     }
 }

@@ -1,6 +1,6 @@
 #include "NetworkManager.hpp"
 #include "Debug.hpp"
-#include "KapMirror/Runtime/Transports/Telepathy/TelepathyTransport.hpp"
+#include "Runtime/Transports/Telepathy/TelepathyTransport.hpp"
 
 using namespace KapMirror;
 
@@ -72,7 +72,7 @@ void NetworkManager::setupServer() {
 
     for (auto& go : scene.getAllObjects()) {
         for (auto& component : go->getAllComponents()) {
-            auto comp = std::dynamic_pointer_cast<KapMirror::Experimental::NetworkComponent>(component);
+            auto comp = std::dynamic_pointer_cast<KapMirror::NetworkComponent>(component);
             if (comp) {
                 comp->__setServer(server);
             }
@@ -81,7 +81,7 @@ void NetworkManager::setupServer() {
 
     for (auto& go : scene.getAllObjects()) {
         for (auto& component : go->getAllComponents()) {
-            auto identity = std::dynamic_pointer_cast<KapMirror::Experimental::NetworkIdentity>(component); //TODO: to hasComponent in KapEngine
+            auto identity = std::dynamic_pointer_cast<KapMirror::NetworkIdentity>(component); //TODO: to hasComponent in KapEngine
             if (identity) {
                 identity->onStartServer();
             }
@@ -123,7 +123,7 @@ void NetworkManager::startClient() {
 
     for (auto& go : scene.getAllObjects()) {
         for (auto& component : go->getAllComponents()) {
-            auto identity = std::dynamic_pointer_cast<KapMirror::Experimental::NetworkIdentity>(component);
+            auto identity = std::dynamic_pointer_cast<KapMirror::NetworkIdentity>(component);
             if (identity) {
                 identity->onStartClient();
             }
@@ -139,7 +139,7 @@ void NetworkManager::stopClient() {
 
 void NetworkManager::__initGameObject(std::shared_ptr<KapEngine::GameObject> go) {
     for (auto& component : go->getAllComponents()) {
-        auto comp = std::dynamic_pointer_cast<KapMirror::Experimental::NetworkComponent>(component);
+        auto comp = std::dynamic_pointer_cast<KapMirror::NetworkComponent>(component);
         if (comp) {
             comp->__setServer(server);
             comp->__setClient(client);

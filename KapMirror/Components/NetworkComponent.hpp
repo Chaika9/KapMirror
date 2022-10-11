@@ -6,7 +6,6 @@
 #include "KapMirror/NetworkServer.hpp"
 
 namespace KapMirror {
-namespace Experimental {
     class NetworkComponent : public KapEngine::Component {
         private:
         std::shared_ptr<NetworkServer> server;
@@ -59,5 +58,4 @@ namespace Experimental {
         virtual void onStartClient() {}
         virtual void onStopClient() {}
     };
-}
 }

@@ -3,7 +3,6 @@
 #include "Component.hpp"
 
 namespace KapMirror {
-namespace Experimental {
     class NetworkIdentity : public KapEngine::Component {
         private:
         static int nextNetworkId;
@@ -49,5 +48,4 @@ namespace Experimental {
         void onStartClient();
         void onStopClient();
     };
-}
 }

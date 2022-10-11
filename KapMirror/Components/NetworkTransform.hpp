@@ -5,7 +5,6 @@
 #include "Vectors.hpp"
 
 namespace KapMirror {
-namespace Experimental {
     class NetworkTransform : public NetworkComponent {
         private:
         // Set to true if the client should be able to move the object
@@ -46,12 +45,9 @@ namespace Experimental {
 
         void onUpdate();
 
-        void onStartServer();
-
         private:
         void updateServer();
 
         void updateClient();
     };
-}
 }
