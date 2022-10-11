@@ -20,7 +20,11 @@ Socket::Socket(std::shared_ptr<Address> _address) : address(_address), socket_fd
     }
 
     int opval = 1;
+#ifdef __WINDOWS__
+    ::setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, (const char *)&opval, sizeof(int));
+#else
     ::setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &opval, sizeof(int));
+#endif
 }
 
 Socket::Socket(std::shared_ptr<Address> _address, SOCKET _socket_fd) : address(_address), socket_fd(_socket_fd) {
@@ -104,14 +108,22 @@ void Socket::setBlocking(bool blocking) {
 }
 
 void Socket::send(byte* buffer, int size, uint32_t flags) {
+#ifdef __WINDOWS__
+    int status = ::send(socket_fd, (const char *)buffer, size, flags);
+#else
     int status = ::send(socket_fd, buffer, size, flags);
+#endif
     if (status == SOCKET_ERROR || status <= 0) {
         throw SocketException("Socket send error");
     }
 }
 
 int Socket::receive(byte* buffer, int size, uint32_t flags) {
+#ifdef __WINDOWS__
+    auto received = ::recv(socket_fd, (char *)buffer, size, flags);
+#else
     auto received = ::recv(socket_fd, buffer, size, flags);
+#endif
     if (received == SOCKET_ERROR || received <= 0) {
         return 0;
     }
