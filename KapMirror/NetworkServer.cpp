@@ -213,6 +213,7 @@ void NetworkServer::spawnObject(std::string prefabName,
         for (auto& component : gameObject->getAllComponents()) {
             auto comp = std::dynamic_pointer_cast<NetworkComponent>(component);
             if (comp) {
+                writer.write(comp->isEnable()); // Is Active
                 comp->customPayloadSerialize(writer);
             }
         }
@@ -272,6 +273,20 @@ void NetworkServer::sendObject(std::shared_ptr<KapEngine::GameObject> gameObject
     auto& networkIdentity = gameObject->getComponent<NetworkIdentity>();
     auto& transform = gameObject->getComponent<KapEngine::Transform>();
 
+    // @Beta - Custom Payload
+    NetworkWriter writer;
+    try {
+        for (auto& component : gameObject->getAllComponents()) {
+            auto comp = std::dynamic_pointer_cast<NetworkComponent>(component);
+            if (comp) {
+                writer.write(comp->isEnable()); // Is Active
+                comp->customPayloadSerialize(writer);
+            }
+        }
+    } catch (...) {
+        KapEngine::Debug::error("NetworkServer: Failed to serialize custom payload");
+    }
+
     ObjectSpawnMessage message;
     message.networkId = networkIdentity.getNetworkId();
     message.isOwner = !networkIdentity.hasAuthority();
@@ -280,5 +295,6 @@ void NetworkServer::sendObject(std::shared_ptr<KapEngine::GameObject> gameObject
     message.x = transform.getLocalPosition().getX();
     message.y = transform.getLocalPosition().getY();
     message.z = transform.getLocalPosition().getZ();
+    message.payload = writer.toArraySegment();
     connection->send(message);
 }

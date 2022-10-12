@@ -1,6 +1,7 @@
 #include "NetworkClient.hpp"
 #include "Runtime/Transport.hpp"
 #include "Runtime/Compression.hpp"
+#include "NetworkManager.hpp"
 #include "Components/NetworkIdentity.hpp"
 #include "Components/NetworkComponent.hpp"
 #include "KapEngine.hpp"
@@ -9,7 +10,7 @@
 
 using namespace KapMirror;
 
-NetworkClient::NetworkClient(KapEngine::KEngine& _engine) : engine(_engine) {
+NetworkClient::NetworkClient(NetworkManager& _manager, KapEngine::KEngine& _engine) : manager(_manager), engine(_engine) {
     connectState = ConnectState::None;
     connection = nullptr;
 }
@@ -149,13 +150,15 @@ void NetworkClient::onObjectSpawn(ObjectSpawnMessage& message) {
         return;
     }
 
-    auto& transform = gameObject->getComponent<KapEngine::Transform>();
-    transform.setPosition(KapEngine::Tools::Vector3(message.x, message.y, message.z));
-
     if (!gameObject->hasComponent<NetworkIdentity>()) {
         KapEngine::Debug::error("NetworkClient: object " + message.prefabName + " does not have NetworkIdentity component");
         return;
     }
+
+    auto& transform = gameObject->getComponent<KapEngine::Transform>();
+    transform.setPosition(KapEngine::Tools::Vector3(message.x, message.y, message.z));
+
+    manager.__initGameObject(gameObject);
 
     // @Beta - Custom Payload
     NetworkReader reader(message.payload);
@@ -163,6 +166,7 @@ void NetworkClient::onObjectSpawn(ObjectSpawnMessage& message) {
         for (auto& component : gameObject->getAllComponents()) {
             auto comp = std::dynamic_pointer_cast<NetworkComponent>(component);
             if (comp) {
+                comp->setActive(reader.read<bool>()); // Is active
                 comp->customPayloadDeserialize(reader);
             }
         }

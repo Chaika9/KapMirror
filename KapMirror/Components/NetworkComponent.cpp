@@ -26,3 +26,7 @@ bool NetworkComponent::isServer() const {
 bool NetworkComponent::isClient() const {
     return networkIdentity->isClient();
 }
+
+bool NetworkComponent::isLocal() const {
+    return networkIdentity->isLocal();
+}

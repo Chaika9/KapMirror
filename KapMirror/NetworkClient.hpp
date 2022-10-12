@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Runtime/ArraySegment.hpp"
-#include "Runtime/NetworkMessage.hpp"
 #include "Runtime/NetworkConnectionToServer.hpp"
+#include "Runtime/NetworkMessage.hpp"
 #include "Messages.hpp"
 #include "KapEngine.hpp"
 #include "Platform.hpp"
@@ -22,8 +22,11 @@ namespace KapMirror {
         Disconnected
     };
 
+    class NetworkManager;
+
     class NetworkClient {
         private:
+        NetworkManager& manager;
         KapEngine::KEngine& engine;
 
         ConnectState connectState;
@@ -33,7 +36,7 @@ namespace KapMirror {
         KapEngine::Dictionary<unsigned int, std::shared_ptr<KapEngine::GameObject>> networkObjects;
 
         public:
-        NetworkClient(KapEngine::KEngine& _engine);
+        NetworkClient(NetworkManager& _manager, KapEngine::KEngine& _engine);
         ~NetworkClient() = default;
 
         void connect(std::string ip, int port);
@@ -86,6 +89,10 @@ namespace KapMirror {
 
         void clearHandlers() {
             handlers.clear();
+        }
+
+        bool getNetworkObject(unsigned int id, std::shared_ptr<KapEngine::GameObject>& gameObject) {
+            return networkObjects.tryGetValue(id, gameObject);
         }
 
         private:

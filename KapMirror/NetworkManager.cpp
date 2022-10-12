@@ -9,7 +9,7 @@ std::shared_ptr<Compression> Compression::activeCompression = nullptr;
 
 NetworkManager::NetworkManager(std::shared_ptr<KapEngine::GameObject> go) : KapEngine::Component(go, "NetworkManager") {
     server = std::make_shared<NetworkServer>(*this, go->getEngine());
-    client = std::make_shared<NetworkClient>(go->getEngine());
+    client = std::make_shared<NetworkClient>(*this, go->getEngine());
 }
 
 NetworkManager::~NetworkManager() {

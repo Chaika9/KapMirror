@@ -55,6 +55,21 @@ namespace KapMirror {
             }
         }
 
+        template<typename T, typename = std::enable_if<std::is_base_of<NetworkMessage, T>::value>>
+        void sendToClient(T& message, int networkId) {
+            if (!active) {
+                KapEngine::Debug::warning("NetworkServer: Cannot send data, server not active");
+                return;
+            }
+
+            std::shared_ptr<NetworkConnectionToClient> connection;
+            if (connections.tryGetValue(networkId, connection)) {
+                connection->send(message);
+            } else {
+                KapEngine::Debug::warning("NetworkServer: Cannot send data, client not found");
+            }
+        }
+
         void disconnectAll() {
             for (auto const& [id, conn] : connections) {
                 conn->disconnect();
@@ -116,6 +131,10 @@ namespace KapMirror {
         void destroyObject(unsigned int networkId);
 
         void destroyObject(std::shared_ptr<KapEngine::GameObject> gameObject);
+
+        bool getNetworkObject(unsigned int id, std::shared_ptr<KapEngine::GameObject>& gameObject) {
+            return networkObjects.tryGetValue(id, gameObject);
+        }
 
         private:
         void initialize();

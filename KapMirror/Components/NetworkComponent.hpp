@@ -48,6 +48,8 @@ namespace KapMirror {
 
         bool isClient() const;
 
+        bool isLocal() const;
+
         unsigned int getNetworkId() const {
             return networkIdentity->getNetworkId();
         }

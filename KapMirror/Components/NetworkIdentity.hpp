@@ -42,6 +42,10 @@ namespace KapMirror {
             return _isClient;
         }
 
+        bool isLocal() const {
+            return !_isServer && !_isClient;
+        }
+
         void onStartServer();
         void onStopServer();
 
