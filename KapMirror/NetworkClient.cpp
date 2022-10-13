@@ -129,11 +129,9 @@ bool NetworkClient::unpackAndInvoke(std::shared_ptr<ArraySegment<byte>> data) {
     return false;
 }
 
-// KapEngine
+#pragma region KapEngine
 
 void NetworkClient::onObjectSpawn(ObjectSpawnMessage& message) {
-    KAP_DEBUG_LOG("NetworkClient: Spawning object " + message.prefabName);
-
     std::shared_ptr<KapEngine::GameObject> gameObject;
     if (!findObject(message.networkId, gameObject)) {
         auto& scene = engine.getSceneManager()->getScene(message.sceneName);
@@ -181,8 +179,6 @@ void NetworkClient::onObjectSpawn(ObjectSpawnMessage& message) {
 }
 
 void NetworkClient::onObjectDestroy(ObjectDestroyMessage& message) {
-    KAP_DEBUG_LOG("NetworkClient: Destroying object " + std::to_string(message.networkId));
-
     std::shared_ptr<KapEngine::GameObject> gameObject;
     if (findObject(message.networkId, gameObject)) {
         networkObjects.remove(message.networkId);
@@ -201,3 +197,5 @@ void NetworkClient::onObjectTransformUpdate(ObjectTransformMessage& message) {
 bool NetworkClient::findObject(unsigned int networkId, std::shared_ptr<KapEngine::GameObject>& gameObject) {
     return networkObjects.tryGetValue(networkId, gameObject);
 }
+
+#pragma endregion

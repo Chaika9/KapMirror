@@ -165,13 +165,12 @@ bool NetworkServer::removeConnection(int connectionId) {
     return connections.remove(connectionId);
 }
 
-// KapEngine
+#pragma region KapEngine
 
 void NetworkServer::spawnObject(std::string prefabName,
     KapEngine::SceneManagement::Scene &scene, KapEngine::Tools::Vector3 position,
     std::function<void(std::shared_ptr<KapEngine::GameObject>&)> playload,
     std::shared_ptr<KapEngine::GameObject>& gameObject) {
-    KAP_DEBUG_LOG("NetworkServer: Spawning object " + prefabName);
 
     if (!engine.getPrefabManager()->instantiatePrefab(prefabName, scene, gameObject)) {
         KapEngine::Debug::error("NetworkServer: Failed to spawn object " + prefabName);
@@ -234,8 +233,6 @@ void NetworkServer::spawnObject(std::string prefabName,
 }
 
 void NetworkServer::destroyObject(unsigned int networkId) {
-    KAP_DEBUG_LOG("NetworkServer: Destroying object " + std::to_string(networkId));
-
     std::shared_ptr<KapEngine::GameObject> gameObject;
     if (!findObject(networkId, gameObject)) {
         KapEngine::Debug::error("NetworkServer: destroyObject: GameObject not found");
@@ -298,3 +295,5 @@ void NetworkServer::sendObject(std::shared_ptr<KapEngine::GameObject> gameObject
     message.payload = writer.toArraySegment();
     connection->send(message);
 }
+
+#pragma endregion
