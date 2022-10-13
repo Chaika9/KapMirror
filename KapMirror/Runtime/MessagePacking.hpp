@@ -8,8 +8,7 @@ namespace KapMirror {
         public:
         template<typename T>
         inline static ushort getId() {
-            std::size_t type = typeid(T).hash_code();
-            return (ushort)type;
+            return (ushort) std::hash<std::string>()(typeid(T).name());
         }
 
         template<typename T>
