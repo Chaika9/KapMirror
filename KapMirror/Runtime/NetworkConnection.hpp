@@ -10,22 +10,25 @@ namespace KapMirror {
         public:
         virtual ~NetworkConnection() = default;
 
-        virtual unsigned int getNetworkId() = 0;
+        /**
+         * @brief Unique identifier for this connection that is assigned by the transport layer.
+        */
+        virtual unsigned int getConnectionId() = 0;
 
         /**
-         * @brief Disconnects this connection
+         * @brief Disconnects this connection.
          */
         virtual void disconnect() = 0;
 
         /**
-         * @brief Send raw data to the transport
+         * @brief Send raw data to the transport.
          *
          * @param data Data to send
          */
         virtual void sendToTransport(std::shared_ptr<ArraySegment<byte>> data) = 0;
 
         /**
-         * @brief Send a NetworkMessage to this connection
+         * @brief Send a NetworkMessage to this connection.
          */
         template<typename T, typename = std::enable_if<std::is_base_of<NetworkMessage, T>::value>>
         void send(T& message) {

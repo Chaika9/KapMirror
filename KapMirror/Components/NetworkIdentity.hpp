@@ -18,6 +18,9 @@ namespace KapMirror {
         NetworkIdentity(std::shared_ptr<KapEngine::GameObject> go);
         ~NetworkIdentity() = default;
 
+        /**
+         * @brief The unique network Id of this object (unique at runtime).
+        */
         unsigned int getNetworkId() const {
             return _networkId;
         }
@@ -26,6 +29,9 @@ namespace KapMirror {
             _networkId = networkId;
         }
 
+        /**
+         * @brief True on client if that component has been assigned to the client.
+        */
         bool hasAuthority() const {
             return _hasAuthority;
         }
@@ -34,10 +40,16 @@ namespace KapMirror {
             _hasAuthority = authority;
         }
 
+        /**
+         * @brief Returns true if NetworkServer.isActive and server is not stopped.
+        */
         bool isServer() const {
             return _isServer;
         }
 
+        /**
+         * @brief Returns true if running as a client and this object was spawned by a server.
+        */
         bool isClient() const {
             return _isClient;
         }

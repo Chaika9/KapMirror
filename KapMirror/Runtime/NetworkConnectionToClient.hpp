@@ -13,23 +13,30 @@ namespace KapMirror {
         NetworkConnectionToClient(unsigned int _connectionId) : connectionId(_connectionId) {}
         ~NetworkConnectionToClient() = default;
 
-        unsigned int getNetworkId() override {
+        /**
+         * @brief Unique identifier for this connection that is assigned by the transport layer.
+        */
+        unsigned int getConnectionId() override {
             return connectionId;
         }
 
+        /**
+         * @brief Disconnects this connection.
+         */
         void disconnect() override {
             Transport::activeTransport->serverDisconnect(connectionId);
         }
 
+        /**
+         * @brief Send raw data to the transport.
+         *
+         * @param data Data to send
+         */
         void sendToTransport(std::shared_ptr<ArraySegment<byte>> data) override {
             if (Compression::activeCompression != nullptr) {
                 data = Compression::activeCompression->compress(data);
             }
             Transport::activeTransport->serverSend(connectionId, data);
-        }
-
-        int getConnectionId() const {
-            return connectionId;
         }
     };
 }

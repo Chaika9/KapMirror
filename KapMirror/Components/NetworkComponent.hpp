@@ -44,26 +44,53 @@ namespace KapMirror {
 
         void onDestroy() override;
 
+        /**
+         * @brief True if this object is on the server and has been spawned.
+        */
         bool isServer() const;
 
+        /**
+         * @brief True if this object is on the client and has been spawned by the server.
+        */
         bool isClient() const;
 
         bool isLocal() const;
 
+        /**
+         * @brief The unique network Id of this object (unique at runtime).
+        */
         unsigned int getNetworkId() const {
             return networkIdentity->getNetworkId();
         }
 
+        /**
+         * @brief Like start(), but only called on server.
+        */
         virtual void onStartServer() {}
+
+        /**
+         * @brief Stop event, only called on server.
+        */
         virtual void onStopServer() {}
 
+        /**
+         * @brief Like start(), but only called on client.
+        */
         virtual void onStartClient() {}
+
+        /**
+         * @brief Stop event, only called on client.
+        */
         virtual void onStopClient() {}
 
-        // @Beta
-        virtual void customPayloadSerialize(KapMirror::NetworkWriter& writer) {}
+        /**
+         * @brief Serialize all the data from this component into payload.
+        */
+        virtual void serialize(KapMirror::NetworkWriter& writer) {}
 
-        // @Beta
-        virtual void customPayloadDeserialize(KapMirror::NetworkReader& reader) {}
+        /**
+         * @brief Deserialize all the data from payload into this component.
+        */
+        virtual void deserialize(KapMirror::NetworkReader& reader) {}
     };
 }

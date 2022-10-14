@@ -26,7 +26,7 @@ void NetworkManager::onAwake() {
     }
 }
 
-void NetworkManager::onUpdate() {
+void NetworkManager::onFixedUpdate() {
     server->networkEarlyUpdate();
     client->networkEarlyUpdate();
 }
@@ -97,7 +97,7 @@ void NetworkManager::stopServer() {
 
 void NetworkManager::startClient() {
     KapEngine::Debug::log("NetworkManager: Starting client");
-    if (client->active()) {
+    if (client->isActive()) {
         KapEngine::Debug::warning("NetworkManager: Client already started.");
         return;
     }

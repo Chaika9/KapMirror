@@ -51,6 +51,7 @@ namespace KapMirror {
     };
 
     struct ObjectDestroyMessage : NetworkMessage {
+        // networkId of existing object
         unsigned int networkId;
 
         void serialize(KapMirror::NetworkWriter& writer) {
@@ -63,6 +64,7 @@ namespace KapMirror {
     };
 
     struct ObjectTransformMessage : NetworkMessage {
+        // networkId of existing object
         unsigned int networkId;
         float x;
         float y;

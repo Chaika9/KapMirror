@@ -43,6 +43,8 @@ void NetworkServer::listen(int maxConnections, int port) {
 
 void NetworkServer::shutdown() {
     if (initialized) {
+        disconnectAll();
+
         removeTransportHandlers();
 
         Transport::activeTransport->serverStop();
@@ -206,14 +208,14 @@ void NetworkServer::spawnObject(std::string prefabName,
         playload(gameObject);
     }
 
-    // @Beta - Custom Payload
+    // Serialize all components
     NetworkWriter writer;
     try {
         for (auto& component : gameObject->getAllComponents()) {
-            auto comp = std::dynamic_pointer_cast<NetworkComponent>(component);
-            if (comp) {
-                writer.write(comp->isEnable()); // Is Active
-                comp->customPayloadSerialize(writer);
+            auto networkCompenent = std::dynamic_pointer_cast<NetworkComponent>(component);
+            if (networkCompenent) {
+                writer.write(networkCompenent->isEnable()); // isActive
+                networkCompenent->serialize(writer);
             }
         }
     } catch (...) {
@@ -232,9 +234,24 @@ void NetworkServer::spawnObject(std::string prefabName,
     sendToAll(message);
 }
 
+void NetworkServer::unSpawn(std::shared_ptr<KapEngine::GameObject> gameObject) {
+    if (gameObject == nullptr) {
+        KapEngine::Debug::error("NetworkServer: Cannot unSpawn, gameObject is null");
+        return;
+    }
+
+    if (!gameObject->hasComponent<NetworkIdentity>()) {
+        KapEngine::Debug::error("NetworkServer: Cannot unSpawn, gameObject has no NetworkIdentity");
+        return;
+    }
+
+    auto& identity = gameObject->getComponent<NetworkIdentity>();
+    destroyObject(identity.getNetworkId());
+}
+
 void NetworkServer::destroyObject(unsigned int networkId) {
     std::shared_ptr<KapEngine::GameObject> gameObject;
-    if (!findObject(networkId, gameObject)) {
+    if (!getExistingObject(networkId, gameObject)) {
         KapEngine::Debug::error("NetworkServer: destroyObject: GameObject not found");
         return;
     }
@@ -247,20 +264,6 @@ void NetworkServer::destroyObject(unsigned int networkId) {
     sendToAll(message);
 }
 
-void NetworkServer::destroyObject(std::shared_ptr<KapEngine::GameObject> gameObject) {
-    if (!gameObject->hasComponent<NetworkIdentity>()) {
-        KapEngine::Debug::error("NetworkServer: destroyObject: GameObject does not have NetworkIdentity component");
-        return;
-    }
-
-    auto& networkIdentity = gameObject->getComponent<NetworkIdentity>();
-    destroyObject(networkIdentity.getNetworkId());
-}
-
-bool NetworkServer::findObject(unsigned int networkId, std::shared_ptr<KapEngine::GameObject>& gameObject) {
-    return networkObjects.tryGetValue(networkId, gameObject);
-}
-
 void NetworkServer::sendObject(std::shared_ptr<KapEngine::GameObject> gameObject, std::shared_ptr<NetworkConnectionToClient> connection) {
     if (!gameObject->hasComponent<NetworkIdentity>()) {
         KapEngine::Debug::error("NetworkServer: sendObject: GameObject does not have NetworkIdentity component");
@@ -270,14 +273,14 @@ void NetworkServer::sendObject(std::shared_ptr<KapEngine::GameObject> gameObject
     auto& networkIdentity = gameObject->getComponent<NetworkIdentity>();
     auto& transform = gameObject->getComponent<KapEngine::Transform>();
 
-    // @Beta - Custom Payload
+    // Serialize all components
     NetworkWriter writer;
     try {
         for (auto& component : gameObject->getAllComponents()) {
-            auto comp = std::dynamic_pointer_cast<NetworkComponent>(component);
-            if (comp) {
-                writer.write(comp->isEnable()); // Is Active
-                comp->customPayloadSerialize(writer);
+            auto networkCompenent = std::dynamic_pointer_cast<NetworkComponent>(component);
+            if (networkCompenent) {
+                writer.write(networkCompenent->isEnable()); // isActive
+                networkCompenent->serialize(writer);
             }
         }
     } catch (...) {

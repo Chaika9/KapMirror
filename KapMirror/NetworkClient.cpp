@@ -133,7 +133,7 @@ bool NetworkClient::unpackAndInvoke(std::shared_ptr<ArraySegment<byte>> data) {
 
 void NetworkClient::onObjectSpawn(ObjectSpawnMessage& message) {
     std::shared_ptr<KapEngine::GameObject> gameObject;
-    if (!findObject(message.networkId, gameObject)) {
+    if (!getExistingObject(message.networkId, gameObject)) {
         auto& scene = engine.getSceneManager()->getScene(message.sceneName);
         if (!engine.getPrefabManager()->instantiatePrefab(message.prefabName, scene, gameObject)) {
             KapEngine::Debug::error("NetworkClient: failed to instantiate prefab " + message.prefabName + " with networkId " + std::to_string(message.networkId));
@@ -158,14 +158,14 @@ void NetworkClient::onObjectSpawn(ObjectSpawnMessage& message) {
 
     manager.__initGameObject(gameObject);
 
-    // @Beta - Custom Payload
+    // Deserialize all components
     NetworkReader reader(message.payload);
     try {
         for (auto& component : gameObject->getAllComponents()) {
-            auto comp = std::dynamic_pointer_cast<NetworkComponent>(component);
-            if (comp) {
-                comp->setActive(reader.read<bool>()); // Is active
-                comp->customPayloadDeserialize(reader);
+            auto networkCompenent = std::dynamic_pointer_cast<NetworkComponent>(component);
+            if (networkCompenent) {
+                networkCompenent->setActive(reader.read<bool>()); // isActive
+                networkCompenent->deserialize(reader);
             }
         }
     } catch (...) {
@@ -180,7 +180,7 @@ void NetworkClient::onObjectSpawn(ObjectSpawnMessage& message) {
 
 void NetworkClient::onObjectDestroy(ObjectDestroyMessage& message) {
     std::shared_ptr<KapEngine::GameObject> gameObject;
-    if (findObject(message.networkId, gameObject)) {
+    if (getExistingObject(message.networkId, gameObject)) {
         networkObjects.remove(message.networkId);
         gameObject->destroy();
     }
@@ -188,14 +188,10 @@ void NetworkClient::onObjectDestroy(ObjectDestroyMessage& message) {
 
 void NetworkClient::onObjectTransformUpdate(ObjectTransformMessage& message) {
     std::shared_ptr<KapEngine::GameObject> gameObject;
-    if (findObject(message.networkId, gameObject)) {
+    if (getExistingObject(message.networkId, gameObject)) {
         auto& transform = gameObject->getComponent<KapEngine::Transform>();
         transform.setPosition(KapEngine::Tools::Vector3(message.x, message.y, message.z));
     }
-}
-
-bool NetworkClient::findObject(unsigned int networkId, std::shared_ptr<KapEngine::GameObject>& gameObject) {
-    return networkObjects.tryGetValue(networkId, gameObject);
 }
 
 #pragma endregion

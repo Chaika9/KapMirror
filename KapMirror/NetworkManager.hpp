@@ -35,31 +35,61 @@ namespace KapMirror {
 
         void onAwake() override;
 
-        void onUpdate() override;
+        void onFixedUpdate() override;
 
+        /**
+         * @brief Set transport layer.
+        */
         void setTransport(std::shared_ptr<Transport> transport);
 
         void setCompression(std::shared_ptr<Compression> compression);
 
+        /**
+         * @brief Starts the server, listening for incoming connections.
+        */
         void startServer();
 
+        /**
+         * @brief Stops the server from listening and simulating the game.
+        */
         void stopServer();
 
+        /**
+         * @brief Starts the client, connects it to the server with ip and port.
+        */
         void startClient();
 
+        /**
+         * @brief Stops and disconnects the client.
+        */
         void stopClient();
 
         void __initGameObject(std::shared_ptr<KapEngine::GameObject> go);
 
         protected:
-        // Events
+        /**
+         * @brief This is invoked when a server is started.
+        */
         virtual void onStartServer() {}
+
+        /**
+         * @brief This is called when a server is stopped.
+        */
         virtual void onStopServer() {}
+
         virtual void onServerClientConnected(std::shared_ptr<NetworkConnection> connection) {}
         virtual void onServerClientDisconnected(std::shared_ptr<NetworkConnection> connection) {}
 
+        /**
+         * @brief This is invoked when the client is started.
+        */
         virtual void onStartClient() {}
+
+        /**
+         * @brief This is called when a client is stopped.
+        */
         virtual void onStopClient() {}
+
         virtual void onClientConnected(std::shared_ptr<NetworkConnection> connection) {}
         virtual void onClientDisconnected(std::shared_ptr<NetworkConnection> connection) {}
 
