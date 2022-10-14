@@ -7,10 +7,6 @@
 
 namespace KapMirror {
     class NetworkComponent : public KapEngine::Component {
-        private:
-        std::shared_ptr<NetworkServer> server;
-        std::shared_ptr<NetworkClient> client;
-
         protected:
         NetworkIdentity* networkIdentity;
 
@@ -18,27 +14,9 @@ namespace KapMirror {
         NetworkComponent(std::shared_ptr<KapEngine::GameObject> go, std::string name);
         ~NetworkComponent() = default;
 
-        std::shared_ptr<NetworkServer> getServer() const {
-            if (server == nullptr) {
-                throw std::runtime_error("NetworkComponent: Server is not set");
-            }
-            return server;
-        }
+        std::shared_ptr<NetworkServer> getServer() const;
 
-        void __setServer(std::shared_ptr<NetworkServer> _server) {
-            server = _server;
-        }
-
-        std::shared_ptr<NetworkClient> getClient() const {
-            if (client == nullptr) {
-                throw std::runtime_error("NetworkComponent: Client is not set");
-            }
-            return client;
-        }
-
-        void __setClient(std::shared_ptr<NetworkClient> _client) {
-            client = _client;
-        }
+        std::shared_ptr<NetworkClient> getClient() const;
 
         void onAwake() override;
 

@@ -9,6 +9,8 @@
 namespace KapMirror {
     class NetworkManager : public KapEngine::Component {
         private:
+        static NetworkManager* instance;
+
         std::shared_ptr<Transport> transport;
         std::shared_ptr<Compression> compression;
 
@@ -24,6 +26,10 @@ namespace KapMirror {
         public:
         NetworkManager(std::shared_ptr<KapEngine::GameObject> go);
         ~NetworkManager();
+
+        static NetworkManager* getInstance() {
+            return instance;
+        }
 
         std::shared_ptr<NetworkServer> getServer() const {
             return server;
@@ -64,8 +70,6 @@ namespace KapMirror {
         */
         void stopClient();
 
-        void __initGameObject(std::shared_ptr<KapEngine::GameObject> go);
-
         protected:
         /**
          * @brief This is invoked when a server is started.
@@ -94,6 +98,8 @@ namespace KapMirror {
         virtual void onClientDisconnected(std::shared_ptr<NetworkConnection> connection) {}
 
         private:
+        void initializeSingleton();
+
         void setupServer();
     };
 }

@@ -194,8 +194,6 @@ void NetworkServer::spawnObject(std::string prefabName,
         return;
     }
 
-    manager.__initGameObject(gameObject);
-
     networkIdentity.setAuthority(true);
     networkIdentity.onStartServer();
 

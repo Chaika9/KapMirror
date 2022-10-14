@@ -4,6 +4,8 @@
 
 using namespace KapMirror;
 
+NetworkManager* NetworkManager::instance = nullptr;
+
 std::shared_ptr<Transport> Transport::activeTransport = nullptr;
 std::shared_ptr<Compression> Compression::activeCompression = nullptr;
 
@@ -17,7 +19,16 @@ NetworkManager::~NetworkManager() {
     client->disconnect();
 }
 
+void NetworkManager::initializeSingleton() {
+    if (instance != nullptr && instance == this) {
+        return;
+    }
+
+    instance = this;
+}
+
 void NetworkManager::onAwake() {
+    initializeSingleton();
     KapEngine::Debug::log("KapMirror | KapEngine | https://github.com/Chaika9/KapMirror");
 
     if (transport == nullptr) {
@@ -69,16 +80,6 @@ void NetworkManager::setupServer() {
 
     // TODO: Move this
     auto& scene = getGameObject().getEngine().getSceneManager()->getCurrentScene();
-
-    for (auto& go : scene.getAllObjects()) {
-        for (auto& component : go->getAllComponents()) {
-            auto comp = std::dynamic_pointer_cast<NetworkComponent>(component);
-            if (comp) {
-                comp->__setServer(server);
-            }
-        }
-    }
-
     for (auto& go : scene.getAllObjects()) {
         for (auto& component : go->getAllComponents()) {
             auto identity = std::dynamic_pointer_cast<NetworkIdentity>(component); //TODO: to hasComponent in KapEngine
@@ -116,11 +117,6 @@ void NetworkManager::startClient() {
 
     // TODO: Move this
     auto& scene = getGameObject().getEngine().getSceneManager()->getCurrentScene();
-
-    for (auto& go : scene.getAllObjects()) {
-        __initGameObject(go);
-    }
-
     for (auto& go : scene.getAllObjects()) {
         for (auto& component : go->getAllComponents()) {
             auto identity = std::dynamic_pointer_cast<NetworkIdentity>(component);
@@ -135,14 +131,4 @@ void NetworkManager::stopClient() {
     onStopClient();
 
     client->disconnect();
-}
-
-void NetworkManager::__initGameObject(std::shared_ptr<KapEngine::GameObject> go) {
-    for (auto& component : go->getAllComponents()) {
-        auto comp = std::dynamic_pointer_cast<NetworkComponent>(component);
-        if (comp) {
-            comp->__setServer(server);
-            comp->__setClient(client);
-        }
-    }
 }

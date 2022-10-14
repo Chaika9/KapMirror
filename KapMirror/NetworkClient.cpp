@@ -156,8 +156,6 @@ void NetworkClient::onObjectSpawn(ObjectSpawnMessage& message) {
     auto& transform = gameObject->getComponent<KapEngine::Transform>();
     transform.setPosition(KapEngine::Tools::Vector3(message.x, message.y, message.z));
 
-    manager.__initGameObject(gameObject);
-
     // Deserialize all components
     NetworkReader reader(message.payload);
     try {
