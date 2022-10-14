@@ -13,14 +13,16 @@ namespace KapMirror {
         // Send N messages per second
         int sendRate = 30;
 
-        long long lastRefreshTime;
-
-        KapEngine::Tools::Vector3 lastPosition;
+        long long lastRefreshTime = 0;
+        KapEngine::Tools::Vector3 lastPosition = KapEngine::Tools::Vector3(0, 0, 0);
 
         public:
         NetworkTransform(std::shared_ptr<KapEngine::GameObject> go);
         ~NetworkTransform() = default;
 
+        /**
+         * @brief Set to true if the client should be able to move the object.
+        */
         bool isClientWithAuthority() const {
             return networkIdentity->hasAuthority() && clientAuthority;
         }

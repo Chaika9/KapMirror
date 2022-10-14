@@ -13,7 +13,7 @@
 namespace KapMirror {
 namespace Telepathy {
     struct ClientConnection {
-        int id;
+        unsigned int id;
         std::shared_ptr<TcpClient> client;
         std::thread thread;
         MagnificentSendPipe sendPipe;
@@ -33,7 +33,7 @@ namespace Telepathy {
 
         MagnificentReceivePipe receivePipe;
 
-        int counter;
+        unsigned int counter;
 
         public:
         int sendQueueLimit = 10000;
