@@ -41,11 +41,11 @@ namespace KapMirror {
          * @return Array
          */
         T *toArray() const {
-            return array;
+            return array + offset;
         }
 
         operator T*() const {
-            return array;
+            return array + offset;
         }
 
         /**
@@ -95,6 +95,10 @@ namespace KapMirror {
 
         static std::shared_ptr<ArraySegment<T>> createArraySegment(T* array, int size) {
             return std::make_shared<ArraySegment<T>>(array, size);
+        }
+
+        static std::shared_ptr<ArraySegment<T>> createArraySegment(T* array, int offset, int size) {
+            return std::make_shared<ArraySegment<T>>(array, offset, size);
         }
     };
 }
