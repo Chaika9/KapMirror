@@ -123,6 +123,16 @@ namespace KapMirror {
         #pragma region KapEngine
 
         /**
+         * @brief Update GameObject for all clients.
+        */
+        void updateObject(unsigned int id);
+
+        /**
+         * @brief Update GameObject for all clients.
+        */
+        void updateObject(std::shared_ptr<KapEngine::GameObject> gameObject);
+
+        /**
          * @brief Get existing GameObject with networkId.
          * (Spawned by server)
         */

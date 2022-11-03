@@ -63,6 +63,32 @@ namespace KapMirror {
         }
     };
 
+    struct ObjectUpdateMessage : NetworkMessage {
+        // networkId of existing object
+        unsigned int networkId;
+        // Custom payload
+        std::shared_ptr<ArraySegment<byte>> payload;
+
+        void serialize(KapMirror::NetworkWriter& writer) {
+            writer.write(networkId);
+            writer.write(payload->getSize());
+            writer.writeBytes(payload->toArray(), payload->getOffset(), payload->getSize());
+        }
+
+        void deserialize(KapMirror::NetworkReader& reader) {
+            networkId = reader.read<unsigned int>();
+
+            int payloadSize = reader.read<int>();
+            if (payloadSize > 0) {
+                byte* segmentValue = reader.readBytes(payloadSize);
+                payload = std::make_shared<ArraySegment<byte>>(segmentValue, 0, payloadSize);
+                delete[] segmentValue;
+            } else {
+                payload = std::make_shared<ArraySegment<byte>>();
+            }
+        }
+    };
+
     struct ObjectTransformMessage : NetworkMessage {
         // networkId of existing object
         unsigned int networkId;

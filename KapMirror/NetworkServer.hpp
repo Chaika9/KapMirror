@@ -184,6 +184,16 @@ namespace KapMirror {
         }
 
         /**
+         * @brief Update GameObject for all clients.
+        */
+        void updateObject(unsigned int id);
+
+        /**
+         * @brief Update GameObject for all clients.
+        */
+        void updateObject(std::shared_ptr<KapEngine::GameObject> gameObject);
+
+        /**
          * @brief Get existing GameObject with networkId.
         */
         bool getExistingObject(unsigned int id, std::shared_ptr<KapEngine::GameObject>& gameObject) {
