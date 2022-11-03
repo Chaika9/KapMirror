@@ -3,8 +3,7 @@
 #include <exception>
 #include <string>
 
-namespace KapMirror {
-namespace Telepathy {
+namespace KapMirror::Telepathy {
     class SocketException : public std::exception {
         std::string _message;
 
@@ -16,5 +15,4 @@ namespace Telepathy {
             return _message.c_str();
         }
     };
-}
 }

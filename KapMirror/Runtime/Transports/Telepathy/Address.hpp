@@ -4,8 +4,7 @@
 #include <memory>
 #include <string>
 
-namespace KapMirror {
-namespace Telepathy {
+namespace KapMirror::Telepathy {
     class Address {
         private:
         addrinfo *address = nullptr;
@@ -28,5 +27,4 @@ namespace Telepathy {
 
         static std::shared_ptr<Address> createAddress(int port, bool passive = true);
     };
-}
 }

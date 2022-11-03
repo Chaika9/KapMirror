@@ -12,8 +12,20 @@ void NetworkTransform::setClientAuthority(bool _clientAuthority) {
     clientAuthority = _clientAuthority;
 }
 
-void NetworkTransform::setSendRate(int _sendRate) {
-    sendRate = _sendRate;
+void NetworkTransform::setActiveUpdate(bool _activeUpdate) {
+    activeUpdate = _activeUpdate;
+}
+
+void NetworkTransform::setActiveLateUpdate(bool _activeLateUpdate) {
+    activeLateUpdate = _activeLateUpdate;
+}
+
+void NetworkTransform::setSendRate(int rate) {
+    sendRate = rate;
+}
+
+void NetworkTransform::setLateUpdateDelay(int delay) {
+    lateUpdateDelay = delay;
 }
 
 void NetworkTransform::onUpdate() {
@@ -24,10 +36,34 @@ void NetworkTransform::onUpdate() {
     }
 }
 
+#pragma region Server
+
 void NetworkTransform::updateServer() {
-    if (KapMirror::NetworkTime::localTime() - lastRefreshTime > 1000 / sendRate &&
+    // Update transform
+    if (KapMirror::NetworkTime::localTime() - lastUpdateRefreshTime > 1000 / sendRate &&
         (!clientAuthority || isClientWithAuthority())) {
-        lastRefreshTime = NetworkTime::localTime();
+        lastUpdateRefreshTime = NetworkTime::localTime();
+        lastLateUpdateRefreshTime = NetworkTime::localTime();
+
+        auto& transform = getGameObject().getComponent<KapEngine::Transform>();
+        if (transform.getLocalPosition() == lastPosition) {
+            return;
+        }
+        lastPosition = transform.getLocalPosition();
+
+        ObjectTransformMessage message;
+        message.networkId = networkIdentity->getNetworkId();
+        message.x = transform.getLocalPosition().getX();
+        message.y = transform.getLocalPosition().getY();
+        message.z = transform.getLocalPosition().getZ();
+        getServer()->sendToAll(message);
+        return;
+    }
+
+    // Update late transform
+    if (KapMirror::NetworkTime::localTime() - lastLateUpdateRefreshTime > lateUpdateDelay * 1000 &&
+        (!clientAuthority || isClientWithAuthority())) {
+        lastLateUpdateRefreshTime = NetworkTime::localTime();
 
         auto& transform = getGameObject().getComponent<KapEngine::Transform>();
         if (transform.getLocalPosition() == lastPosition) {
@@ -44,13 +80,19 @@ void NetworkTransform::updateServer() {
     }
 }
 
+#pragma endregion
+
+#pragma region Client
+
 void NetworkTransform::updateClient() {
     if (!isClientWithAuthority()) {
         return;
     }
 
-    if (KapMirror::NetworkTime::localTime() - lastRefreshTime > 1000 / sendRate) {
-        lastRefreshTime = NetworkTime::localTime();
+    if (KapMirror::NetworkTime::localTime() - lastUpdateRefreshTime > 1000 / sendRate) {
+        lastUpdateRefreshTime = NetworkTime::localTime();
         // TODO: Implement client authority
     }
 }
+
+#pragma endregion

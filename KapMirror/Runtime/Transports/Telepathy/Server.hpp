@@ -10,8 +10,7 @@
 #include <memory>
 #include <functional>
 
-namespace KapMirror {
-namespace Telepathy {
+namespace KapMirror::Telepathy {
     struct ClientConnection {
         unsigned int id;
         std::shared_ptr<TcpClient> client;
@@ -63,5 +62,4 @@ namespace Telepathy {
         std::function<void(int)> onDisconnected;
         std::function<void(int, std::shared_ptr<ArraySegment<byte>>)> onData;
     };
-}
 }

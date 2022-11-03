@@ -10,10 +10,21 @@ namespace KapMirror {
         // Set to true if the client should be able to move the object
         bool clientAuthority = false;
 
+        // Active sync of the transform
+        bool activeUpdate = true;
+
+        // Active sync of the transform with delay
+        bool activeLateUpdate = false;
+
         // Send N messages per second
         int sendRate = 30;
 
-        long long lastRefreshTime = 0;
+        // Send late update delay (in seconds)
+        int lateUpdateDelay = 1;
+
+        long long lastUpdateRefreshTime = 0;
+        long long lastLateUpdateRefreshTime = 0;
+
         KapEngine::Tools::Vector3 lastPosition = KapEngine::Tools::Vector3(0, 0, 0);
 
         public:
@@ -37,13 +48,40 @@ namespace KapMirror {
         void setClientAuthority(bool _clientAuthority);
 
         /**
+         * @brief Set the Active Update Transform.
+         * Set to true if the transform should be updated every frame.
+         * (default: true)
+         *
+         * @param _activeUpdate
+         */
+        void setActiveUpdate(bool _activeUpdate);
+
+        /**
+         * @brief Set the Active Late Update Transform.
+         * Set to true if the transform should be updated with a delay.
+         * (default: false)
+         *
+         * @param _activeLateUpdate
+         */
+        void setActiveLateUpdate(bool _activeLateUpdate);
+
+        /**
          * @brief Set the Send Rate object.
          * Send N messages per second.
          * (default: 30)
          *
-         * @param sendRate
+         * @param sendRate The number of messages per second.
          */
-        void setSendRate(int _sendRate);
+        void setSendRate(int rate);
+
+        /**
+         * @brief Set the Late Update Delay object.
+         * Send late update delay (in seconds).
+         * (default: 1)
+         *
+         * @param lateUpdateDelay The delay in seconds.
+         */
+        void setLateUpdateDelay(int delay);
 
         void onUpdate();
 

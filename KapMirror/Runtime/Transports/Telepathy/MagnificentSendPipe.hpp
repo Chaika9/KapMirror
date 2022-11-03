@@ -6,8 +6,7 @@
 #include <queue>
 #include <mutex>
 
-namespace KapMirror {
-namespace Telepathy {
+namespace KapMirror::Telepathy {
     class MagnificentSendPipe {
         private:
         std::queue<std::shared_ptr<ArraySegment<byte>>> queue;
@@ -50,5 +49,4 @@ namespace Telepathy {
             }
         }
     };
-}
 }

@@ -8,8 +8,7 @@
 #include <memory>
 #include <functional>
 
-namespace KapMirror {
-namespace Telepathy {
+namespace KapMirror::Telepathy {
     class Client {
         private:
         volatile bool running;
@@ -57,5 +56,4 @@ namespace Telepathy {
         std::function<void()> onDisconnected;
         std::function<void(std::shared_ptr<ArraySegment<byte>>)> onData;
     };
-}
 }

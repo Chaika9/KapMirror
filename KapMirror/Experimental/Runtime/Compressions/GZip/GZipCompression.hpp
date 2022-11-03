@@ -2,8 +2,7 @@
 
 #include "KapMirror/Runtime/Compression.hpp"
 
-namespace KapMirror {
-namespace Experimental {
+namespace KapMirror::Experimental {
     class GZipCompression : public Compression {
         public:
         ~GZipCompression() = default;
@@ -12,5 +11,4 @@ namespace Experimental {
 
         std::shared_ptr<ArraySegment<byte>> decompress(std::shared_ptr<ArraySegment<byte>> data) override;
     };
-}
 }

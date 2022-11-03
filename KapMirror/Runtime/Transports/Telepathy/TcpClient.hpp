@@ -4,8 +4,7 @@
 #include "SocketException.hpp"
 #include "KapMirror/Runtime/ArraySegment.hpp"
 
-namespace KapMirror {
-namespace Telepathy {
+namespace KapMirror::Telepathy {
     class TcpClient {
         private:
         std::shared_ptr<Socket> socket;
@@ -64,5 +63,4 @@ namespace Telepathy {
 
         void setBlocking(bool blocking);
     };
-}
 }

@@ -7,8 +7,7 @@
 #include <memory>
 #include <string>
 
-namespace KapMirror {
-namespace Telepathy {
+namespace KapMirror::Telepathy {
     class Socket {
         private:
         std::shared_ptr<Address> address;
@@ -75,5 +74,4 @@ namespace Telepathy {
 
         static std::shared_ptr<Socket> createSocket(std::shared_ptr<Address> address, SOCKET socket_fd);
     };
-}
 }

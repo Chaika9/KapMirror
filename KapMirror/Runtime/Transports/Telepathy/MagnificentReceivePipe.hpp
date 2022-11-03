@@ -6,8 +6,7 @@
 #include <queue>
 #include <mutex>
 
-namespace KapMirror {
-namespace Telepathy {
+namespace KapMirror::Telepathy {
     class MagnificentReceivePipe {
         public:
         enum EventType {
@@ -70,5 +69,4 @@ namespace Telepathy {
             }
         }
     };
-}
 }
