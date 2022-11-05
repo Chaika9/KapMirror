@@ -152,7 +152,12 @@ void NetworkClient::onObjectSpawn(ObjectSpawnMessage& message) {
     auto& networkIdentity = gameObject->getComponent<NetworkIdentity>();
     networkIdentity.setNetworkId(message.networkId);
     networkIdentity.setAuthority(message.isOwner);
-    networkIdentity.onStartClient();
+
+    try {
+        networkIdentity.onStartClient();
+    } catch (std::exception& e) {
+        KAP_DEBUG_ERROR("NetworkClient: Exception in onStartClient: " + std::string(e.what()));
+    }
 
     // Deserialize all components
     NetworkReader reader(message.payload);
@@ -178,7 +183,12 @@ void NetworkClient::onObjectDestroy(ObjectDestroyMessage& message) {
 
     if (gameObject->hasComponent<NetworkIdentity>()) {
         auto& networkIdentity = gameObject->getComponent<NetworkIdentity>();
-        networkIdentity.onStopClient();
+
+        try {
+            networkIdentity.onStopClient();
+        } catch (std::exception& e) {
+            KAP_DEBUG_ERROR("NetworkClient: Exception in onStopClient: " + std::string(e.what()));
+        }
     }
 
     gameObject->destroy();

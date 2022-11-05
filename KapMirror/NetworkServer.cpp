@@ -189,7 +189,13 @@ void NetworkServer::spawnObject(const std::string& prefabName, KapEngine::SceneM
     }
 
     networkIdentity.setAuthority(true);
-    networkIdentity.onStartServer();
+
+    try {
+        networkIdentity.onStartServer();
+    } catch (std::exception& e) {
+        KAP_DEBUG_ERROR("NetworkServer: Exception in onStartServer: " + std::string(e.what()));
+        return;
+    }
 
     networkObjects[networkIdentity.getNetworkId()] = gameObject;
 
@@ -250,7 +256,12 @@ void NetworkServer::destroyObject(unsigned int networkId) {
 
     if (gameObject->hasComponent<NetworkIdentity>()) {
         auto& identity = gameObject->getComponent<NetworkIdentity>();
-        identity.onStopServer();
+
+        try {
+            identity.onStopServer();
+        } catch (std::exception& e) {
+            KAP_DEBUG_ERROR("NetworkServer: Exception in onStopServer: " + std::string(e.what()));
+        }
     }
 
     gameObject->destroy();

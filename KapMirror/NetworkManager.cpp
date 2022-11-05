@@ -74,22 +74,43 @@ void NetworkManager::setupServer() {
 
     onStartServer();
 
-    // TODO: Move this
     auto& scene = getGameObject().getEngine().getSceneManager()->getCurrentScene();
     for (auto& go : scene.getAllObjects()) {
         for (auto& component : go->getAllComponents()) {
-            auto identity = std::dynamic_pointer_cast<NetworkIdentity>(component); // TODO: to hasComponent in KapEngine
+            auto identity = std::dynamic_pointer_cast<NetworkIdentity>(component);
             if (identity) {
-                identity->onStartServer();
+                try {
+                    identity->onStartServer();
+                } catch (std::exception& e) {
+                    KAP_DEBUG_ERROR("NetworkManager: Exception in onStartServer: " + std::string(e.what()));
+                }
             }
         }
     }
 }
 
 void NetworkManager::stopServer() {
-    onStopServer();
+    try {
+        onStopServer();
+    } catch (std::exception& e) {
+        KAP_DEBUG_ERROR("NetworkManager: Exception in onStopServer: " + std::string(e.what()));
+    }
 
     server->shutdown();
+
+    auto& scene = getGameObject().getEngine().getSceneManager()->getCurrentScene();
+    for (auto& go : scene.getAllObjects()) {
+        for (auto& component : go->getAllComponents()) {
+            auto identity = std::dynamic_pointer_cast<NetworkIdentity>(component);
+            if (identity) {
+                try {
+                    identity->onStopServer();
+                } catch (std::exception& e) {
+                    KAP_DEBUG_ERROR("NetworkManager: Exception in onStopServer: " + std::string(e.what()));
+                }
+            }
+        }
+    }
 }
 
 void NetworkManager::startClient() {
@@ -107,20 +128,41 @@ void NetworkManager::startClient() {
 
     onStartClient();
 
-    // TODO: Move this
     auto& scene = getGameObject().getEngine().getSceneManager()->getCurrentScene();
     for (auto& go : scene.getAllObjects()) {
         for (auto& component : go->getAllComponents()) {
             auto identity = std::dynamic_pointer_cast<NetworkIdentity>(component);
             if (identity) {
-                identity->onStartClient();
+                try {
+                    identity->onStartClient();
+                } catch (std::exception& e) {
+                    KAP_DEBUG_ERROR("NetworkManager: Exception in onStartClient: " + std::string(e.what()));
+                }
             }
         }
     }
 }
 
 void NetworkManager::stopClient() {
-    onStopClient();
+    try {
+        onStopClient();
+    } catch (std::exception& e) {
+        KAP_DEBUG_ERROR("NetworkManager: Exception in onStopClient: " + std::string(e.what()));
+    }
 
     client->disconnect();
+
+    auto& scene = getGameObject().getEngine().getSceneManager()->getCurrentScene();
+    for (auto& go : scene.getAllObjects()) {
+        for (auto& component : go->getAllComponents()) {
+            auto identity = std::dynamic_pointer_cast<NetworkIdentity>(component);
+            if (identity) {
+                try {
+                    identity->onStopClient();
+                } catch (std::exception& e) {
+                    KAP_DEBUG_ERROR("NetworkManager: Exception in onStopClient: " + std::string(e.what()));
+                }
+            }
+        }
+    }
 }
