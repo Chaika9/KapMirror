@@ -7,7 +7,7 @@ TcpClient::TcpClient(const std::shared_ptr<Address>& address) {
     if (address == nullptr) {
         throw std::runtime_error("Address cannot be null");
     }
-    socket      = Socket::createSocket(address);
+    socket = Socket::createSocket(address);
     isConnected = false;
 }
 
@@ -16,7 +16,7 @@ TcpClient::TcpClient(const std::shared_ptr<Socket>& socket) {
         throw std::runtime_error("Socket cannot be null");
     }
     this->socket = socket;
-    isConnected  = true;
+    isConnected = true;
 }
 
 TcpClient::~TcpClient() { socket->close(); }

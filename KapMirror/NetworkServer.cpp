@@ -11,7 +11,7 @@ using namespace KapMirror;
 
 NetworkServer::NetworkServer(NetworkManager& _manager, KapEngine::KEngine& _engine) : manager(_manager), engine(_engine) {
     initialized = false;
-    active      = false;
+    active = false;
 }
 
 void NetworkServer::initialize() {
@@ -57,7 +57,7 @@ void NetworkServer::shutdown() {
     connections.clear();
 
     // clear events
-    onConnectedEvent    = nullptr;
+    onConnectedEvent = nullptr;
     onDisconnectedEvent = nullptr;
 }
 
@@ -68,7 +68,7 @@ void NetworkServer::networkEarlyUpdate() const {
 }
 
 void NetworkServer::addTransportHandlers() {
-    Transport::activeTransport->onServerConnected    = [this](Transport&, int connectionId) { onTransportConnect(connectionId); };
+    Transport::activeTransport->onServerConnected = [this](Transport&, int connectionId) { onTransportConnect(connectionId); };
     Transport::activeTransport->onServerDisconnected = [this](Transport&, int connectionId) { onTransportDisconnect(connectionId); };
     Transport::activeTransport->onServerDataReceived = [this](Transport&, int connectionId, std::shared_ptr<ArraySegment<byte>> data) {
         onTransportData(connectionId, data);
@@ -76,7 +76,7 @@ void NetworkServer::addTransportHandlers() {
 }
 
 void NetworkServer::removeTransportHandlers() {
-    Transport::activeTransport->onServerConnected    = nullptr;
+    Transport::activeTransport->onServerConnected = nullptr;
     Transport::activeTransport->onServerDisconnected = nullptr;
     Transport::activeTransport->onServerDataReceived = nullptr;
 }
@@ -164,7 +164,7 @@ bool NetworkServer::removeConnection(int connectionId) { return connections.remo
 
 void NetworkServer::spawnObject(const std::string& prefabName, KapEngine::SceneManagement::Scene& scene,
                                 const KapEngine::Tools::Vector3& position,
-                                const std::function<void(std::shared_ptr<KapEngine::GameObject>&)>& playload,
+                                const std::function<void(const std::shared_ptr<KapEngine::GameObject>&)>& playload,
                                 std::shared_ptr<KapEngine::GameObject>& gameObject) {
 
     if (!engine.getPrefabManager()->instantiatePrefab(prefabName, scene, gameObject)) {
@@ -213,14 +213,14 @@ void NetworkServer::spawnObject(const std::string& prefabName, KapEngine::SceneM
     } catch (...) { KapEngine::Debug::error("NetworkServer: Failed to serialize custom payload"); }
 
     ObjectSpawnMessage message;
-    message.networkId  = networkIdentity.getNetworkId();
-    message.isOwner    = !networkIdentity.hasAuthority();
+    message.networkId = networkIdentity.getNetworkId();
+    message.isOwner = !networkIdentity.hasAuthority();
     message.prefabName = prefabName;
-    message.sceneName  = scene.getName();
-    message.x          = position.getX();
-    message.y          = position.getY();
-    message.z          = position.getZ();
-    message.payload    = writer.toArraySegment();
+    message.sceneName = scene.getName();
+    message.x = position.getX();
+    message.y = position.getY();
+    message.z = position.getZ();
+    message.payload = writer.toArraySegment();
     sendToAll(message);
 }
 
@@ -242,7 +242,7 @@ void NetworkServer::unSpawn(const std::shared_ptr<KapEngine::GameObject>& gameOb
 void NetworkServer::destroyObject(unsigned int networkId) {
     std::shared_ptr<KapEngine::GameObject> gameObject;
     if (!getExistingObject(networkId, gameObject)) {
-        KapEngine::Debug::error("NetworkServer: destroyObject: GameObject not found");
+        KapEngine::Debug::warning("NetworkServer: destroyObject: GameObject not found");
         return;
     }
 
@@ -280,7 +280,7 @@ void NetworkServer::updateObject(unsigned int id) {
 
     ObjectUpdateMessage message;
     message.networkId = id;
-    message.payload   = writer.toArraySegment();
+    message.payload = writer.toArraySegment();
     sendToAll(message);
 }
 
@@ -307,7 +307,7 @@ void NetworkServer::sendObject(const std::shared_ptr<KapEngine::GameObject>& gam
     }
 
     auto& networkIdentity = gameObject->getComponent<NetworkIdentity>();
-    auto& transform       = gameObject->getComponent<KapEngine::Transform>();
+    auto& transform = gameObject->getComponent<KapEngine::Transform>();
 
     // Serialize all components
     NetworkWriter writer;
@@ -322,14 +322,14 @@ void NetworkServer::sendObject(const std::shared_ptr<KapEngine::GameObject>& gam
     } catch (...) { KapEngine::Debug::error("NetworkServer: Failed to serialize custom payload"); }
 
     ObjectSpawnMessage message;
-    message.networkId  = networkIdentity.getNetworkId();
-    message.isOwner    = !networkIdentity.hasAuthority();
+    message.networkId = networkIdentity.getNetworkId();
+    message.isOwner = !networkIdentity.hasAuthority();
     message.prefabName = gameObject->getPrefabName();
-    message.sceneName  = gameObject->getScene().getName();
-    message.x          = transform.getLocalPosition().getX();
-    message.y          = transform.getLocalPosition().getY();
-    message.z          = transform.getLocalPosition().getZ();
-    message.payload    = writer.toArraySegment();
+    message.sceneName = gameObject->getScene().getName();
+    message.x = transform.getLocalPosition().getX();
+    message.y = transform.getLocalPosition().getY();
+    message.z = transform.getLocalPosition().getZ();
+    message.payload = writer.toArraySegment();
     connection->send(message);
 }
 

@@ -92,7 +92,7 @@ namespace KapMirror {
          * @brief Register a handler for a message type T.
          */
         template <typename T, typename = std::enable_if<std::is_base_of<NetworkMessage, T>::value>>
-        void registerHandler(std::function<void(std::shared_ptr<NetworkConnectionToServer>, T&)> handler) {
+        void registerHandler(std::function<void(const std::shared_ptr<NetworkConnectionToServer>&, T&)> handler) {
             ushort msgType = MessagePacking::getId<T>();
             if (handlers.containsKey(msgType)) {
                 KapEngine::Debug::warning("NetworkClient.registerHandler replacing handler for {" + std::string(typeid(T).name()) +

@@ -14,21 +14,21 @@ namespace KapMirror {
 
       public:
         ArraySegment() {
-            array  = nullptr;
+            array = nullptr;
             offset = 0;
-            size   = 0;
+            size = 0;
         }
 
         ArraySegment(T* _array, int _size) {
-            array  = Array::copyArray(_array, _size);
+            array = Array::copyArray(_array, _size);
             offset = 0;
-            size   = _size;
+            size = _size;
         }
 
         ArraySegment(T* _array, int _offset, int _size) {
-            array  = Array::copyArray(_array, _size);
+            array = Array::copyArray(_array, _size);
             offset = _offset;
-            size   = _size;
+            size = _size;
         }
 
         ~ArraySegment() { delete[] array; }
@@ -75,9 +75,9 @@ namespace KapMirror {
         bool operator!=(ArraySegment<T> const& other) { return *this != other; }
 
         ArraySegment<T>& operator=(ArraySegment<T> const& other) {
-            array  = Array::copyArray(other.array, other.size);
+            array = Array::copyArray(other.array, other.size);
             offset = other.offset;
-            size   = other.size;
+            size = other.size;
             return *this;
         }
 

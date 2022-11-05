@@ -31,18 +31,18 @@ namespace KapMirror {
         }
 
         void deserialize(KapMirror::NetworkReader& reader) override {
-            networkId  = reader.read<unsigned int>();
-            isOwner    = reader.read<bool>();
-            sceneName  = reader.readString();
+            networkId = reader.read<unsigned int>();
+            isOwner = reader.read<bool>();
+            sceneName = reader.readString();
             prefabName = reader.readString();
-            x          = reader.read<float>();
-            y          = reader.read<float>();
-            z          = reader.read<float>();
+            x = reader.read<float>();
+            y = reader.read<float>();
+            z = reader.read<float>();
 
             int payloadSize = reader.read<int>();
             if (payloadSize > 0) {
                 byte* segmentValue = reader.readBytes(payloadSize);
-                payload            = std::make_shared<ArraySegment<byte>>(segmentValue, 0, payloadSize);
+                payload = std::make_shared<ArraySegment<byte>>(segmentValue, 0, payloadSize);
                 delete[] segmentValue;
             } else {
                 payload = std::make_shared<ArraySegment<byte>>();
@@ -77,7 +77,7 @@ namespace KapMirror {
             int payloadSize = reader.read<int>();
             if (payloadSize > 0) {
                 byte* segmentValue = reader.readBytes(payloadSize);
-                payload            = std::make_shared<ArraySegment<byte>>(segmentValue, 0, payloadSize);
+                payload = std::make_shared<ArraySegment<byte>>(segmentValue, 0, payloadSize);
                 delete[] segmentValue;
             } else {
                 payload = std::make_shared<ArraySegment<byte>>();
@@ -101,9 +101,9 @@ namespace KapMirror {
 
         void deserialize(KapMirror::NetworkReader& reader) override {
             networkId = reader.read<unsigned int>();
-            x         = reader.read<float>();
-            y         = reader.read<float>();
-            z         = reader.read<float>();
+            x = reader.read<float>();
+            y = reader.read<float>();
+            z = reader.read<float>();
         }
     };
 } // namespace KapMirror

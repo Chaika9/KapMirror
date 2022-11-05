@@ -14,8 +14,8 @@ TelepathyTransport::~TelepathyTransport() {
  */
 
 void TelepathyTransport::createClient() {
-    client                    = std::make_shared<Telepathy::Client>(clientMaxMessageSize);
-    client->sendQueueLimit    = clientSendQueueLimit;
+    client = std::make_shared<Telepathy::Client>(clientMaxMessageSize);
+    client->sendQueueLimit = clientSendQueueLimit;
     client->receiveQueueLimit = clientReceiveQueueLimit;
 
     client->onConnected = [this]() {
@@ -69,8 +69,8 @@ void TelepathyTransport::clientEarlyUpdate() {
 
 void TelepathyTransport::serverStart(int port) {
     // Create server
-    server                    = std::make_shared<Telepathy::Server>(serverMaxMessageSize);
-    server->sendQueueLimit    = serverSendQueueLimitPerConnection;
+    server = std::make_shared<Telepathy::Server>(serverMaxMessageSize);
+    server->sendQueueLimit = serverSendQueueLimitPerConnection;
     server->receiveQueueLimit = serverReceiveQueueLimitPerConnection;
 
     // Servers Hooks

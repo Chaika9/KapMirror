@@ -32,7 +32,7 @@ void Server::start(int port) {
 
 void Server::listen(int port) {
     auto address = std::make_shared<Address>(port);
-    listener     = std::make_shared<TcpListener>(address);
+    listener = std::make_shared<TcpListener>(address);
 
     try {
         listener->start();
@@ -52,8 +52,8 @@ void Server::listen(int port) {
             auto client = listener->acceptTcpClient();
 
             // Create a new connection object
-            auto connection    = std::make_shared<ClientConnection>();
-            connection->id     = ++counter;
+            auto connection = std::make_shared<ClientConnection>();
+            connection->id = ++counter;
             connection->client = client;
             connection->thread = std::thread([this, connection]() { this->handleConnection(connection); });
 

@@ -4,8 +4,8 @@
 using namespace KapMirror::Telepathy;
 
 Address::Address(const std::string& host, int port) {
-    addrinfo hints    = {0};
-    hints.ai_family   = AF_INET; // Note: Windows fails to connect if left unspecified
+    addrinfo hints = {0};
+    hints.ai_family = AF_INET; // Note: Windows fails to connect if left unspecified
     hints.ai_socktype = SOCK_STREAM;
 
     int status = getaddrinfo(host.c_str(), std::to_string(port).c_str(), &hints, &address);
@@ -15,8 +15,8 @@ Address::Address(const std::string& host, int port) {
 }
 
 Address::Address(int port, bool passive) {
-    addrinfo hints    = {0};
-    hints.ai_family   = AF_INET; // Note: Windows fails to connect if left unspecified
+    addrinfo hints = {0};
+    hints.ai_family = AF_INET; // Note: Windows fails to connect if left unspecified
     hints.ai_socktype = SOCK_STREAM;
     if (passive) {
         hints.ai_flags = AI_PASSIVE;

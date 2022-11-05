@@ -11,7 +11,7 @@ using namespace KapMirror;
 
 NetworkClient::NetworkClient(NetworkManager& _manager, KapEngine::KEngine& _engine) : manager(_manager), engine(_engine) {
     connectState = ConnectState::None;
-    connection   = nullptr;
+    connection = nullptr;
 }
 
 void NetworkClient::connect(std::string ip, int port) {
@@ -49,7 +49,7 @@ void NetworkClient::networkEarlyUpdate() {
 }
 
 void NetworkClient::addTransportHandlers() {
-    Transport::activeTransport->onClientConnected    = [this](Transport&) { onTransportConnect(); };
+    Transport::activeTransport->onClientConnected = [this](Transport&) { onTransportConnect(); };
     Transport::activeTransport->onClientDisconnected = [this](Transport&) { onTransportDisconnect(); };
     Transport::activeTransport->onClientDataReceived = [this](Transport&, std::shared_ptr<ArraySegment<byte>> data) {
         onTransportData(data);
@@ -57,7 +57,7 @@ void NetworkClient::addTransportHandlers() {
 }
 
 void NetworkClient::removeTransportHandlers() {
-    Transport::activeTransport->onClientConnected    = nullptr;
+    Transport::activeTransport->onClientConnected = nullptr;
     Transport::activeTransport->onClientDisconnected = nullptr;
     Transport::activeTransport->onClientDataReceived = nullptr;
 }
@@ -212,7 +212,7 @@ void NetworkClient::updateObject(unsigned int id) {
 
     ObjectUpdateMessage message;
     message.networkId = id;
-    message.payload   = writer.toArraySegment();
+    message.payload = writer.toArraySegment();
     send(message);
 }
 

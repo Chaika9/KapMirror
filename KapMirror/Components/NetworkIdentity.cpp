@@ -7,10 +7,10 @@ using namespace KapMirror;
 int NetworkIdentity::nextNetworkId = 1;
 
 NetworkIdentity::NetworkIdentity(std::shared_ptr<KapEngine::GameObject> go) : KapEngine::Component(go, "NetworkIdentity") {
-    _networkId    = 0;
+    _networkId = 0;
     _hasAuthority = false;
-    _isServer     = false;
-    _isClient     = false;
+    _isServer = false;
+    _isClient = false;
 }
 
 void NetworkIdentity::onStartServer() {

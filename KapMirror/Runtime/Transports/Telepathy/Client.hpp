@@ -23,7 +23,7 @@ namespace KapMirror::Telepathy {
         MagnificentSendPipe sendPipe;
 
       public:
-        int sendQueueLimit    = 10000;
+        int sendQueueLimit = 10000;
         int receiveQueueLimit = 10000;
 
       public:

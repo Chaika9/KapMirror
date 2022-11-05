@@ -17,9 +17,9 @@ namespace KapMirror {
 
       public:
         NetworkWriter() {
-            buffer     = new byte[BUFFER_SIZE];
+            buffer = new byte[BUFFER_SIZE];
             bufferSize = BUFFER_SIZE;
-            position   = 0;
+            position = 0;
         }
 
         ~NetworkWriter() { delete[] buffer; }

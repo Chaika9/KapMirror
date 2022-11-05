@@ -102,7 +102,7 @@ namespace KapMirror {
          * @brief Register a handler for a message type T.
          */
         template <typename T, typename = std::enable_if<std::is_base_of<NetworkMessage, T>::value>>
-        void registerHandler(std::function<void(std::shared_ptr<NetworkConnectionToClient>, T&)> handler) {
+        void registerHandler(std::function<void(const std::shared_ptr<NetworkConnectionToClient>&, T&)> handler) {
             ushort msgType = MessagePacking::getId<T>();
             if (handlers.containsKey(msgType)) {
                 KapEngine::Debug::warning("NetworkServer.registerHandler replacing handler for {" + std::string(typeid(T).name()) +
@@ -134,14 +134,14 @@ namespace KapMirror {
          * @brief Spawn new GameObject on specifics Scene for all clients. (only Prefab)
          */
         void spawnObject(const std::string& prefabName, KapEngine::SceneManagement::Scene& scene, const KapEngine::Tools::Vector3& position,
-                         const std::function<void(std::shared_ptr<KapEngine::GameObject>&)>& playload,
+                         const std::function<void(const std::shared_ptr<KapEngine::GameObject>&)>& playload,
                          std::shared_ptr<KapEngine::GameObject>& gameObject);
 
         /**
          * @brief Spawn new GameObject on specifics Scene for all clients. (only Prefab)
          */
         void spawnObject(const std::string& prefabName, std::size_t sceneId, const KapEngine::Tools::Vector3& position,
-                         const std::function<void(std::shared_ptr<KapEngine::GameObject>&)>& playload,
+                         const std::function<void(const std::shared_ptr<KapEngine::GameObject>&)>& playload,
                          std::shared_ptr<KapEngine::GameObject>& gameObject) {
             auto& scene = engine.getSceneManager()->getScene(sceneId);
             spawnObject(prefabName, scene, position, playload, gameObject);
@@ -151,7 +151,7 @@ namespace KapMirror {
          * @brief Spawn new GameObject on current Scene for all clients. (only Prefab)
          */
         void spawnObject(const std::string& prefabName, const KapEngine::Tools::Vector3& position,
-                         const std::function<void(std::shared_ptr<KapEngine::GameObject>&)>& playload,
+                         const std::function<void(const std::shared_ptr<KapEngine::GameObject>&)>& playload,
                          std::shared_ptr<KapEngine::GameObject>& gameObject) {
             auto& scene = engine.getSceneManager()->getCurrentScene();
             spawnObject(prefabName, scene, position, playload, gameObject);

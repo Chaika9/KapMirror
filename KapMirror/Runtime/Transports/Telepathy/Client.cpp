@@ -7,7 +7,7 @@
 using namespace KapMirror::Telepathy;
 
 Client::Client(int _maxMessageSize) : maxMessageSize(_maxMessageSize) {
-    running      = false;
+    running = false;
     isConnecting = false;
 }
 
@@ -18,7 +18,7 @@ Client::~Client() {
 }
 
 void Client::dispose() {
-    running      = false;
+    running = false;
     isConnecting = false;
     if (clientThread.joinable()) {
         clientThread.join();
@@ -41,7 +41,7 @@ void Client::connect(std::string ip, int port) {
         throw std::runtime_error("Invalid port number");
     }
 
-    running      = true;
+    running = true;
     isConnecting = true;
 
     clientThread = std::thread([this, ip, port]() { this->run(ip, port); });
@@ -122,7 +122,7 @@ void Client::send(const std::shared_ptr<ArraySegment<byte>>& message) {
 
 void Client::run(const std::string& ip, int port) {
     auto address = std::make_shared<Address>(ip, port);
-    client       = std::make_shared<TcpClient>(address);
+    client = std::make_shared<TcpClient>(address);
 
     try {
         client->connect();

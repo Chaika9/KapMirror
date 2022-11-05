@@ -42,8 +42,8 @@ namespace KapMirror::Telepathy {
             queue.pop();
 
             connectionId = entry.connectionId;
-            eventType    = entry.eventType;
-            data         = entry.data;
+            eventType = entry.eventType;
+            data = entry.data;
 
             return true;
         }

@@ -35,7 +35,7 @@ namespace KapMirror::Telepathy {
         unsigned int counter{};
 
       public:
-        int sendQueueLimit    = 10000;
+        int sendQueueLimit = 10000;
         int receiveQueueLimit = 10000;
 
       public:

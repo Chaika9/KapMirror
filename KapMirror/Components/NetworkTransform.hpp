@@ -22,7 +22,7 @@ namespace KapMirror {
         // Send late update delay (in seconds)
         int lateUpdateDelay = 1;
 
-        long long lastUpdateRefreshTime     = 0;
+        long long lastUpdateRefreshTime = 0;
         long long lastLateUpdateRefreshTime = 0;
 
         KapEngine::Tools::Vector3 lastPosition = KapEngine::Tools::Vector3(0, 0, 0);
