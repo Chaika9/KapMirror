@@ -6,13 +6,13 @@
 
 namespace KapMirror::Telepathy {
     class TcpClient {
-        private:
+      private:
         std::shared_ptr<Socket> socket;
         bool isConnected;
 
-        public:
-        TcpClient(std::shared_ptr<Address> address);
-        TcpClient(std::shared_ptr<Socket> socket);
+      public:
+        explicit TcpClient(const std::shared_ptr<Address>& address);
+        explicit TcpClient(const std::shared_ptr<Socket>& socket);
         ~TcpClient();
 
         /**
@@ -35,9 +35,7 @@ namespace KapMirror::Telepathy {
          *
          * @return True if connected
          */
-        bool connected() const {
-            return isConnected;
-        }
+        bool connected() const { return isConnected; }
 
         /**
          * @brief Send data to the server
@@ -63,4 +61,4 @@ namespace KapMirror::Telepathy {
 
         void setBlocking(bool blocking);
     };
-}
+} // namespace KapMirror::Telepathy

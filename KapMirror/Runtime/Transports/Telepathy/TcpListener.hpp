@@ -5,11 +5,11 @@
 
 namespace KapMirror::Telepathy {
     class TcpListener {
-        private:
+      private:
         std::shared_ptr<Socket> socket;
 
-        public:
-        TcpListener(std::shared_ptr<Address> address);
+      public:
+        explicit TcpListener(std::shared_ptr<Address> address);
         ~TcpListener();
 
         /**
@@ -35,4 +35,4 @@ namespace KapMirror::Telepathy {
 
         void setBlocking(bool blocking);
     };
-}
+} // namespace KapMirror::Telepathy

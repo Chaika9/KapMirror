@@ -12,7 +12,7 @@ std::shared_ptr<KapMirror::ArraySegment<byte>> GZipCompression::compress(std::sh
     os.push(boost::iostreams::back_inserter(compressed));
     os.write((char*)data->toArray(), data->getSize());
     os.reset();
-    return ArraySegment<byte>::createArraySegment(reinterpret_cast<byte *>(compressed.data()), compressed.size());
+    return ArraySegment<byte>::createArraySegment(reinterpret_cast<byte*>(compressed.data()), compressed.size());
 }
 
 std::shared_ptr<KapMirror::ArraySegment<byte>> GZipCompression::decompress(std::shared_ptr<KapMirror::ArraySegment<byte>> data) {
@@ -22,5 +22,5 @@ std::shared_ptr<KapMirror::ArraySegment<byte>> GZipCompression::decompress(std::
     os.push(boost::iostreams::back_inserter(decompressed));
     os.write((char*)data->toArray(), data->getSize());
     os.reset();
-    return ArraySegment<byte>::createArraySegment(reinterpret_cast<byte *>(decompressed.data()), decompressed.size());;
+    return ArraySegment<byte>::createArraySegment(reinterpret_cast<byte*>(decompressed.data()), decompressed.size());
 }

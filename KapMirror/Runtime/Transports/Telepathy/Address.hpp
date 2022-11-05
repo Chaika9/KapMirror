@@ -6,12 +6,12 @@
 
 namespace KapMirror::Telepathy {
     class Address {
-        private:
-        addrinfo *address = nullptr;
+      private:
+        addrinfo* address = nullptr;
 
-        public:
-        Address(std::string host, int port);
-        Address(int port, bool passive = true);
+      public:
+        Address(const std::string& host, int port);
+        explicit Address(int port, bool passive = true);
         ~Address();
 
         /**
@@ -19,12 +19,10 @@ namespace KapMirror::Telepathy {
          *
          * @return addrinfo*
          */
-        addrinfo* getAddress() const {
-            return address;
-        }
+        addrinfo* getAddress() const { return address; }
 
-        static std::shared_ptr<Address> createAddress(std::string host, int port);
+        static std::shared_ptr<Address> createAddress(const std::string& host, int port);
 
         static std::shared_ptr<Address> createAddress(int port, bool passive = true);
     };
-}
+} // namespace KapMirror::Telepathy

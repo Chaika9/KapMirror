@@ -10,28 +10,24 @@
 
 namespace KapMirror {
     class NetworkWriter {
-        private:
-        byte *buffer;
+      private:
+        byte* buffer;
         int bufferSize;
         int position;
 
-        public:
+      public:
         NetworkWriter() {
-            buffer = new byte[BUFFER_SIZE];
+            buffer     = new byte[BUFFER_SIZE];
             bufferSize = BUFFER_SIZE;
-            position = 0;
+            position   = 0;
         }
 
-        ~NetworkWriter() {
-            delete[] buffer;
-        }
+        ~NetworkWriter() { delete[] buffer; }
 
         /**
          * @brief Reset the position to 0
          */
-        inline void reset() {
-            position = 0;
-        }
+        inline void reset() { position = 0; }
 
         /**
          * @brief Write a value to the buffer
@@ -53,31 +49,23 @@ namespace KapMirror {
          * @brief Get the buffer
          * @return Array of bytes
          */
-        inline byte *toArray() {
-            return Array::copyArray(buffer, position);
-        }
+        inline byte* toArray() { return Array::copyArray(buffer, position); }
 
-        operator byte*() {
-            return toArray();
-        }
+        explicit operator byte*() { return toArray(); }
 
         /**
          * @brief Get the buffer
          * @return ArraySegment<char>
          */
-        inline std::shared_ptr<ArraySegment<byte>> toArraySegment() {
-            return ArraySegment<byte>::createArraySegment(buffer, position);
-        }
+        inline std::shared_ptr<ArraySegment<byte>> toArraySegment() { return ArraySegment<byte>::createArraySegment(buffer, position); }
 
         /**
          * @brief Get the size of the buffer
          * @return Size
          */
-        inline int size() const {
-            return position;
-        }
+        inline int size() const { return position; }
 
-        private:
+      private:
         inline void ensureCapacity(int value) {
             if (position > bufferSize) {
                 Array::resizeArray(buffer, bufferSize, bufferSize * 2);
@@ -85,7 +73,7 @@ namespace KapMirror {
             }
         }
 
-        public:
+      public:
         /**
          * @brief Write a byte array to the buffer
          *
@@ -93,7 +81,7 @@ namespace KapMirror {
          * @param offset Offset
          * @param count Count
          */
-        void writeBytes(byte *array, int offset, int count) {
+        void writeBytes(byte* array, int offset, int count) {
             if (offset < 0 || count < 0) {
                 throw std::invalid_argument("offset or count is less than 0");
             }
@@ -110,13 +98,11 @@ namespace KapMirror {
          *
          * @param value Value
          */
-        void writeString(std::string value) {
+        void writeString(const std::string& value) {
             write((short)value.length());
-            writeBytes((byte *)value.c_str(), 0, value.length());
+            writeBytes((byte*)value.c_str(), 0, (int)value.length());
         }
 
-        void writeArraySegment(std::shared_ptr<ArraySegment<byte>> value) {
-            writeBytes(value->toArray(), 0, value->getSize());
-        }
+        void writeArraySegment(const std::shared_ptr<ArraySegment<byte>>& value) { writeBytes(value->toArray(), 0, value->getSize()); }
     };
-}
+} // namespace KapMirror

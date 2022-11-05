@@ -5,14 +5,14 @@
 
 namespace KapMirror {
     class Compression {
-        public:
+      public:
         virtual ~Compression() = default;
 
         virtual std::shared_ptr<ArraySegment<byte>> compress(std::shared_ptr<ArraySegment<byte>> data) = 0;
 
         virtual std::shared_ptr<ArraySegment<byte>> decompress(std::shared_ptr<ArraySegment<byte>> data) = 0;
 
-        public:
+      public:
         static std::shared_ptr<Compression> activeCompression;
     };
-}
+} // namespace KapMirror

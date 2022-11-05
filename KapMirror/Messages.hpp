@@ -18,7 +18,7 @@ namespace KapMirror {
         // Custom payload
         std::shared_ptr<ArraySegment<byte>> payload;
 
-        void serialize(KapMirror::NetworkWriter& writer) {
+        void serialize(KapMirror::NetworkWriter& writer) override {
             writer.write(networkId);
             writer.write(isOwner);
             writer.writeString(sceneName);
@@ -30,19 +30,19 @@ namespace KapMirror {
             writer.writeBytes(payload->toArray(), payload->getOffset(), payload->getSize());
         }
 
-        void deserialize(KapMirror::NetworkReader& reader) {
-            networkId = reader.read<unsigned int>();
-            isOwner = reader.read<bool>();
-            sceneName = reader.readString();
+        void deserialize(KapMirror::NetworkReader& reader) override {
+            networkId  = reader.read<unsigned int>();
+            isOwner    = reader.read<bool>();
+            sceneName  = reader.readString();
             prefabName = reader.readString();
-            x = reader.read<float>();
-            y = reader.read<float>();
-            z = reader.read<float>();
+            x          = reader.read<float>();
+            y          = reader.read<float>();
+            z          = reader.read<float>();
 
             int payloadSize = reader.read<int>();
             if (payloadSize > 0) {
                 byte* segmentValue = reader.readBytes(payloadSize);
-                payload = std::make_shared<ArraySegment<byte>>(segmentValue, 0, payloadSize);
+                payload            = std::make_shared<ArraySegment<byte>>(segmentValue, 0, payloadSize);
                 delete[] segmentValue;
             } else {
                 payload = std::make_shared<ArraySegment<byte>>();
@@ -54,13 +54,9 @@ namespace KapMirror {
         // networkId of existing object
         unsigned int networkId;
 
-        void serialize(KapMirror::NetworkWriter& writer) {
-            writer.write(networkId);
-        }
+        void serialize(KapMirror::NetworkWriter& writer) override { writer.write(networkId); }
 
-        void deserialize(KapMirror::NetworkReader& reader) {
-            networkId = reader.read<unsigned int>();
-        }
+        void deserialize(KapMirror::NetworkReader& reader) override { networkId = reader.read<unsigned int>(); }
     };
 
     struct ObjectUpdateMessage : NetworkMessage {
@@ -69,19 +65,19 @@ namespace KapMirror {
         // Custom payload
         std::shared_ptr<ArraySegment<byte>> payload;
 
-        void serialize(KapMirror::NetworkWriter& writer) {
+        void serialize(KapMirror::NetworkWriter& writer) override {
             writer.write(networkId);
             writer.write(payload->getSize());
             writer.writeBytes(payload->toArray(), payload->getOffset(), payload->getSize());
         }
 
-        void deserialize(KapMirror::NetworkReader& reader) {
+        void deserialize(KapMirror::NetworkReader& reader) override {
             networkId = reader.read<unsigned int>();
 
             int payloadSize = reader.read<int>();
             if (payloadSize > 0) {
                 byte* segmentValue = reader.readBytes(payloadSize);
-                payload = std::make_shared<ArraySegment<byte>>(segmentValue, 0, payloadSize);
+                payload            = std::make_shared<ArraySegment<byte>>(segmentValue, 0, payloadSize);
                 delete[] segmentValue;
             } else {
                 payload = std::make_shared<ArraySegment<byte>>();
@@ -96,18 +92,18 @@ namespace KapMirror {
         float y;
         float z;
 
-        void serialize(KapMirror::NetworkWriter& writer) {
+        void serialize(KapMirror::NetworkWriter& writer) override {
             writer.write(networkId);
             writer.write(x);
             writer.write(y);
             writer.write(z);
         }
 
-        void deserialize(KapMirror::NetworkReader& reader) {
+        void deserialize(KapMirror::NetworkReader& reader) override {
             networkId = reader.read<unsigned int>();
-            x = reader.read<float>();
-            y = reader.read<float>();
-            z = reader.read<float>();
+            x         = reader.read<float>();
+            y         = reader.read<float>();
+            z         = reader.read<float>();
         }
     };
-}
+} // namespace KapMirror

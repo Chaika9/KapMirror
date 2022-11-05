@@ -6,7 +6,7 @@
 
 namespace KapMirror {
     class NetworkTransform : public NetworkComponent {
-        private:
+      private:
         // Set to true if the client should be able to move the object
         bool clientAuthority = false;
 
@@ -22,21 +22,19 @@ namespace KapMirror {
         // Send late update delay (in seconds)
         int lateUpdateDelay = 1;
 
-        long long lastUpdateRefreshTime = 0;
+        long long lastUpdateRefreshTime     = 0;
         long long lastLateUpdateRefreshTime = 0;
 
         KapEngine::Tools::Vector3 lastPosition = KapEngine::Tools::Vector3(0, 0, 0);
 
-        public:
-        NetworkTransform(std::shared_ptr<KapEngine::GameObject> go);
+      public:
+        explicit NetworkTransform(std::shared_ptr<KapEngine::GameObject> go);
         ~NetworkTransform() = default;
 
         /**
          * @brief Set to true if the client should be able to move the object.
-        */
-        bool isClientWithAuthority() const {
-            return networkIdentity->hasAuthority() && clientAuthority;
-        }
+         */
+        bool isClientWithAuthority() const { return networkIdentity->hasAuthority() && clientAuthority; }
 
         /**
          * @brief Set the Client Authority object.
@@ -83,11 +81,11 @@ namespace KapMirror {
          */
         void setLateUpdateDelay(int delay);
 
-        void onUpdate();
+        void onUpdate() override;
 
-        private:
+      private:
         void updateServer();
 
         void updateClient();
     };
-}
+} // namespace KapMirror

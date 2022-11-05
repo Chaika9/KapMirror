@@ -10,7 +10,7 @@
 
 namespace KapMirror::Telepathy {
     class Client {
-        private:
+      private:
         volatile bool running;
         volatile bool isConnecting;
 
@@ -22,38 +22,34 @@ namespace KapMirror::Telepathy {
         MagnificentReceivePipe receivePipe;
         MagnificentSendPipe sendPipe;
 
-        public:
-        int sendQueueLimit = 10000;
+      public:
+        int sendQueueLimit    = 10000;
         int receiveQueueLimit = 10000;
 
-        public:
-        Client(int _maxMessageSize = 1024);
+      public:
+        explicit Client(int _maxMessageSize = 1024);
         ~Client();
 
         void connect(std::string ip, int port);
 
         void disconnect();
 
-        bool connecting() const {
-            return isConnecting;
-        }
+        bool connecting() const { return isConnecting; }
 
-        bool connected() const {
-            return client != nullptr && client->connected();
-        }
+        bool connected() const { return client != nullptr && client->connected(); }
 
         int tick(int processLimit);
 
-        void send(std::shared_ptr<ArraySegment<byte>> message);
+        void send(const std::shared_ptr<ArraySegment<byte>>& message);
 
-        private:
+      private:
         void dispose();
 
-        void run(std::string ip, int port);
+        void run(const std::string& ip, int port);
 
-        public:
+      public:
         std::function<void()> onConnected;
         std::function<void()> onDisconnected;
         std::function<void(std::shared_ptr<ArraySegment<byte>>)> onData;
     };
-}
+} // namespace KapMirror::Telepathy

@@ -7,73 +7,63 @@
 namespace KapMirror {
     template <typename T>
     class ArraySegment {
-        private:
+      private:
         T* array;
         int offset;
         int size;
 
-        public:
+      public:
         ArraySegment() {
-            array = nullptr;
+            array  = nullptr;
             offset = 0;
-            size = 0;
+            size   = 0;
         }
 
         ArraySegment(T* _array, int _size) {
-            array = Array::copyArray(_array, _size);
+            array  = Array::copyArray(_array, _size);
             offset = 0;
-            size = _size;
+            size   = _size;
         }
 
         ArraySegment(T* _array, int _offset, int _size) {
-            array = Array::copyArray(_array, _size);
+            array  = Array::copyArray(_array, _size);
             offset = _offset;
-            size = _size;
+            size   = _size;
         }
 
-        ~ArraySegment() {
-            delete[] array;
-        }
+        ~ArraySegment() { delete[] array; }
 
         /**
          * @brief Get the array
          *
          * @return Array
          */
-        T *toArray() const {
-            return array + offset;
-        }
+        T* toArray() const { return array + offset; }
 
-        operator T*() const {
-            return array + offset;
-        }
+        operator T*() const { return array + offset; }
 
         /**
          * @brief Get the offset of the array
          *
          * @return Offset
          */
-        int getOffset() const {
-            return offset;
-        }
+        int getOffset() const { return offset; }
 
         /**
          * @brief Get the size of the array
          *
          * @return Size
          */
-        int getSize() const {
-            return size;
-        }
+        int getSize() const { return size; }
 
-        T &operator[](int index) {
+        T& operator[](int index) {
             if (index < 0 || index >= size) {
                 throw std::out_of_range("index is out of range");
             }
             return array[offset + index];
         }
 
-        bool operator==(ArraySegment<T> const &other) {
+        bool operator==(ArraySegment<T> const& other) {
             for (int i = 0; i < std::min(size, other.size); i++) {
                 if (array[offset + i] != other.array[other.offset + i]) {
                     return false;
@@ -82,14 +72,12 @@ namespace KapMirror {
             return true;
         }
 
-        bool operator!=(ArraySegment<T> const &other) {
-            return !(*this == other);
-        }
+        bool operator!=(ArraySegment<T> const& other) { return *this != other; }
 
-        ArraySegment<T> &operator=(ArraySegment<T> const &other) {
-            array = Array::copyArray(other.array, other.size);
+        ArraySegment<T>& operator=(ArraySegment<T> const& other) {
+            array  = Array::copyArray(other.array, other.size);
             offset = other.offset;
-            size = other.size;
+            size   = other.size;
             return *this;
         }
 
@@ -101,4 +89,4 @@ namespace KapMirror {
             return std::make_shared<ArraySegment<T>>(array, offset, size);
         }
     };
-}
+} // namespace KapMirror

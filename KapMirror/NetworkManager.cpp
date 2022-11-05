@@ -6,7 +6,7 @@ using namespace KapMirror;
 
 NetworkManager* NetworkManager::instance = nullptr;
 
-std::shared_ptr<Transport> Transport::activeTransport = nullptr;
+std::shared_ptr<Transport> Transport::activeTransport       = nullptr;
 std::shared_ptr<Compression> Compression::activeCompression = nullptr;
 
 NetworkManager::NetworkManager(std::shared_ptr<KapEngine::GameObject> go) : KapEngine::Component(go, "NetworkManager") {
@@ -42,14 +42,14 @@ void NetworkManager::onFixedUpdate() {
     client->networkEarlyUpdate();
 }
 
-void NetworkManager::setTransport(std::shared_ptr<Transport> transport) {
-    this->transport = transport;
-    Transport::activeTransport = transport;
+void NetworkManager::setTransport(const std::shared_ptr<Transport>& _transport) {
+    this->transport            = _transport;
+    Transport::activeTransport = _transport;
 }
 
-void NetworkManager::setCompression(std::shared_ptr<Compression> compression) {
-    this->compression = compression;
-    Compression::activeCompression = compression;
+void NetworkManager::setCompression(const std::shared_ptr<Compression>& _compression) {
+    this->compression              = _compression;
+    Compression::activeCompression = _compression;
 }
 
 void NetworkManager::startServer() {
@@ -66,12 +66,8 @@ void NetworkManager::setupServer() {
     // always >= 0
     maxConnections = std::max(maxConnections, 0);
 
-    server->onConnectedEvent = [this](std::shared_ptr<NetworkConnection> connection) {
-        onServerClientConnected(connection);
-    };
-    server->onDisconnectedEvent = [this](std::shared_ptr<NetworkConnection> connection) {
-        onServerClientDisconnected(connection);
-    };
+    server->onConnectedEvent    = [this](const std::shared_ptr<NetworkConnection>& connection) { onServerClientConnected(connection); };
+    server->onDisconnectedEvent = [this](const std::shared_ptr<NetworkConnection>& connection) { onServerClientDisconnected(connection); };
 
     server->listen(maxConnections, networkPort);
     KapEngine::Debug::log("NetworkManager: Server started listening on port " + std::to_string(networkPort));
@@ -82,7 +78,7 @@ void NetworkManager::setupServer() {
     auto& scene = getGameObject().getEngine().getSceneManager()->getCurrentScene();
     for (auto& go : scene.getAllObjects()) {
         for (auto& component : go->getAllComponents()) {
-            auto identity = std::dynamic_pointer_cast<NetworkIdentity>(component); //TODO: to hasComponent in KapEngine
+            auto identity = std::dynamic_pointer_cast<NetworkIdentity>(component); // TODO: to hasComponent in KapEngine
             if (identity) {
                 identity->onStartServer();
             }
@@ -103,12 +99,8 @@ void NetworkManager::startClient() {
         return;
     }
 
-    client->onConnectedEvent = [this](std::shared_ptr<NetworkConnection> connection) {
-        onClientConnected(connection);
-    };
-    client->onDisconnectedEvent = [this](std::shared_ptr<NetworkConnection> connection) {
-        onClientDisconnected(connection);
-    };
+    client->onConnectedEvent    = [this](const std::shared_ptr<NetworkConnection>& connection) { onClientConnected(connection); };
+    client->onDisconnectedEvent = [this](const std::shared_ptr<NetworkConnection>& connection) { onClientDisconnected(connection); };
 
     KapEngine::Debug::log("NetworkManager: Connecting to server \"" + networkAddress + ":" + std::to_string(networkPort) + "\"");
     client->connect(networkAddress, networkPort);

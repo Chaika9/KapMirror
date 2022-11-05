@@ -7,10 +7,10 @@ using namespace KapMirror;
 int NetworkIdentity::nextNetworkId = 1;
 
 NetworkIdentity::NetworkIdentity(std::shared_ptr<KapEngine::GameObject> go) : KapEngine::Component(go, "NetworkIdentity") {
-    _networkId = 0;
+    _networkId    = 0;
     _hasAuthority = false;
-    _isServer = false;
-    _isClient = false;
+    _isServer     = false;
+    _isClient     = false;
 }
 
 void NetworkIdentity::onStartServer() {
@@ -46,9 +46,7 @@ void NetworkIdentity::onStopServer() {
         if (networkComponent != nullptr) {
             try {
                 networkComponent->onStopServer();
-            } catch (std::exception& e) {
-                KapEngine::Debug::error("NetworkIdentity: Exception in onStopServer: " + std::string(e.what()));
-            }
+            } catch (std::exception& e) { KapEngine::Debug::error("NetworkIdentity: Exception in onStopServer: " + std::string(e.what())); }
         }
     }
 }
@@ -80,9 +78,7 @@ void NetworkIdentity::onStopClient() {
         if (networkComponent != nullptr) {
             try {
                 networkComponent->onStopClient();
-            } catch (std::exception& e) {
-                KapEngine::Debug::error("NetworkIdentity: Exception in onStopClient: " + std::string(e.what()));
-            }
+            } catch (std::exception& e) { KapEngine::Debug::error("NetworkIdentity: Exception in onStopClient: " + std::string(e.what())); }
         }
     }
 }

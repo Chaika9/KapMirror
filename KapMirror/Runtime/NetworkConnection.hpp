@@ -7,13 +7,13 @@
 
 namespace KapMirror {
     class NetworkConnection {
-        public:
+      public:
         virtual ~NetworkConnection() = default;
 
         /**
          * @brief Unique identifier for this connection that is assigned by the transport layer.
-        */
-        virtual unsigned int getConnectionId() = 0;
+         */
+        virtual int getConnectionId() = 0;
 
         /**
          * @brief Disconnects this connection.
@@ -30,7 +30,7 @@ namespace KapMirror {
         /**
          * @brief Send a NetworkMessage to this connection.
          */
-        template<typename T, typename = std::enable_if<std::is_base_of<NetworkMessage, T>::value>>
+        template <typename T, typename = std::enable_if<std::is_base_of<NetworkMessage, T>::value>>
         void send(T& message) {
             NetworkWriter writer;
             MessagePacking::pack(message, writer);
@@ -38,4 +38,4 @@ namespace KapMirror {
             sendToTransport(data);
         }
     };
-}
+} // namespace KapMirror

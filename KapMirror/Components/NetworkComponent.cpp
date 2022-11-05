@@ -3,17 +3,13 @@
 
 using namespace KapMirror;
 
-NetworkComponent::NetworkComponent(std::shared_ptr<KapEngine::GameObject> go, std::string name) : KapEngine::Component(go, name) {
+NetworkComponent::NetworkComponent(std::shared_ptr<KapEngine::GameObject> go, const std::string& name) : KapEngine::Component(go, name) {
     addRequireComponent("NetworkIdentity");
 }
 
-std::shared_ptr<NetworkServer> NetworkComponent::getServer() const {
-    return NetworkManager::getInstance()->getServer();
-}
+std::shared_ptr<NetworkServer> NetworkComponent::getServer() const { return NetworkManager::getInstance()->getServer(); }
 
-std::shared_ptr<NetworkClient> NetworkComponent::getClient() const {
-    return NetworkManager::getInstance()->getClient();
-}
+std::shared_ptr<NetworkClient> NetworkComponent::getClient() const { return NetworkManager::getInstance()->getClient(); }
 
 void NetworkComponent::onAwake() {
     networkIdentity = &getGameObject().getComponent<NetworkIdentity>();
@@ -28,14 +24,8 @@ void NetworkComponent::onDestroy() {
     }
 }
 
-bool NetworkComponent::isServer() const {
-    return networkIdentity->isServer();
-}
+bool NetworkComponent::isServer() const { return networkIdentity->isServer(); }
 
-bool NetworkComponent::isClient() const {
-    return networkIdentity->isClient();
-}
+bool NetworkComponent::isClient() const { return networkIdentity->isClient(); }
 
-bool NetworkComponent::isLocal() const {
-    return networkIdentity->isLocal();
-}
+bool NetworkComponent::isLocal() const { return networkIdentity->isLocal(); }

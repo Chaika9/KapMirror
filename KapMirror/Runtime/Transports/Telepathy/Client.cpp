@@ -7,7 +7,7 @@
 using namespace KapMirror::Telepathy;
 
 Client::Client(int _maxMessageSize) : maxMessageSize(_maxMessageSize) {
-    running = false;
+    running      = false;
     isConnecting = false;
 }
 
@@ -18,7 +18,7 @@ Client::~Client() {
 }
 
 void Client::dispose() {
-    running = false;
+    running      = false;
     isConnecting = false;
     if (clientThread.joinable()) {
         clientThread.join();
@@ -32,7 +32,8 @@ void Client::dispose() {
 
 void Client::connect(std::string ip, int port) {
     if (connecting() || connected()) {
-        std::cerr << "Client: Telepathy Client can not create connection because an existing connection is connecting or connected" << std::endl;
+        std::cerr << "Client: Telepathy Client can not create connection because an existing connection is connecting or connected"
+                  << std::endl;
         return;
     }
 
@@ -40,7 +41,7 @@ void Client::connect(std::string ip, int port) {
         throw std::runtime_error("Invalid port number");
     }
 
-    running = true;
+    running      = true;
     isConnecting = true;
 
     clientThread = std::thread([this, ip, port]() { this->run(ip, port); });
@@ -96,7 +97,7 @@ int Client::tick(int processLimit) {
     return receivePipe.getSize();
 }
 
-void Client::send(std::shared_ptr<ArraySegment<byte>> message) {
+void Client::send(const std::shared_ptr<ArraySegment<byte>>& message) {
     if (!connected()) {
         std::cerr << "Client.Send: not connected!" << std::endl;
         return;
@@ -106,7 +107,10 @@ void Client::send(std::shared_ptr<ArraySegment<byte>> message) {
         return;
     }
     if (sendPipe.getSize() > sendQueueLimit) {
-        std::cerr << "Client.Send: sendPipe reached limit of " << sendQueueLimit << ". This can happen if we call send faster than the network can process messages. Disconnecting to avoid ever growing memory & latency." << std::endl;
+        std::cerr << "Client.Send: sendPipe reached limit of " << sendQueueLimit
+                  << ". This can happen if we call send faster than the network can process messages. Disconnecting to avoid ever growing "
+                     "memory & latency."
+                  << std::endl;
 
         // Disconnect if the send queue is full
         disconnect();
@@ -116,9 +120,9 @@ void Client::send(std::shared_ptr<ArraySegment<byte>> message) {
     sendPipe.push(message);
 }
 
-void Client::run(std::string ip, int port) {
+void Client::run(const std::string& ip, int port) {
     auto address = std::make_shared<Address>(ip, port);
-    client = std::make_shared<TcpClient>(address);
+    client       = std::make_shared<TcpClient>(address);
 
     try {
         client->connect();

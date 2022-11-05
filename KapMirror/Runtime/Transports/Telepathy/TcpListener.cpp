@@ -9,13 +9,9 @@ TcpListener::TcpListener(std::shared_ptr<Address> address) {
     socket = Socket::createSocket(address);
 }
 
-TcpListener::~TcpListener() {
-    socket->close();
-}
+TcpListener::~TcpListener() { socket->close(); }
 
-void TcpListener::close() {
-    socket->close();
-}
+void TcpListener::close() { socket->close(); }
 
 void TcpListener::start() {
     socket->bind();
@@ -30,14 +26,8 @@ std::shared_ptr<TcpClient> TcpListener::acceptTcpClient() {
     return std::make_shared<TcpClient>(clientSocket);
 }
 
-bool TcpListener::isReadable() const {
-    return socket->isReadable();
-}
+bool TcpListener::isReadable() const { return socket->isReadable(); }
 
-bool TcpListener::isWritable() const {
-    return socket->isWritable();
-}
+bool TcpListener::isWritable() const { return socket->isWritable(); }
 
-void TcpListener::setBlocking(bool blocking) {
-    socket->setBlocking(blocking);
-}
+void TcpListener::setBlocking(bool blocking) { socket->setBlocking(blocking); }

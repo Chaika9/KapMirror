@@ -5,14 +5,13 @@
 #include "Components/NetworkIdentity.hpp"
 #include "Components/NetworkComponent.hpp"
 #include "KapEngine.hpp"
-#include "Factory.hpp"
 #include "Transform.hpp"
 
 using namespace KapMirror;
 
 NetworkServer::NetworkServer(NetworkManager& _manager, KapEngine::KEngine& _engine) : manager(_manager), engine(_engine) {
     initialized = false;
-    active = false;
+    active      = false;
 }
 
 void NetworkServer::initialize() {
@@ -58,30 +57,26 @@ void NetworkServer::shutdown() {
     connections.clear();
 
     // clear events
-    onConnectedEvent = nullptr;
+    onConnectedEvent    = nullptr;
     onDisconnectedEvent = nullptr;
 }
 
-void NetworkServer::networkEarlyUpdate() {
+void NetworkServer::networkEarlyUpdate() const {
     if (initialized) {
         Transport::activeTransport->serverEarlyUpdate();
     }
 }
 
 void NetworkServer::addTransportHandlers() {
-    Transport::activeTransport->onServerConnected = [this](Transport&, int connectionId) {
-        onTransportConnect(connectionId);
-    };
-    Transport::activeTransport->onServerDisconnected = [this](Transport&, int connectionId) {
-        onTransportDisconnect(connectionId);
-    };
+    Transport::activeTransport->onServerConnected    = [this](Transport&, int connectionId) { onTransportConnect(connectionId); };
+    Transport::activeTransport->onServerDisconnected = [this](Transport&, int connectionId) { onTransportDisconnect(connectionId); };
     Transport::activeTransport->onServerDataReceived = [this](Transport&, int connectionId, std::shared_ptr<ArraySegment<byte>> data) {
         onTransportData(connectionId, data);
     };
 }
 
 void NetworkServer::removeTransportHandlers() {
-    Transport::activeTransport->onServerConnected = nullptr;
+    Transport::activeTransport->onServerConnected    = nullptr;
     Transport::activeTransport->onServerDisconnected = nullptr;
     Transport::activeTransport->onServerDataReceived = nullptr;
 }
@@ -155,7 +150,7 @@ bool NetworkServer::unpackAndInvoke(std::shared_ptr<NetworkConnectionToClient> c
     return false;
 }
 
-bool NetworkServer::addConnection(std::shared_ptr<NetworkConnectionToClient> connection) {
+bool NetworkServer::addConnection(const std::shared_ptr<NetworkConnectionToClient>& connection) {
     if (connections.containsKey(connection->getConnectionId())) {
         return false;
     }
@@ -163,16 +158,14 @@ bool NetworkServer::addConnection(std::shared_ptr<NetworkConnectionToClient> con
     return true;
 }
 
-bool NetworkServer::removeConnection(int connectionId) {
-    return connections.remove(connectionId);
-}
+bool NetworkServer::removeConnection(int connectionId) { return connections.remove(connectionId); }
 
 #pragma region KapEngine
 
-void NetworkServer::spawnObject(std::string prefabName,
-    KapEngine::SceneManagement::Scene &scene, KapEngine::Tools::Vector3 position,
-    std::function<void(std::shared_ptr<KapEngine::GameObject>&)> playload,
-    std::shared_ptr<KapEngine::GameObject>& gameObject) {
+void NetworkServer::spawnObject(const std::string& prefabName, KapEngine::SceneManagement::Scene& scene,
+                                const KapEngine::Tools::Vector3& position,
+                                const std::function<void(std::shared_ptr<KapEngine::GameObject>&)>& playload,
+                                std::shared_ptr<KapEngine::GameObject>& gameObject) {
 
     if (!engine.getPrefabManager()->instantiatePrefab(prefabName, scene, gameObject)) {
         KapEngine::Debug::error("NetworkServer: Failed to spawn object " + prefabName);
@@ -189,7 +182,8 @@ void NetworkServer::spawnObject(std::string prefabName,
 
     // Spawn should only be called once per netId
     if (networkObjects.containsKey(networkIdentity.getNetworkId())) {
-        KapEngine::Debug::warning("NetworkServer: " + prefabName + " with networkId=" + std::to_string(networkIdentity.getNetworkId()) + " was already spawned.");
+        KapEngine::Debug::warning("NetworkServer: " + prefabName + " with networkId=" + std::to_string(networkIdentity.getNetworkId()) +
+                                  " was already spawned.");
         gameObject->destroy();
         return;
     }
@@ -216,23 +210,21 @@ void NetworkServer::spawnObject(std::string prefabName,
                 networkCompenent->serialize(writer);
             }
         }
-    } catch (...) {
-        KapEngine::Debug::error("NetworkServer: Failed to serialize custom payload");
-    }
+    } catch (...) { KapEngine::Debug::error("NetworkServer: Failed to serialize custom payload"); }
 
     ObjectSpawnMessage message;
-    message.networkId = networkIdentity.getNetworkId();
-    message.isOwner = !networkIdentity.hasAuthority();
+    message.networkId  = networkIdentity.getNetworkId();
+    message.isOwner    = !networkIdentity.hasAuthority();
     message.prefabName = prefabName;
-    message.sceneName = scene.getName();
-    message.x = position.getX();
-    message.y = position.getY();
-    message.z = position.getZ();
-    message.payload = writer.toArraySegment();
+    message.sceneName  = scene.getName();
+    message.x          = position.getX();
+    message.y          = position.getY();
+    message.z          = position.getZ();
+    message.payload    = writer.toArraySegment();
     sendToAll(message);
 }
 
-void NetworkServer::unSpawn(std::shared_ptr<KapEngine::GameObject> gameObject) {
+void NetworkServer::unSpawn(const std::shared_ptr<KapEngine::GameObject>& gameObject) {
     if (gameObject == nullptr) {
         KapEngine::Debug::error("NetworkServer: Cannot unSpawn, gameObject is null");
         return;
@@ -255,6 +247,12 @@ void NetworkServer::destroyObject(unsigned int networkId) {
     }
 
     networkObjects.remove(networkId);
+
+    if (gameObject->hasComponent<NetworkIdentity>()) {
+        auto& identity = gameObject->getComponent<NetworkIdentity>();
+        identity.onStopServer();
+    }
+
     gameObject->destroy();
 
     ObjectDestroyMessage message;
@@ -278,17 +276,15 @@ void NetworkServer::updateObject(unsigned int id) {
                 networkCompenent->serialize(writer);
             }
         }
-    } catch (...) {
-        KapEngine::Debug::error("NetworkServer: Failed to serialize custom payload");
-    }
+    } catch (...) { KapEngine::Debug::error("NetworkServer: Failed to serialize custom payload"); }
 
     ObjectUpdateMessage message;
     message.networkId = id;
-    message.payload = writer.toArraySegment();
+    message.payload   = writer.toArraySegment();
     sendToAll(message);
 }
 
-void NetworkServer::updateObject(std::shared_ptr<KapEngine::GameObject> gameObject) {
+void NetworkServer::updateObject(const std::shared_ptr<KapEngine::GameObject>& gameObject) {
     if (gameObject == nullptr) {
         KapEngine::Debug::error("NetworkServer: updateObject: GameObject is null");
         return;
@@ -303,14 +299,15 @@ void NetworkServer::updateObject(std::shared_ptr<KapEngine::GameObject> gameObje
     updateObject(identity.getNetworkId());
 }
 
-void NetworkServer::sendObject(std::shared_ptr<KapEngine::GameObject> gameObject, std::shared_ptr<NetworkConnectionToClient> connection) {
+void NetworkServer::sendObject(const std::shared_ptr<KapEngine::GameObject>& gameObject,
+                               const std::shared_ptr<NetworkConnectionToClient>& connection) {
     if (!gameObject->hasComponent<NetworkIdentity>()) {
         KapEngine::Debug::error("NetworkServer: sendObject: GameObject does not have NetworkIdentity component");
         return;
     }
 
     auto& networkIdentity = gameObject->getComponent<NetworkIdentity>();
-    auto& transform = gameObject->getComponent<KapEngine::Transform>();
+    auto& transform       = gameObject->getComponent<KapEngine::Transform>();
 
     // Serialize all components
     NetworkWriter writer;
@@ -322,19 +319,17 @@ void NetworkServer::sendObject(std::shared_ptr<KapEngine::GameObject> gameObject
                 networkCompenent->serialize(writer);
             }
         }
-    } catch (...) {
-        KapEngine::Debug::error("NetworkServer: Failed to serialize custom payload");
-    }
+    } catch (...) { KapEngine::Debug::error("NetworkServer: Failed to serialize custom payload"); }
 
     ObjectSpawnMessage message;
-    message.networkId = networkIdentity.getNetworkId();
-    message.isOwner = !networkIdentity.hasAuthority();
+    message.networkId  = networkIdentity.getNetworkId();
+    message.isOwner    = !networkIdentity.hasAuthority();
     message.prefabName = gameObject->getPrefabName();
-    message.sceneName = gameObject->getScene().getName();
-    message.x = transform.getLocalPosition().getX();
-    message.y = transform.getLocalPosition().getY();
-    message.z = transform.getLocalPosition().getZ();
-    message.payload = writer.toArraySegment();
+    message.sceneName  = gameObject->getScene().getName();
+    message.x          = transform.getLocalPosition().getX();
+    message.y          = transform.getLocalPosition().getY();
+    message.z          = transform.getLocalPosition().getZ();
+    message.payload    = writer.toArraySegment();
     connection->send(message);
 }
 

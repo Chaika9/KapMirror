@@ -8,12 +8,8 @@
 
 namespace KapMirror::Telepathy {
     class MagnificentReceivePipe {
-        public:
-        enum EventType {
-            Connected,
-            Data,
-            Disconnected
-        };
+      public:
+        enum EventType { Connected, Data, Disconnected };
 
         struct Entry {
             int connectionId;
@@ -21,11 +17,11 @@ namespace KapMirror::Telepathy {
             std::shared_ptr<ArraySegment<byte>> data;
         };
 
-        private:
+      private:
         std::queue<Entry> queue;
         std::mutex queueMutex;
 
-        public:
+      public:
         void push(int connectionId, EventType eventType, std::shared_ptr<ArraySegment<byte>> data) {
             std::lock_guard<std::mutex> lock(queueMutex);
             queue.push({connectionId, eventType, data});
@@ -46,15 +42,15 @@ namespace KapMirror::Telepathy {
             queue.pop();
 
             connectionId = entry.connectionId;
-            eventType = entry.eventType;
-            data = entry.data;
+            eventType    = entry.eventType;
+            data         = entry.data;
 
             return true;
         }
 
         int getSize() {
             std::lock_guard<std::mutex> lock(queueMutex);
-            return queue.size();
+            return (int)queue.size();
         }
 
         bool isEmpty() {
@@ -69,4 +65,4 @@ namespace KapMirror::Telepathy {
             }
         }
     };
-}
+} // namespace KapMirror::Telepathy

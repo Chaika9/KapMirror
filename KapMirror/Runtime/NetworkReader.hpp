@@ -8,22 +8,20 @@
 
 namespace KapMirror {
     class NetworkReader {
-        private:
-        byte *buffer;
+      private:
+        byte* buffer;
         int position;
 
-        public:
-        NetworkReader(byte *_buffer) : buffer(_buffer) {
+      public:
+        explicit NetworkReader(byte* _buffer) : buffer(_buffer) { position = 0; }
+
+        explicit NetworkReader(ArraySegment<byte>& segment) {
+            buffer   = segment.toArray();
             position = 0;
         }
 
-        NetworkReader(ArraySegment<byte>& segment) {
-            buffer = segment.toArray();
-            position = 0;
-        }
-
-        NetworkReader(std::shared_ptr<ArraySegment<byte>> segment) {
-            buffer = segment->toArray();
+        explicit NetworkReader(std::shared_ptr<ArraySegment<byte>> segment) {
+            buffer   = segment->toArray();
             position = 0;
         }
 
@@ -32,9 +30,7 @@ namespace KapMirror {
         /**
          * @brief Reset the position to 0
          */
-        inline void reset() {
-            position = 0;
-        }
+        inline void reset() { position = 0; }
 
         /**
          * @brief Read a value from the buffer
@@ -54,7 +50,7 @@ namespace KapMirror {
          *
          * @return Value
          */
-        byte *readBytes(int count) {
+        byte* readBytes(int count) {
             byte* array = new byte[count];
             std::copy(buffer + position, buffer + position + count, array);
             position += count;
@@ -67,11 +63,11 @@ namespace KapMirror {
          * @return Value
          */
         std::string readString() {
-            short length = read<short>();
-            byte *array = readBytes(length);
-            std::string str((char *)array, length);
+            auto length = read<short>();
+            byte* array = readBytes(length);
+            std::string str((char*)array, length);
             delete[] array;
             return str;
         }
     };
-}
+} // namespace KapMirror

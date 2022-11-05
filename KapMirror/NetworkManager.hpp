@@ -8,7 +8,7 @@
 
 namespace KapMirror {
     class NetworkManager : public KapEngine::Component {
-        private:
+      private:
         static NetworkManager* instance;
 
         std::shared_ptr<Transport> transport;
@@ -17,27 +17,21 @@ namespace KapMirror {
         std::shared_ptr<NetworkServer> server;
         std::shared_ptr<NetworkClient> client;
 
-        public:
+      public:
         int maxConnections = 100;
 
         std::string networkAddress = "127.0.0.1";
-        int networkPort = 7777;
+        int networkPort            = 7777;
 
-        public:
-        NetworkManager(std::shared_ptr<KapEngine::GameObject> go);
+      public:
+        explicit NetworkManager(std::shared_ptr<KapEngine::GameObject> go);
         ~NetworkManager();
 
-        static NetworkManager* getInstance() {
-            return instance;
-        }
+        static NetworkManager* getInstance() { return instance; }
 
-        std::shared_ptr<NetworkServer> getServer() const {
-            return server;
-        }
+        std::shared_ptr<NetworkServer> getServer() const { return server; }
 
-        std::shared_ptr<NetworkClient> getClient() const {
-            return client;
-        }
+        std::shared_ptr<NetworkClient> getClient() const { return client; }
 
         void onAwake() override;
 
@@ -45,62 +39,61 @@ namespace KapMirror {
 
         /**
          * @brief Set transport layer.
-        */
-        void setTransport(std::shared_ptr<Transport> transport);
+         */
+        void setTransport(const std::shared_ptr<Transport>& _transport);
 
-        void setCompression(std::shared_ptr<Compression> compression);
+        void setCompression(const std::shared_ptr<Compression>& _compression);
 
         /**
          * @brief Starts the server, listening for incoming connections.
-        */
+         */
         void startServer();
 
         /**
          * @brief Stops the server from listening and simulating the game.
-        */
+         */
         void stopServer();
 
         /**
          * @brief Starts the client, connects it to the server with ip and port.
-        */
+         */
         void startClient();
 
         /**
          * @brief Stops and disconnects the client.
-        */
+         */
         void stopClient();
 
-        protected:
+      protected:
         /**
          * @brief This is invoked when a server is started.
-        */
+         */
         virtual void onStartServer() {}
 
         /**
          * @brief This is called when a server is stopped.
-        */
+         */
         virtual void onStopServer() {}
 
-        virtual void onServerClientConnected(std::shared_ptr<NetworkConnection> connection) {}
-        virtual void onServerClientDisconnected(std::shared_ptr<NetworkConnection> connection) {}
+        virtual void onServerClientConnected(const std::shared_ptr<NetworkConnection>& connection) {}
+        virtual void onServerClientDisconnected(const std::shared_ptr<NetworkConnection>& connection) {}
 
         /**
          * @brief This is invoked when the client is started.
-        */
+         */
         virtual void onStartClient() {}
 
         /**
          * @brief This is called when a client is stopped.
-        */
+         */
         virtual void onStopClient() {}
 
-        virtual void onClientConnected(std::shared_ptr<NetworkConnection> connection) {}
-        virtual void onClientDisconnected(std::shared_ptr<NetworkConnection> connection) {}
+        virtual void onClientConnected(const std::shared_ptr<NetworkConnection>& connection) {}
+        virtual void onClientDisconnected(const std::shared_ptr<NetworkConnection>& connection) {}
 
-        private:
+      private:
         void initializeSingleton();
 
         void setupServer();
     };
-}
-
+} // namespace KapMirror

@@ -8,12 +8,12 @@
 
 namespace KapMirror::Telepathy {
     class MagnificentSendPipe {
-        private:
+      private:
         std::queue<std::shared_ptr<ArraySegment<byte>>> queue;
         std::mutex queueMutex;
 
-        public:
-        void push(std::shared_ptr<ArraySegment<byte>> data) {
+      public:
+        void push(const std::shared_ptr<ArraySegment<byte>>& data) {
             std::lock_guard<std::mutex> lock(queueMutex);
             queue.push(data);
         }
@@ -49,4 +49,4 @@ namespace KapMirror::Telepathy {
             }
         }
     };
-}
+} // namespace KapMirror::Telepathy

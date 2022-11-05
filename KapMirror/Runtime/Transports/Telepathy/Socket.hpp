@@ -9,12 +9,12 @@
 
 namespace KapMirror::Telepathy {
     class Socket {
-        private:
+      private:
         std::shared_ptr<Address> address;
         int socket_fd;
 
-        public:
-        Socket(std::shared_ptr<Address> _address);
+      public:
+        explicit Socket(std::shared_ptr<Address> _address);
         Socket(std::shared_ptr<Address> _address, SOCKET _socket_fd);
         ~Socket();
 
@@ -31,7 +31,7 @@ namespace KapMirror::Telepathy {
         /**
          * @brief Listen for incoming connections
          */
-        void listen();
+        void listen() const;
 
         /**
          * @brief Connect to remote
@@ -45,14 +45,14 @@ namespace KapMirror::Telepathy {
          */
         std::shared_ptr<Socket> accept();
 
-        void setBlocking(bool blocking);
+        void setBlocking(bool blocking) const;
 
         /**
          * @brief Send data to remote
          *
          * @param data The data to send
          */
-        void send(byte* buffer, int size, uint32_t flags = 0);
+        void send(byte* buffer, int size, uint32_t flags = 0) const;
 
         /**
          * @brief Receive data from remote
@@ -62,7 +62,7 @@ namespace KapMirror::Telepathy {
          *
          * @return int The number of bytes received
          */
-        int receive(byte* buffer, int size, uint32_t flags = 0);
+        int receive(byte* buffer, int size, uint32_t flags = 0) const;
 
         bool isInvalid() const;
 
@@ -70,8 +70,8 @@ namespace KapMirror::Telepathy {
 
         bool isWritable() const;
 
-        static std::shared_ptr<Socket> createSocket(std::shared_ptr<Address> address);
+        static std::shared_ptr<Socket> createSocket(const std::shared_ptr<Address>& address);
 
-        static std::shared_ptr<Socket> createSocket(std::shared_ptr<Address> address, SOCKET socket_fd);
+        static std::shared_ptr<Socket> createSocket(const std::shared_ptr<Address>& address, SOCKET socket_fd);
     };
-}
+} // namespace KapMirror::Telepathy

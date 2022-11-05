@@ -6,25 +6,25 @@
 
 namespace KapMirror {
     class TelepathyTransport : public Transport {
-        private:
+      private:
         std::shared_ptr<Telepathy::Client> client;
 
         std::shared_ptr<Telepathy::Server> server;
 
-        public:
-        int clientMaxMessageSize = 16 * 1024;
+      public:
+        int clientMaxMessageSize     = 16 * 1024;
         int clientMaxReceivesPerTick = 1000;
-        int clientSendQueueLimit = 10000;
-        int clientReceiveQueueLimit = 10000;
+        int clientSendQueueLimit     = 10000;
+        int clientReceiveQueueLimit  = 10000;
 
-        int serverMaxMessageSize = 16 * 1024;
-        int serverMaxReceivesPerTick = 10000;
-        int serverSendQueueLimitPerConnection = 10000;
+        int serverMaxMessageSize                 = 16 * 1024;
+        int serverMaxReceivesPerTick             = 10000;
+        int serverSendQueueLimitPerConnection    = 10000;
         int serverReceiveQueueLimitPerConnection = 10000;
 
-        public:
-        TelepathyTransport();
-        ~TelepathyTransport();
+      public:
+        TelepathyTransport() = default;
+        ~TelepathyTransport() override;
 
         bool clientConnected() override;
 
@@ -46,7 +46,7 @@ namespace KapMirror {
 
         void serverEarlyUpdate() override;
 
-        private:
+      private:
         void createClient();
     };
-}
+} // namespace KapMirror

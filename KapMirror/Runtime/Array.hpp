@@ -4,7 +4,7 @@
 
 namespace KapMirror {
     class Array {
-        public:
+      public:
         /**
          * @brief Resize an array
          *
@@ -33,10 +33,10 @@ namespace KapMirror {
          * @return Copy of the array
          */
         template <typename T>
-        static T *copyArray(T* array, int size) {
+        static T* copyArray(T* array, int size) {
             T* newArray = new T[size];
             std::copy(array, array + size, newArray);
             return newArray;
         }
     };
-}
+} // namespace KapMirror

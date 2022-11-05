@@ -4,9 +4,9 @@
 
 namespace KapMirror {
     class NetworkTime {
-        public:
+      public:
         static long long localTime() {
             return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         }
     };
-}
+} // namespace KapMirror

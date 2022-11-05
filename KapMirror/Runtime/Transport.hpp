@@ -7,7 +7,7 @@
 
 namespace KapMirror {
     class Transport {
-        public:
+      public:
         virtual ~Transport() = default;
 
         virtual bool clientConnected() = 0;
@@ -30,7 +30,7 @@ namespace KapMirror {
 
         virtual void serverEarlyUpdate() = 0;
 
-        public:
+      public:
         static std::shared_ptr<Transport> activeTransport;
 
         std::function<void(Transport&)> onClientConnected;
@@ -41,4 +41,4 @@ namespace KapMirror {
         std::function<void(Transport&, int)> onServerDisconnected;
         std::function<void(Transport&, int, std::shared_ptr<ArraySegment<byte>>)> onServerDataReceived;
     };
-}
+} // namespace KapMirror

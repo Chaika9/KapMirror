@@ -3,25 +3,23 @@
 
 using namespace KapMirror::Telepathy;
 
-TcpClient::TcpClient(std::shared_ptr<Address> address) {
+TcpClient::TcpClient(const std::shared_ptr<Address>& address) {
     if (address == nullptr) {
         throw std::runtime_error("Address cannot be null");
     }
-    socket = Socket::createSocket(address);
+    socket      = Socket::createSocket(address);
     isConnected = false;
 }
 
-TcpClient::TcpClient(std::shared_ptr<Socket> socket) {
+TcpClient::TcpClient(const std::shared_ptr<Socket>& socket) {
     if (socket == nullptr) {
         throw std::runtime_error("Socket cannot be null");
     }
     this->socket = socket;
-    isConnected = true;
+    isConnected  = true;
 }
 
-TcpClient::~TcpClient() {
-    socket->close();
-}
+TcpClient::~TcpClient() { socket->close(); }
 
 void TcpClient::close() {
     socket->close();
@@ -68,6 +66,4 @@ bool TcpClient::isWritable() const {
     return socket->isWritable();
 }
 
-void TcpClient::setBlocking(bool blocking) {
-    socket->setBlocking(blocking);
-}
+void TcpClient::setBlocking(bool blocking) { socket->setBlocking(blocking); }

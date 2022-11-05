@@ -6,26 +6,21 @@
 
 namespace KapMirror {
     class NetworkConnectionToClient : public NetworkConnection {
-        private:
-        unsigned int connectionId;
+      private:
+        int connectionId;
 
-        public:
-        NetworkConnectionToClient(unsigned int _connectionId) : connectionId(_connectionId) {}
-        ~NetworkConnectionToClient() = default;
+      public:
+        explicit NetworkConnectionToClient(int _connectionId) : connectionId(_connectionId) {}
 
         /**
          * @brief Unique identifier for this connection that is assigned by the transport layer.
-        */
-        unsigned int getConnectionId() override {
-            return connectionId;
-        }
+         */
+        int getConnectionId() override { return connectionId; }
 
         /**
          * @brief Disconnects this connection.
          */
-        void disconnect() override {
-            Transport::activeTransport->serverDisconnect(connectionId);
-        }
+        void disconnect() override { Transport::activeTransport->serverDisconnect(connectionId); }
 
         /**
          * @brief Send raw data to the transport.
@@ -39,4 +34,4 @@ namespace KapMirror {
             Transport::activeTransport->serverSend(connectionId, data);
         }
     };
-}
+} // namespace KapMirror

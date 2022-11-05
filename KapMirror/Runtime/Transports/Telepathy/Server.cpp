@@ -6,12 +6,9 @@
 
 using namespace KapMirror::Telepathy;
 
-Server::Server(int _maxMessageSize) : maxMessageSize(_maxMessageSize) {
-}
+Server::Server(int _maxMessageSize) : maxMessageSize(_maxMessageSize) {}
 
-Server::~Server() {
-    close();
-}
+Server::~Server() { close(); }
 
 void Server::close() {
     running = false;
@@ -35,7 +32,7 @@ void Server::start(int port) {
 
 void Server::listen(int port) {
     auto address = std::make_shared<Address>(port);
-    listener = std::make_shared<TcpListener>(address);
+    listener     = std::make_shared<TcpListener>(address);
 
     try {
         listener->start();
@@ -55,16 +52,14 @@ void Server::listen(int port) {
             auto client = listener->acceptTcpClient();
 
             // Create a new connection object
-            auto connection = std::make_shared<ClientConnection>();
-            connection->id = ++counter;
+            auto connection    = std::make_shared<ClientConnection>();
+            connection->id     = ++counter;
             connection->client = client;
             connection->thread = std::thread([this, connection]() { this->handleConnection(connection); });
 
             std::lock_guard<std::mutex> lock(connectionListMutex);
             connectionList.push_back(connection);
-        } catch (SocketException& e) {
-            std::cout << "Server: Exception=" << e.what() << std::endl;
-        }
+        } catch (SocketException& e) { std::cout << "Server: Exception=" << e.what() << std::endl; }
     }
 
     // Wait for all connection threads to finish
@@ -160,8 +155,8 @@ void Server::send(int clientId, std::shared_ptr<ArraySegment<byte>> message) {
     }
 }
 
-void Server::handleConnection(std::shared_ptr<ClientConnection> connection) {
-    receivePipe.push(connection->id, MagnificentReceivePipe::EventType::Connected);
+void Server::handleConnection(const std::shared_ptr<ClientConnection>& connection) {
+    receivePipe.push((int)connection->id, MagnificentReceivePipe::EventType::Connected);
 
     byte* header = new byte[4];
     byte* buffer = new byte[maxMessageSize];
@@ -225,7 +220,7 @@ void Server::handleConnection(std::shared_ptr<ClientConnection> connection) {
                     std::cerr << "Server: Receive pipe is full, dropping messages" << std::endl;
                     break;
                 }
-            } catch(SocketException& e) {
+            } catch (SocketException& e) {
                 std::cerr << "Server: Client Exception=" << e.what() << std::endl;
                 break;
             }
@@ -236,5 +231,5 @@ void Server::handleConnection(std::shared_ptr<ClientConnection> connection) {
     delete[] header;
     delete[] buffer;
 
-    receivePipe.push(connection->id, MagnificentReceivePipe::EventType::Disconnected);
+    receivePipe.push((int)connection->id, MagnificentReceivePipe::EventType::Disconnected);
 }
