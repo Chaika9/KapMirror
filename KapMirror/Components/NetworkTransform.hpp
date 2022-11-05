@@ -19,8 +19,8 @@ namespace KapMirror {
         // Send N messages per second
         int sendRate = 30;
 
-        // Send late update delay (in seconds)
-        int lateUpdateDelay = 1;
+        // Send late update delay (in milliseconds)
+        int lateUpdateDelay = 1000;
 
         long long lastUpdateRefreshTime = 0;
         long long lastLateUpdateRefreshTime = 0;
@@ -77,7 +77,7 @@ namespace KapMirror {
          * Send late update delay (in seconds).
          * (default: 1)
          *
-         * @param lateUpdateDelay The delay in seconds.
+         * @param lateUpdateDelay The delay in milliseconds.
          */
         void setLateUpdateDelay(int delay);
 

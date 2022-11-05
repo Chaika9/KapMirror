@@ -248,7 +248,6 @@ void NetworkServer::unSpawn(const std::shared_ptr<KapEngine::GameObject>& gameOb
 void NetworkServer::destroyObject(unsigned int networkId) {
     std::shared_ptr<KapEngine::GameObject> gameObject;
     if (!getExistingObject(networkId, gameObject)) {
-        KapEngine::Debug::warning("NetworkServer: destroyObject: GameObject not found");
         return;
     }
 

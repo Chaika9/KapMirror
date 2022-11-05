@@ -175,7 +175,6 @@ void NetworkClient::onObjectSpawn(ObjectSpawnMessage& message) {
 void NetworkClient::onObjectDestroy(ObjectDestroyMessage& message) {
     std::shared_ptr<KapEngine::GameObject> gameObject;
     if (!getExistingObject(message.networkId, gameObject)) {
-        KapEngine::Debug::warning("NetworkClient: failed to find object with network id " + std::to_string(message.networkId));
         return;
     }
 

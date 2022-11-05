@@ -24,8 +24,23 @@ void NetworkComponent::onDestroy() {
     }
 }
 
-bool NetworkComponent::isServer() const { return networkIdentity->isServer(); }
+bool NetworkComponent::isServer() const {
+    if (networkIdentity) {
+        return networkIdentity->isServer();
+    }
+    return false;
+}
 
-bool NetworkComponent::isClient() const { return networkIdentity->isClient(); }
+bool NetworkComponent::isClient() const {
+    if (networkIdentity) {
+        return networkIdentity->isClient();
+    }
+    return false;
+}
 
-bool NetworkComponent::isLocal() const { return networkIdentity->isLocal(); }
+bool NetworkComponent::isLocal() const {
+    if (networkIdentity) {
+        return networkIdentity->isLocal();
+    }
+    return true;
+}
