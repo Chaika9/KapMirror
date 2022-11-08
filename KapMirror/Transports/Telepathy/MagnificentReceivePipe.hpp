@@ -1,6 +1,6 @@
 #pragma once
 
-#include "KapMirror/Runtime/ArraySegment.hpp"
+#include "KapMirror/Core/ArraySegment.hpp"
 #include "Platform.hpp"
 #include <memory>
 #include <queue>

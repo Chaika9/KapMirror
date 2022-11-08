@@ -1,6 +1,6 @@
 #pragma once
 
-#include "KapMirror/Runtime/Compression.hpp"
+#include "KapMirror/Core/Compression.hpp"
 
 namespace KapMirror::Experimental {
     class GZipCompression : public Compression {

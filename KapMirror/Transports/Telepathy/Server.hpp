@@ -3,7 +3,7 @@
 #include "TcpListener.hpp"
 #include "MagnificentReceivePipe.hpp"
 #include "MagnificentSendPipe.hpp"
-#include "KapMirror/Runtime/ArraySegment.hpp"
+#include "KapMirror/Core/ArraySegment.hpp"
 #include <thread>
 #include <mutex>
 #include <list>

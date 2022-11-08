@@ -1,6 +1,6 @@
 #include "NetworkManager.hpp"
 #include "Debug.hpp"
-#include "Runtime/Transports/Telepathy/TelepathyTransport.hpp"
+#include "Transports/Telepathy/TelepathyTransport.hpp"
 
 using namespace KapMirror;
 
@@ -81,9 +81,7 @@ void NetworkManager::setupServer() {
             if (identity) {
                 try {
                     identity->onStartServer();
-                } catch (std::exception& e) {
-                    KAP_DEBUG_ERROR("NetworkManager: Exception in onStartServer: " + std::string(e.what()));
-                }
+                } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkManager: Exception in onStartServer: " + std::string(e.what())); }
             }
         }
     }
@@ -92,9 +90,7 @@ void NetworkManager::setupServer() {
 void NetworkManager::stopServer() {
     try {
         onStopServer();
-    } catch (std::exception& e) {
-        KAP_DEBUG_ERROR("NetworkManager: Exception in onStopServer: " + std::string(e.what()));
-    }
+    } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkManager: Exception in onStopServer: " + std::string(e.what())); }
 
     server->shutdown();
 
@@ -105,9 +101,7 @@ void NetworkManager::stopServer() {
             if (identity) {
                 try {
                     identity->onStopServer();
-                } catch (std::exception& e) {
-                    KAP_DEBUG_ERROR("NetworkManager: Exception in onStopServer: " + std::string(e.what()));
-                }
+                } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkManager: Exception in onStopServer: " + std::string(e.what())); }
             }
         }
     }
@@ -135,9 +129,7 @@ void NetworkManager::startClient() {
             if (identity) {
                 try {
                     identity->onStartClient();
-                } catch (std::exception& e) {
-                    KAP_DEBUG_ERROR("NetworkManager: Exception in onStartClient: " + std::string(e.what()));
-                }
+                } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkManager: Exception in onStartClient: " + std::string(e.what())); }
             }
         }
     }
@@ -146,9 +138,7 @@ void NetworkManager::startClient() {
 void NetworkManager::stopClient() {
     try {
         onStopClient();
-    } catch (std::exception& e) {
-        KAP_DEBUG_ERROR("NetworkManager: Exception in onStopClient: " + std::string(e.what()));
-    }
+    } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkManager: Exception in onStopClient: " + std::string(e.what())); }
 
     client->disconnect();
 
@@ -159,9 +149,7 @@ void NetworkManager::stopClient() {
             if (identity) {
                 try {
                     identity->onStopClient();
-                } catch (std::exception& e) {
-                    KAP_DEBUG_ERROR("NetworkManager: Exception in onStopClient: " + std::string(e.what()));
-                }
+                } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkManager: Exception in onStopClient: " + std::string(e.what())); }
             }
         }
     }

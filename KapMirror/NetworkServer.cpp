@@ -1,6 +1,6 @@
 #include "NetworkServer.hpp"
-#include "Runtime/Transport.hpp"
-#include "Runtime/Compression.hpp"
+#include "Core/Transport.hpp"
+#include "Core/Compression.hpp"
 #include "NetworkManager.hpp"
 #include "Components/NetworkIdentity.hpp"
 #include "Components/NetworkComponent.hpp"
@@ -258,9 +258,7 @@ void NetworkServer::destroyObject(unsigned int networkId) {
 
         try {
             identity.onStopServer();
-        } catch (std::exception& e) {
-            KAP_DEBUG_ERROR("NetworkServer: Exception in onStopServer: " + std::string(e.what()));
-        }
+        } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkServer: Exception in onStopServer: " + std::string(e.what())); }
     }
 
     gameObject->destroy();

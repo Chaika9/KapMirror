@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Runtime/NetworkMessage.hpp"
+#include "Core/NetworkMessage.hpp"
 #include <memory>
 
 namespace KapMirror {

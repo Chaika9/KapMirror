@@ -37,7 +37,7 @@ void TelepathyTransport::createClient() {
 
 bool TelepathyTransport::clientConnected() { return client != nullptr && client->connected(); }
 
-void TelepathyTransport::clientConnect(std::string ip, int port) {
+void TelepathyTransport::clientConnect(const std::string& ip, int port) {
     createClient();
     client->connect(ip, port);
 }

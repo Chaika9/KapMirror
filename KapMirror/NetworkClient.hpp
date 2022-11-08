@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Runtime/ArraySegment.hpp"
-#include "Runtime/NetworkConnectionToServer.hpp"
-#include "Runtime/NetworkMessage.hpp"
+#include "Core/ArraySegment.hpp"
+#include "Core/NetworkConnectionToServer.hpp"
+#include "Core/NetworkMessage.hpp"
 #include "Messages.hpp"
 #include "KapEngine.hpp"
 #include "Platform.hpp"

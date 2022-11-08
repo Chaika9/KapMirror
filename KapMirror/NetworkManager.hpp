@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Runtime/Transport.hpp"
-#include "Runtime/Compression.hpp"
-#include "Runtime/NetworkMessage.hpp"
+#include "Core/Transport.hpp"
+#include "Core/Compression.hpp"
+#include "Core/NetworkMessage.hpp"
 #include "KapMirror.hpp"
 #include "Component.hpp"
 

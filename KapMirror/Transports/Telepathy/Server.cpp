@@ -1,6 +1,6 @@
 #include "Server.hpp"
-#include "KapMirror/Runtime/NetworkReader.hpp"
-#include "KapMirror/Runtime/NetworkWriter.hpp"
+#include "KapMirror/Core/NetworkReader.hpp"
+#include "KapMirror/Core/NetworkWriter.hpp"
 #include <iostream>
 #include <cstring>
 

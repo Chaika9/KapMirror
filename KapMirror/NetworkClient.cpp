@@ -1,6 +1,6 @@
 #include "NetworkClient.hpp"
-#include "Runtime/Transport.hpp"
-#include "Runtime/Compression.hpp"
+#include "Core/Transport.hpp"
+#include "Core/Compression.hpp"
 #include "NetworkManager.hpp"
 #include "Components/NetworkIdentity.hpp"
 #include "Components/NetworkComponent.hpp"
@@ -155,9 +155,7 @@ void NetworkClient::onObjectSpawn(ObjectSpawnMessage& message) {
 
     try {
         networkIdentity.onStartClient();
-    } catch (std::exception& e) {
-        KAP_DEBUG_ERROR("NetworkClient: Exception in onStartClient: " + std::string(e.what()));
-    }
+    } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkClient: Exception in onStartClient: " + std::string(e.what())); }
 
     // Deserialize all components
     NetworkReader reader(message.payload);
@@ -185,9 +183,7 @@ void NetworkClient::onObjectDestroy(ObjectDestroyMessage& message) {
 
         try {
             networkIdentity.onStopClient();
-        } catch (std::exception& e) {
-            KAP_DEBUG_ERROR("NetworkClient: Exception in onStopClient: " + std::string(e.what()));
-        }
+        } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkClient: Exception in onStopClient: " + std::string(e.what())); }
     }
 
     gameObject->destroy();

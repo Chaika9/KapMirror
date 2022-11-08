@@ -1,7 +1,7 @@
 #pragma once
 
 #include "NetworkComponent.hpp"
-#include "KapMirror/Runtime/NetworkTime.hpp"
+#include "KapMirror/Core/NetworkTime.hpp"
 #include "Vectors.hpp"
 
 namespace KapMirror {
