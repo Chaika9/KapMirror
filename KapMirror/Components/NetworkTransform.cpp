@@ -85,9 +85,42 @@ void NetworkTransform::updateClient() {
         return;
     }
 
+    // Update transform
     if (activeUpdate && KapMirror::NetworkTime::localTime() - lastUpdateRefreshTime > 1000 / sendRate) {
         lastUpdateRefreshTime = NetworkTime::localTime();
-        // TODO: Implement client authority
+        lastLateUpdateRefreshTime = NetworkTime::localTime();
+
+        auto& transform = getGameObject().getComponent<KapEngine::Transform>();
+        if (transform.getLocalPosition() == lastPosition) {
+            return;
+        }
+        lastPosition = transform.getLocalPosition();
+
+        ObjectTransformMessage message;
+        message.networkId = networkIdentity->getNetworkId();
+        message.position = transform.getLocalPosition();
+        message.rotate = transform.getLocalRotation();
+        message.scale = transform.getLocalScale();
+        getClient()->send(message);
+        return;
+    }
+
+    // Update late transform
+    if (activeLateUpdate && KapMirror::NetworkTime::localTime() - lastLateUpdateRefreshTime > lateUpdateDelay) {
+        lastLateUpdateRefreshTime = NetworkTime::localTime();
+
+        auto& transform = getGameObject().getComponent<KapEngine::Transform>();
+        if (transform.getLocalPosition() == lastPosition) {
+            return;
+        }
+        lastPosition = transform.getLocalPosition();
+
+        ObjectTransformMessage message;
+        message.networkId = networkIdentity->getNetworkId();
+        message.position = transform.getLocalPosition();
+        message.rotate = transform.getLocalRotation();
+        message.scale = transform.getLocalScale();
+        getClient()->send(message);
     }
 }
 
