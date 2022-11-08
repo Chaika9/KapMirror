@@ -33,9 +33,7 @@ void NetworkIdentity::onStartServer() {
         if (networkComponent != nullptr) {
             try {
                 networkComponent->onStartServer();
-            } catch (std::exception& e) {
-                KapEngine::Debug::error("NetworkIdentity: Exception in onStartServer: " + std::string(e.what()));
-            }
+            } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkIdentity: Exception in onStartServer: " + std::string(e.what())); }
         }
     }
 }
@@ -46,7 +44,7 @@ void NetworkIdentity::onStopServer() {
         if (networkComponent != nullptr) {
             try {
                 networkComponent->onStopServer();
-            } catch (std::exception& e) { KapEngine::Debug::error("NetworkIdentity: Exception in onStopServer: " + std::string(e.what())); }
+            } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkIdentity: Exception in onStopServer: " + std::string(e.what())); }
         }
     }
 }
@@ -65,9 +63,7 @@ void NetworkIdentity::onStartClient() {
         if (networkComponent != nullptr) {
             try {
                 networkComponent->onStartClient();
-            } catch (std::exception& e) {
-                KapEngine::Debug::error("NetworkIdentity: Exception in onStartClient: " + std::string(e.what()));
-            }
+            } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkIdentity: Exception in onStartClient: " + std::string(e.what())); }
         }
     }
 }
@@ -78,7 +74,7 @@ void NetworkIdentity::onStopClient() {
         if (networkComponent != nullptr) {
             try {
                 networkComponent->onStopClient();
-            } catch (std::exception& e) { KapEngine::Debug::error("NetworkIdentity: Exception in onStopClient: " + std::string(e.what())); }
+            } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkIdentity: Exception in onStopClient: " + std::string(e.what())); }
         }
     }
 }

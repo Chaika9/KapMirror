@@ -177,7 +177,7 @@ void NetworkServer::onObjectSpawn(ObjectSpawnMessage& message) {
         auto& scene = engine.getSceneManager()->getScene(message.sceneName);
         if (!engine.getPrefabManager()->instantiatePrefab(message.prefabName, scene, gameObject)) {
             KAP_DEBUG_ERROR("NetworkServer: failed to instantiate prefab " + message.prefabName + " with networkId " +
-                                    std::to_string(message.networkId));
+                            std::to_string(message.networkId));
             return;
         }
 
@@ -196,12 +196,14 @@ void NetworkServer::onObjectSpawn(ObjectSpawnMessage& message) {
     }
 
     auto& transform = gameObject->getComponent<KapEngine::Transform>();
-    transform.setPosition(transform.getLocalPosition());
+    transform.setPosition(message.position);
+    transform.setRotation(message.rotation);
+    transform.setScale(message.scale);
 
     auto& networkIdentity = gameObject->getComponent<NetworkIdentity>();
-    networkIdentity.setAuthority(message.isOwner);
 
     if (isNew) {
+        networkIdentity.setAuthority(message.isOwner);
         networkIdentity.setNetworkId(message.networkId);
 
         try {
@@ -283,7 +285,9 @@ void NetworkServer::spawnObject(const std::string& prefabName, KapEngine::SceneM
     message.isOwner = !networkIdentity.hasAuthority();
     message.prefabName = prefabName;
     message.sceneName = scene.getName();
-    message.position = position;
+    message.position = transform.getLocalPosition();
+    message.rotation = transform.getLocalRotation();
+    message.scale = transform.getLocalScale();
     message.payload = writer.toArraySegment();
     sendToAll(message);
 }
@@ -361,6 +365,8 @@ void NetworkServer::updateObject(unsigned int id) {
     message.prefabName = gameObject->getPrefabName();
     message.sceneName = gameObject->getScene().getName();
     message.position = transform.getLocalPosition();
+    message.rotation = transform.getLocalRotation();
+    message.scale = transform.getLocalScale();
     message.payload = writer.toArraySegment();
     sendToAll(message);
 }
@@ -393,6 +399,8 @@ void NetworkServer::sendObject(const std::shared_ptr<KapEngine::GameObject>& gam
     message.prefabName = gameObject->getPrefabName();
     message.sceneName = gameObject->getScene().getName();
     message.position = transform.getLocalPosition();
+    message.rotation = transform.getLocalRotation();
+    message.scale = transform.getLocalScale();
     message.payload = writer.toArraySegment();
     connection->send(message);
 }
@@ -410,7 +418,7 @@ void NetworkServer::onObjectTransformUpdate(ObjectTransformMessage& message) {
 
     auto& transform = gameObject->getComponent<KapEngine::Transform>();
     transform.setPosition(message.position);
-    transform.setRotation(message.rotate);
+    transform.setRotation(message.rotation);
     transform.setScale(message.scale);
 }
 

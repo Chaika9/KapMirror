@@ -8,7 +8,7 @@
 namespace KapMirror {
     class NetworkComponent : public KapEngine::Component {
       protected:
-        NetworkIdentity* networkIdentity;
+        NetworkIdentity* networkIdentity = nullptr;
 
       public:
         NetworkComponent(std::shared_ptr<KapEngine::GameObject> go, const std::string& name);

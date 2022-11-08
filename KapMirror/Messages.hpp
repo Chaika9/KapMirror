@@ -14,6 +14,8 @@ namespace KapMirror {
         // Prefab name
         std::string prefabName;
         KapEngine::Tools::Vector3 position;
+        KapEngine::Tools::Vector3 rotation;
+        KapEngine::Tools::Vector3 scale;
         // Custom payload
         std::shared_ptr<ArraySegment<byte>> payload;
 
@@ -62,7 +64,7 @@ namespace KapMirror {
         // networkId of existing object
         unsigned int networkId;
         KapEngine::Tools::Vector3 position;
-        KapEngine::Tools::Vector3 rotate;
+        KapEngine::Tools::Vector3 rotation;
         KapEngine::Tools::Vector3 scale;
 
         void serialize(KapMirror::NetworkWriter& writer) override {
@@ -70,9 +72,9 @@ namespace KapMirror {
             writer.write(position.getX());
             writer.write(position.getY());
             writer.write(position.getZ());
-            writer.write(rotate.getX());
-            writer.write(rotate.getY());
-            writer.write(rotate.getZ());
+            writer.write(rotation.getX());
+            writer.write(rotation.getY());
+            writer.write(rotation.getZ());
             writer.write(scale.getX());
             writer.write(scale.getY());
             writer.write(scale.getZ());
@@ -83,9 +85,9 @@ namespace KapMirror {
             position.setX(reader.read<float>());
             position.setY(reader.read<float>());
             position.setZ(reader.read<float>());
-            rotate.setX(reader.read<float>());
-            rotate.setY(reader.read<float>());
-            rotate.setZ(reader.read<float>());
+            rotation.setX(reader.read<float>());
+            rotation.setY(reader.read<float>());
+            rotation.setZ(reader.read<float>());
             scale.setX(reader.read<float>());
             scale.setY(reader.read<float>());
             scale.setZ(reader.read<float>());

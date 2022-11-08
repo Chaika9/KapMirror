@@ -45,7 +45,7 @@ void NetworkTransform::updateServer() {
         ObjectTransformMessage message;
         message.networkId = networkIdentity->getNetworkId();
         message.position = transform.getLocalPosition();
-        message.rotate = transform.getLocalRotation();
+        message.rotation = transform.getLocalRotation();
         message.scale = transform.getLocalScale();
         getServer()->sendToAll(message);
         return;
@@ -65,7 +65,7 @@ void NetworkTransform::updateServer() {
         ObjectTransformMessage message;
         message.networkId = networkIdentity->getNetworkId();
         message.position = transform.getLocalPosition();
-        message.rotate = transform.getLocalRotation();
+        message.rotation = transform.getLocalRotation();
         message.scale = transform.getLocalScale();
         getServer()->sendToAll(message);
     }
@@ -96,7 +96,7 @@ void NetworkTransform::updateClient() {
         ObjectTransformMessage message;
         message.networkId = networkIdentity->getNetworkId();
         message.position = transform.getLocalPosition();
-        message.rotate = transform.getLocalRotation();
+        message.rotation = transform.getLocalRotation();
         message.scale = transform.getLocalScale();
         getClient()->send(message);
         return;
@@ -115,7 +115,7 @@ void NetworkTransform::updateClient() {
         ObjectTransformMessage message;
         message.networkId = networkIdentity->getNetworkId();
         message.position = transform.getLocalPosition();
-        message.rotate = transform.getLocalRotation();
+        message.rotation = transform.getLocalRotation();
         message.scale = transform.getLocalScale();
         getClient()->send(message);
     }
