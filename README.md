@@ -37,7 +37,7 @@ RType is a remake of the classic R-Type game. It is a 2D space shooter game wher
 
 ## Low Level Transports
 
-* (built in) [Telepathy](https://github.com/Chaika9/KapMirror/tree/main/KapMirror/Runtime/Transports/Telepathy): TCP
+* (built in) [Telepathy](https://github.com/Chaika9/KapMirror/tree/main/KapMirror/Transports/Telepathy): TCP
 * [Sylph](https://github.com/Chaika9/SylphTransport): UDP
 
 **Credits**
