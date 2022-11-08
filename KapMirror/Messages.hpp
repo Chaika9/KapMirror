@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Vectors.hpp"
 #include "Runtime/NetworkMessage.hpp"
 #include <memory>
 
@@ -12,9 +13,7 @@ namespace KapMirror {
         std::string sceneName;
         // Prefab name
         std::string prefabName;
-        float x;
-        float y;
-        float z;
+        KapEngine::Tools::Vector3 position;
         // Custom payload
         std::shared_ptr<ArraySegment<byte>> payload;
 
@@ -23,9 +22,9 @@ namespace KapMirror {
             writer.write(isOwner);
             writer.writeString(sceneName);
             writer.writeString(prefabName);
-            writer.write(x);
-            writer.write(y);
-            writer.write(z);
+            writer.write(position.getX());
+            writer.write(position.getY());
+            writer.write(position.getZ());
             writer.write(payload->getSize());
             writer.writeBytes(payload->toArray(), payload->getOffset(), payload->getSize());
         }
@@ -35,9 +34,9 @@ namespace KapMirror {
             isOwner = reader.read<bool>();
             sceneName = reader.readString();
             prefabName = reader.readString();
-            x = reader.read<float>();
-            y = reader.read<float>();
-            z = reader.read<float>();
+            position.setX(reader.read<float>());
+            position.setY(reader.read<float>());
+            position.setZ(reader.read<float>());
 
             int payloadSize = reader.read<int>();
             if (payloadSize > 0) {
@@ -59,51 +58,37 @@ namespace KapMirror {
         void deserialize(KapMirror::NetworkReader& reader) override { networkId = reader.read<unsigned int>(); }
     };
 
-    struct ObjectUpdateMessage : NetworkMessage {
-        // networkId of existing object
-        unsigned int networkId;
-        // Custom payload
-        std::shared_ptr<ArraySegment<byte>> payload;
-
-        void serialize(KapMirror::NetworkWriter& writer) override {
-            writer.write(networkId);
-            writer.write(payload->getSize());
-            writer.writeBytes(payload->toArray(), payload->getOffset(), payload->getSize());
-        }
-
-        void deserialize(KapMirror::NetworkReader& reader) override {
-            networkId = reader.read<unsigned int>();
-
-            int payloadSize = reader.read<int>();
-            if (payloadSize > 0) {
-                byte* segmentValue = reader.readBytes(payloadSize);
-                payload = std::make_shared<ArraySegment<byte>>(segmentValue, 0, payloadSize);
-                delete[] segmentValue;
-            } else {
-                payload = std::make_shared<ArraySegment<byte>>();
-            }
-        }
-    };
-
     struct ObjectTransformMessage : NetworkMessage {
         // networkId of existing object
         unsigned int networkId;
-        float x;
-        float y;
-        float z;
+        KapEngine::Tools::Vector3 position;
+        KapEngine::Tools::Vector3 rotate;
+        KapEngine::Tools::Vector3 scale;
 
         void serialize(KapMirror::NetworkWriter& writer) override {
             writer.write(networkId);
-            writer.write(x);
-            writer.write(y);
-            writer.write(z);
+            writer.write(position.getX());
+            writer.write(position.getY());
+            writer.write(position.getZ());
+            writer.write(rotate.getX());
+            writer.write(rotate.getY());
+            writer.write(rotate.getZ());
+            writer.write(scale.getX());
+            writer.write(scale.getY());
+            writer.write(scale.getZ());
         }
 
         void deserialize(KapMirror::NetworkReader& reader) override {
             networkId = reader.read<unsigned int>();
-            x = reader.read<float>();
-            y = reader.read<float>();
-            z = reader.read<float>();
+            position.setX(reader.read<float>());
+            position.setY(reader.read<float>());
+            position.setZ(reader.read<float>());
+            rotate.setX(reader.read<float>());
+            rotate.setY(reader.read<float>());
+            rotate.setZ(reader.read<float>());
+            scale.setX(reader.read<float>());
+            scale.setY(reader.read<float>());
+            scale.setZ(reader.read<float>());
         }
     };
 } // namespace KapMirror

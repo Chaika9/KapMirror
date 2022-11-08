@@ -43,7 +43,7 @@ namespace KapMirror {
         /**
          * @brief Connect client to a NetworkServer by ip and port.
          */
-        void connect(std::string ip, int port);
+        void connect(const std::string& ip, int port);
 
         /**
          * @brief Disconnect from server.
@@ -124,11 +124,6 @@ namespace KapMirror {
          * @brief Update GameObject for all clients.
          */
         void updateObject(unsigned int id);
-
-        /**
-         * @brief Update GameObject for all clients.
-         */
-        void updateObject(const std::shared_ptr<KapEngine::GameObject>& gameObject);
 
         /**
          * @brief Get existing GameObject with networkId.
