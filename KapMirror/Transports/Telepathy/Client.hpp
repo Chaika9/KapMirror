@@ -30,7 +30,7 @@ namespace KapMirror::Telepathy {
         explicit Client(int _maxMessageSize = 1024);
         ~Client();
 
-        void connect(std::string ip, int port);
+        void connect(const std::string& ip, int port);
 
         void disconnect();
 

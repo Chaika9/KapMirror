@@ -176,8 +176,8 @@ void NetworkServer::onObjectSpawn(ObjectSpawnMessage& message) {
     if (!getExistingObject(message.networkId, gameObject)) {
         auto& scene = engine.getSceneManager()->getScene(message.sceneName);
         if (!engine.getPrefabManager()->instantiatePrefab(message.prefabName, scene, gameObject)) {
-            KAP_DEBUG_ERROR("NetworkServer: failed to instantiate prefab " + message.prefabName + " with networkId " +
-                            std::to_string(message.networkId));
+            KapEngine::Debug::error("NetworkServer: failed to instantiate prefab " + message.prefabName + " with networkId " +
+                                    std::to_string(message.networkId));
             return;
         }
 
@@ -186,12 +186,12 @@ void NetworkServer::onObjectSpawn(ObjectSpawnMessage& message) {
     }
 
     if (gameObject == nullptr) {
-        KAP_DEBUG_ERROR("NetworkServer: failed to find or instantiate object with network id " + std::to_string(message.networkId));
+        KapEngine::Debug::error("NetworkServer: failed to find or instantiate object with network id " + std::to_string(message.networkId));
         return;
     }
 
     if (!gameObject->hasComponent<NetworkIdentity>()) {
-        KAP_DEBUG_ERROR("NetworkServer: object " + message.prefabName + " does not have NetworkIdentity component");
+        KapEngine::Debug::warning("NetworkServer: object " + message.prefabName + " does not have NetworkIdentity component");
         return;
     }
 
@@ -208,7 +208,7 @@ void NetworkServer::onObjectSpawn(ObjectSpawnMessage& message) {
 
         try {
             networkIdentity.onStartServer();
-        } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkServer: Exception in onStartServer: " + std::string(e.what())); }
+        } catch (std::exception& e) { KapEngine::Debug::error("NetworkServer: Exception in onStartServer: " + std::string(e.what())); }
     }
 
     // Deserialize all components
@@ -221,7 +221,7 @@ void NetworkServer::onObjectSpawn(ObjectSpawnMessage& message) {
                 networkCompenent->deserialize(reader);
             }
         }
-    } catch (...) { KAP_DEBUG_ERROR("NetworkServer: failed to deserialize custom payload for object " + message.prefabName); }
+    } catch (...) { KapEngine::Debug::error("NetworkServer: failed to deserialize custom payload for object " + message.prefabName); }
 }
 
 void NetworkServer::spawnObject(const std::string& prefabName, KapEngine::SceneManagement::Scene& scene,
@@ -230,12 +230,12 @@ void NetworkServer::spawnObject(const std::string& prefabName, KapEngine::SceneM
                                 std::shared_ptr<KapEngine::GameObject>& gameObject) {
 
     if (!engine.getPrefabManager()->instantiatePrefab(prefabName, scene, gameObject)) {
-        KAP_DEBUG_ERROR("NetworkServer: Failed to spawn object " + prefabName);
+        KapEngine::Debug::error("NetworkServer: Failed to spawn object " + prefabName);
         return;
     }
 
     if (!gameObject->hasComponent<NetworkIdentity>()) {
-        KAP_DEBUG_ERROR("NetworkServer: spawnObject: GameObject does not have NetworkIdentity component");
+        KapEngine::Debug::warning("NetworkServer: spawnObject: GameObject does not have NetworkIdentity component");
         gameObject->destroy();
         return;
     }
@@ -255,7 +255,7 @@ void NetworkServer::spawnObject(const std::string& prefabName, KapEngine::SceneM
     try {
         networkIdentity.onStartServer();
     } catch (std::exception& e) {
-        KAP_DEBUG_ERROR("NetworkServer: Exception in onStartServer: " + std::string(e.what()));
+        KapEngine::Debug::error("NetworkServer: Exception in onStartServer: " + std::string(e.what()));
         return;
     }
 
@@ -278,7 +278,7 @@ void NetworkServer::spawnObject(const std::string& prefabName, KapEngine::SceneM
                 networkCompenent->serialize(writer);
             }
         }
-    } catch (...) { KAP_DEBUG_ERROR("NetworkServer: Failed to serialize custom payload"); }
+    } catch (...) { KapEngine::Debug::error("NetworkServer: Failed to serialize custom payload"); }
 
     ObjectSpawnMessage message;
     message.networkId = networkIdentity.getNetworkId();
@@ -294,12 +294,12 @@ void NetworkServer::spawnObject(const std::string& prefabName, KapEngine::SceneM
 
 void NetworkServer::unSpawn(const std::shared_ptr<KapEngine::GameObject>& gameObject) {
     if (gameObject == nullptr) {
-        KAP_DEBUG_ERROR("NetworkServer: Cannot unSpawn, gameObject is null");
+        KapEngine::Debug::error("NetworkServer: Cannot unSpawn, gameObject is null");
         return;
     }
 
     if (!gameObject->hasComponent<NetworkIdentity>()) {
-        KAP_DEBUG_ERROR("NetworkServer: Cannot unSpawn, gameObject has no NetworkIdentity");
+        KapEngine::Debug::warning("NetworkServer: Cannot unSpawn, gameObject has no NetworkIdentity");
         return;
     }
 
@@ -316,7 +316,7 @@ void NetworkServer::destroyObject(unsigned int networkId) {
     networkObjects.remove(networkId);
 
     if (!gameObject->hasComponent<NetworkIdentity>()) {
-        KAP_DEBUG_ERROR("NetworkServer: destroyObject: GameObject does not have NetworkIdentity component");
+        KapEngine::Debug::warning("NetworkServer: destroyObject: GameObject does not have NetworkIdentity component");
         return;
     }
 
@@ -324,7 +324,7 @@ void NetworkServer::destroyObject(unsigned int networkId) {
 
     try {
         identity.onStopServer();
-    } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkServer: Exception in onStopServer: " + std::string(e.what())); }
+    } catch (std::exception& e) { KapEngine::Debug::error("NetworkServer: Exception in onStopServer: " + std::string(e.what())); }
 
     gameObject->destroy();
 
@@ -336,12 +336,11 @@ void NetworkServer::destroyObject(unsigned int networkId) {
 void NetworkServer::updateObject(unsigned int id) {
     std::shared_ptr<KapEngine::GameObject> gameObject;
     if (!getExistingObject(id, gameObject)) {
-        KapEngine::Debug::warning("NetworkServer: updateObject: GameObject not found");
         return;
     }
 
     if (!gameObject->hasComponent<NetworkIdentity>()) {
-        KAP_DEBUG_ERROR("NetworkServer: object " + gameObject->getPrefabName() + " does not have NetworkIdentity component");
+        KapEngine::Debug::warning("NetworkServer: object " + gameObject->getPrefabName() + " does not have NetworkIdentity component");
         return;
     }
 
@@ -357,7 +356,7 @@ void NetworkServer::updateObject(unsigned int id) {
                 networkCompenent->serialize(writer);
             }
         }
-    } catch (...) { KAP_DEBUG_ERROR("NetworkServer: Failed to serialize custom payload"); }
+    } catch (...) { KapEngine::Debug::error("NetworkServer: Failed to serialize custom payload"); }
 
     ObjectSpawnMessage message;
     message.networkId = identity.getNetworkId();
@@ -374,7 +373,7 @@ void NetworkServer::updateObject(unsigned int id) {
 void NetworkServer::sendObject(const std::shared_ptr<KapEngine::GameObject>& gameObject,
                                const std::shared_ptr<NetworkConnectionToClient>& connection) {
     if (!gameObject->hasComponent<NetworkIdentity>()) {
-        KapEngine::Debug::error("NetworkServer: sendObject: GameObject does not have NetworkIdentity component");
+        KapEngine::Debug::warning("NetworkServer: sendObject: GameObject does not have NetworkIdentity component");
         return;
     }
 
@@ -391,7 +390,7 @@ void NetworkServer::sendObject(const std::shared_ptr<KapEngine::GameObject>& gam
                 networkCompenent->serialize(writer);
             }
         }
-    } catch (...) { KAP_DEBUG_ERROR("NetworkServer: Failed to serialize custom payload"); }
+    } catch (...) { KapEngine::Debug::error("NetworkServer: Failed to serialize custom payload"); }
 
     ObjectSpawnMessage message;
     message.networkId = networkIdentity.getNetworkId();

@@ -50,7 +50,7 @@ namespace KapMirror::Telepathy {
 
         void disconnectClient(int clientId);
 
-        void send(int clientId, std::shared_ptr<ArraySegment<byte>> message);
+        void send(int clientId, const std::shared_ptr<ArraySegment<byte>>& message);
 
       private:
         void listen(int port);

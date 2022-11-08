@@ -1,7 +1,7 @@
 #include "Client.hpp"
 #include "KapMirror/Core/NetworkReader.hpp"
 #include "KapMirror/Core/NetworkWriter.hpp"
-#include <iostream>
+#include "Debug.hpp"
 #include <cstring>
 
 using namespace KapMirror::Telepathy;
@@ -30,10 +30,10 @@ void Client::dispose() {
     client = nullptr;
 }
 
-void Client::connect(std::string ip, int port) {
+void Client::connect(const std::string& ip, int port) {
     if (connecting() || connected()) {
-        std::cerr << "Client: Telepathy Client can not create connection because an existing connection is connecting or connected"
-                  << std::endl;
+        KapEngine::Debug::error(
+            "Client: Telepathy Client can not create connection because an existing connection is connecting or connected");
         return;
     }
 
@@ -99,18 +99,19 @@ int Client::tick(int processLimit) {
 
 void Client::send(const std::shared_ptr<ArraySegment<byte>>& message) {
     if (!connected()) {
-        std::cerr << "Client.Send: not connected!" << std::endl;
+        KapEngine::Debug::error("Client.Send: not connected!");
         return;
     }
     if (message->getSize() > maxMessageSize) {
-        std::cerr << "Client.Send: message too big: " << message->getSize() << ", Limit: " << maxMessageSize << std::endl;
+        KapEngine::Debug::error("Client.Send: message too big: " + std::to_string(message->getSize()) +
+                                ", Limit: " + std::to_string(maxMessageSize));
         return;
     }
     if (sendPipe.getSize() > sendQueueLimit) {
-        std::cerr << "Client.Send: sendPipe reached limit of " << sendQueueLimit
-                  << ". This can happen if we call send faster than the network can process messages. Disconnecting to avoid ever growing "
-                     "memory & latency."
-                  << std::endl;
+        KapEngine::Debug::error(
+            "Client.Send: sendPipe reached limit of " + std::to_string(sendQueueLimit) +
+            ". This can happen if we call send faster than the network can process messages. Disconnecting to avoid ever growing "
+            "memory & latency.");
 
         // Disconnect if the send queue is full
         disconnect();
@@ -127,7 +128,7 @@ void Client::run(const std::string& ip, int port) {
     try {
         client->connect();
     } catch (SocketException& e) {
-        std::cerr << "Client: Error=" << e.what() << std::endl;
+        KapEngine::Debug::error("Client: Error=" + std::string(e.what()));
         isConnecting = false;
 
         receivePipe.push(0, MagnificentReceivePipe::EventType::Disconnected);
@@ -182,7 +183,7 @@ void Client::run(const std::string& ip, int port) {
                 int messageSize = reader.read<int>();
 
                 if (messageSize <= 0 || messageSize > maxMessageSize) {
-                    std::cerr << "Client: Invalid message size Size=" << messageSize << std::endl;
+                    KapEngine::Debug::error("Client: Invalid message size: " + std::to_string(messageSize));
                     break;
                 }
 
@@ -197,11 +198,11 @@ void Client::run(const std::string& ip, int port) {
                 receivePipe.push(0, MagnificentReceivePipe::EventType::Data, message);
 
                 if (receivePipe.getSize() >= receiveQueueLimit) {
-                    std::cerr << "Client: Receive pipe is full, dropping messages" << std::endl;
+                    KapEngine::Debug::error("Client: Receive pipe is full, dropping messages");
                     break;
                 }
             } catch (SocketException& e) {
-                std::cerr << "Client: Exception=" << e.what() << std::endl;
+                KapEngine::Debug::error("Client: Exception=" + std::string(e.what()));
                 break;
             }
         }

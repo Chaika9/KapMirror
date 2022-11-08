@@ -27,6 +27,12 @@ namespace KapMirror {
             writer.write(position.getX());
             writer.write(position.getY());
             writer.write(position.getZ());
+            writer.write(rotation.getX());
+            writer.write(rotation.getY());
+            writer.write(rotation.getZ());
+            writer.write(scale.getX());
+            writer.write(scale.getY());
+            writer.write(scale.getZ());
             writer.write(payload->getSize());
             writer.writeBytes(payload->toArray(), payload->getOffset(), payload->getSize());
         }
@@ -39,6 +45,12 @@ namespace KapMirror {
             position.setX(reader.read<float>());
             position.setY(reader.read<float>());
             position.setZ(reader.read<float>());
+            rotation.setX(reader.read<float>());
+            rotation.setY(reader.read<float>());
+            rotation.setZ(reader.read<float>());
+            scale.setX(reader.read<float>());
+            scale.setY(reader.read<float>());
+            scale.setZ(reader.read<float>());
 
             int payloadSize = reader.read<int>();
             if (payloadSize > 0) {

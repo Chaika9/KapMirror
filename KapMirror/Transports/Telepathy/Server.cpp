@@ -1,7 +1,7 @@
 #include "Server.hpp"
 #include "KapMirror/Core/NetworkReader.hpp"
 #include "KapMirror/Core/NetworkWriter.hpp"
-#include <iostream>
+#include "Debug.hpp"
 #include <cstring>
 
 using namespace KapMirror::Telepathy;
@@ -37,7 +37,7 @@ void Server::listen(int port) {
     try {
         listener->start();
     } catch (SocketException& e) {
-        std::cerr << "Server: Exception=" << e.what() << std::endl;
+        KapEngine::Debug::error("Server: Exception=" + std::string(e.what()));
         return;
     }
 
@@ -59,7 +59,7 @@ void Server::listen(int port) {
 
             std::lock_guard<std::mutex> lock(connectionListMutex);
             connectionList.push_back(connection);
-        } catch (SocketException& e) { std::cout << "Server: Exception=" << e.what() << std::endl; }
+        } catch (SocketException& e) { KapEngine::Debug::error("Server: Exception=" + std::string(e.what())); }
     }
 
     // Wait for all connection threads to finish
@@ -129,20 +129,20 @@ void Server::disconnectClient(int clientId) {
     }
 }
 
-void Server::send(int clientId, std::shared_ptr<ArraySegment<byte>> message) {
+void Server::send(int clientId, const std::shared_ptr<ArraySegment<byte>>& message) {
     std::lock_guard<std::mutex> lock(connectionListMutex);
     if (connectionList.empty()) {
         return;
     }
     if (message->getSize() > maxMessageSize) {
-        std::cerr << "Client: Message too large Size=" << message->getSize() << std::endl;
+        KapEngine::Debug::error("Server: Message too large Size=" + std::to_string(message->getSize()));
         return;
     }
 
     for (auto& connection : connectionList) {
         if (connection->id == clientId) {
             if (connection->sendPipe.getSize() > sendQueueLimit) {
-                std::cerr << "Client: Send queue full" << std::endl;
+                KapEngine::Debug::error("Server: Send queue full");
 
                 // Disconnect the client if the send queue is full
                 disconnectClient(clientId);
@@ -202,7 +202,7 @@ void Server::handleConnection(const std::shared_ptr<ClientConnection>& connectio
                 int messageSize = reader.read<int>();
 
                 if (messageSize <= 0 || messageSize > maxMessageSize) {
-                    std::cerr << "Server: Invalid message size Size=" << messageSize << std::endl;
+                    KapEngine::Debug::error("Server: Invalid message size=" + std::to_string(messageSize));
                     break;
                 }
 
@@ -217,11 +217,11 @@ void Server::handleConnection(const std::shared_ptr<ClientConnection>& connectio
                 receivePipe.push(connection->id, MagnificentReceivePipe::EventType::Data, message);
 
                 if (receivePipe.getSize() >= receiveQueueLimit) {
-                    std::cerr << "Server: Receive pipe is full, dropping messages" << std::endl;
+                    KapEngine::Debug::error("Server: Receive pipe is full, dropping messages");
                     break;
                 }
             } catch (SocketException& e) {
-                std::cerr << "Server: Client Exception=" << e.what() << std::endl;
+                KapEngine::Debug::error("Server: Client Exception=" + std::string(e.what()));
                 break;
             }
         }
