@@ -188,11 +188,6 @@ namespace KapMirror {
         void updateObject(unsigned int id);
 
         /**
-         * @brief Update GameObject for all clients.
-         */
-        void updateObject(const std::shared_ptr<KapEngine::GameObject>& gameObject);
-
-        /**
          * @brief Get existing GameObject with networkId.
          */
         bool getExistingObject(unsigned int id, std::shared_ptr<KapEngine::GameObject>& gameObject) {
@@ -206,6 +201,7 @@ namespace KapMirror {
 
         void addTransportHandlers();
         void removeTransportHandlers();
+        void registerSystemHandlers();
 
         void onTransportConnect(int connectionId);
         void onTransportDisconnect(int connectionId);
@@ -218,6 +214,10 @@ namespace KapMirror {
 
         void sendObject(const std::shared_ptr<KapEngine::GameObject>& gameObject,
                         const std::shared_ptr<NetworkConnectionToClient>& connection);
+
+        // KapEngine
+        void onObjectSpawn(ObjectSpawnMessage& message);
+        void onObjectTransformUpdate(ObjectTransformMessage& message);
 
       public:
         std::function<void(std::shared_ptr<NetworkConnection>)> onConnectedEvent;

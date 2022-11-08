@@ -14,7 +14,7 @@ NetworkClient::NetworkClient(NetworkManager& _manager, KapEngine::KEngine& _engi
     connection = nullptr;
 }
 
-void NetworkClient::connect(std::string ip, int port) {
+void NetworkClient::connect(const std::string& ip, int port) {
     if (Transport::activeTransport == nullptr) {
         KapEngine::Debug::error("NetworkClient: No transport set, cannot initialize");
         throw std::runtime_error("No transport set");
@@ -124,38 +124,43 @@ bool NetworkClient::unpackAndInvoke(std::shared_ptr<ArraySegment<byte>> data) {
 #pragma region KapEngine
 
 void NetworkClient::onObjectSpawn(ObjectSpawnMessage& message) {
+    bool isNew = false;
     std::shared_ptr<KapEngine::GameObject> gameObject;
     if (!getExistingObject(message.networkId, gameObject)) {
         auto& scene = engine.getSceneManager()->getScene(message.sceneName);
         if (!engine.getPrefabManager()->instantiatePrefab(message.prefabName, scene, gameObject)) {
-            KapEngine::Debug::error("NetworkClient: failed to instantiate prefab " + message.prefabName + " with networkId " +
+            KAP_DEBUG_ERROR("NetworkClient: failed to instantiate prefab " + message.prefabName + " with networkId " +
                                     std::to_string(message.networkId));
             return;
         }
 
+        isNew = true;
         networkObjects[message.networkId] = gameObject;
     }
 
     if (gameObject == nullptr) {
-        KapEngine::Debug::error("NetworkClient: failed to find or instantiate object with network id " + std::to_string(message.networkId));
+        KAP_DEBUG_ERROR("NetworkClient: failed to find or instantiate object with network id " + std::to_string(message.networkId));
         return;
     }
 
     if (!gameObject->hasComponent<NetworkIdentity>()) {
-        KapEngine::Debug::error("NetworkClient: object " + message.prefabName + " does not have NetworkIdentity component");
+        KAP_DEBUG_ERROR("NetworkClient: object " + message.prefabName + " does not have NetworkIdentity component");
         return;
     }
 
     auto& transform = gameObject->getComponent<KapEngine::Transform>();
-    transform.setPosition(KapEngine::Tools::Vector3(message.x, message.y, message.z));
+    transform.setPosition(message.position);
 
     auto& networkIdentity = gameObject->getComponent<NetworkIdentity>();
-    networkIdentity.setNetworkId(message.networkId);
     networkIdentity.setAuthority(message.isOwner);
 
-    try {
-        networkIdentity.onStartClient();
-    } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkClient: Exception in onStartClient: " + std::string(e.what())); }
+    if (isNew) {
+        networkIdentity.setNetworkId(message.networkId);
+
+        try {
+            networkIdentity.onStartClient();
+        } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkClient: Exception in onStartClient: " + std::string(e.what())); }
+    }
 
     // Deserialize all components
     NetworkReader reader(message.payload);
@@ -167,7 +172,7 @@ void NetworkClient::onObjectSpawn(ObjectSpawnMessage& message) {
                 networkCompenent->deserialize(reader);
             }
         }
-    } catch (...) { KapEngine::Debug::error("NetworkClient: failed to deserialize custom payload for object " + message.prefabName); }
+    } catch (...) { KAP_DEBUG_ERROR("NetworkClient: failed to deserialize custom payload for object " + message.prefabName); }
 }
 
 void NetworkClient::onObjectDestroy(ObjectDestroyMessage& message) {
@@ -178,23 +183,30 @@ void NetworkClient::onObjectDestroy(ObjectDestroyMessage& message) {
 
     networkObjects.remove(message.networkId);
 
-    if (gameObject->hasComponent<NetworkIdentity>()) {
-        auto& networkIdentity = gameObject->getComponent<NetworkIdentity>();
-
-        try {
-            networkIdentity.onStopClient();
-        } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkClient: Exception in onStopClient: " + std::string(e.what())); }
+    if (!gameObject->hasComponent<NetworkIdentity>()) {
+        KAP_DEBUG_ERROR("NetworkClient: destroyObject: GameObject does not have NetworkIdentity component");
+        return;
     }
+
+    auto& networkIdentity = gameObject->getComponent<NetworkIdentity>();
+
+    try {
+        networkIdentity.onStopClient();
+    } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkClient: Exception in onStopClient: " + std::string(e.what())); }
 
     gameObject->destroy();
 }
 
 void NetworkClient::onObjectTransformUpdate(ObjectTransformMessage& message) {
     std::shared_ptr<KapEngine::GameObject> gameObject;
-    if (getExistingObject(message.networkId, gameObject)) {
-        auto& transform = gameObject->getComponent<KapEngine::Transform>();
-        transform.setPosition(KapEngine::Tools::Vector3(message.x, message.y, message.z));
+    if (!getExistingObject(message.networkId, gameObject)) {
+        return;
     }
+
+    auto& transform = gameObject->getComponent<KapEngine::Transform>();
+    transform.setPosition(message.position);
+    transform.setRotation(message.rotate);
+    transform.setScale(message.scale);
 }
 
 void NetworkClient::updateObject(unsigned int id) {
@@ -203,6 +215,14 @@ void NetworkClient::updateObject(unsigned int id) {
         KapEngine::Debug::warning("NetworkClient: updateObject: GameObject not found");
         return;
     }
+
+    if (!gameObject->hasComponent<NetworkIdentity>()) {
+        KAP_DEBUG_ERROR("NetworkClient: object " + gameObject->getPrefabName() + " does not have NetworkIdentity component");
+        return;
+    }
+
+    auto& identity = gameObject->getComponent<NetworkIdentity>();
+    auto& transform = gameObject->getComponent<KapEngine::Transform>();
 
     NetworkWriter writer;
     try {
@@ -213,27 +233,16 @@ void NetworkClient::updateObject(unsigned int id) {
                 networkCompenent->serialize(writer);
             }
         }
-    } catch (...) { KapEngine::Debug::error("NetworkClient: Failed to serialize custom payload"); }
+    } catch (...) { KAP_DEBUG_ERROR("NetworkClient: Failed to serialize custom payload"); }
 
-    ObjectUpdateMessage message;
-    message.networkId = id;
+    ObjectSpawnMessage message;
+    message.networkId = identity.getNetworkId();
+    message.isOwner = identity.hasAuthority();
+    message.prefabName = gameObject->getPrefabName();
+    message.sceneName = gameObject->getScene().getName();
+    message.position = transform.getLocalPosition();
     message.payload = writer.toArraySegment();
     send(message);
-}
-
-void NetworkClient::updateObject(const std::shared_ptr<KapEngine::GameObject>& gameObject) {
-    if (gameObject == nullptr) {
-        KapEngine::Debug::error("NetworkClient: updateObject: GameObject is null");
-        return;
-    }
-
-    if (!gameObject->hasComponent<NetworkIdentity>()) {
-        KapEngine::Debug::error("NetworkClient: updateObject: GameObject has no NetworkIdentity");
-        return;
-    }
-
-    auto& identity = gameObject->getComponent<NetworkIdentity>();
-    updateObject(identity.getNetworkId());
 }
 
 #pragma endregion
