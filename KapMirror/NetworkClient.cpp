@@ -49,17 +49,17 @@ void NetworkClient::networkEarlyUpdate() {
 }
 
 void NetworkClient::addTransportHandlers() {
-    Transport::activeTransport->onClientConnected = [this](Transport&) { onTransportConnect(); };
-    Transport::activeTransport->onClientDisconnected = [this](Transport&) { onTransportDisconnect(); };
-    Transport::activeTransport->onClientDataReceived = [this](Transport&, std::shared_ptr<ArraySegment<byte>> data) {
-        onTransportData(data);
-    };
+    Transport::activeTransport->onClientConnected += [this](Transport&) { onTransportConnect(); };
+    Transport::activeTransport->onClientDisconnected += [this](Transport&) { onTransportDisconnect(); };
+    Transport::activeTransport->onClientDataReceived +=
+        [this](Transport&, const std::shared_ptr<ArraySegment<byte>>& data) { onTransportData(data); };
 }
 
 void NetworkClient::removeTransportHandlers() {
-    Transport::activeTransport->onClientConnected = nullptr;
-    Transport::activeTransport->onClientDisconnected = nullptr;
-    Transport::activeTransport->onClientDataReceived = nullptr;
+    // TODO: Clear only the handlers of this class
+    Transport::activeTransport->onClientConnected.clear();
+    Transport::activeTransport->onClientDisconnected.clear();
+    Transport::activeTransport->onClientDataReceived.clear();
 }
 
 void NetworkClient::registerSystemHandlers() {
@@ -73,10 +73,7 @@ void NetworkClient::registerSystemHandlers() {
 
 void NetworkClient::onTransportConnect() {
     connectState = ConnectState::Connected;
-
-    if (onConnectedEvent != nullptr) {
-        onConnectedEvent(connection);
-    }
+    onConnectedEvent(connection);
 }
 
 void NetworkClient::onTransportDisconnect() {
@@ -84,9 +81,7 @@ void NetworkClient::onTransportDisconnect() {
         return;
     }
 
-    if (onDisconnectedEvent != nullptr) {
-        onDisconnectedEvent(connection);
-    }
+    onDisconnectedEvent(connection);
 
     connectState = ConnectState::Disconnected;
 

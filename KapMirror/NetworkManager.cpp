@@ -66,8 +66,8 @@ void NetworkManager::setupServer() {
     // always >= 0
     maxConnections = std::max(maxConnections, 0);
 
-    server->onConnectedEvent = [this](const std::shared_ptr<NetworkConnection>& connection) { onServerClientConnected(connection); };
-    server->onDisconnectedEvent = [this](const std::shared_ptr<NetworkConnection>& connection) { onServerClientDisconnected(connection); };
+    server->onConnectedEvent += [this](const std::shared_ptr<NetworkConnection>& connection) { onServerClientConnected(connection); };
+    server->onDisconnectedEvent += [this](const std::shared_ptr<NetworkConnection>& connection) { onServerClientDisconnected(connection); };
 
     server->listen(maxConnections, networkPort);
     KapEngine::Debug::log("NetworkManager: Server started listening on port " + std::to_string(networkPort));
@@ -114,8 +114,8 @@ void NetworkManager::startClient() {
         return;
     }
 
-    client->onConnectedEvent = [this](const std::shared_ptr<NetworkConnection>& connection) { onClientConnected(connection); };
-    client->onDisconnectedEvent = [this](const std::shared_ptr<NetworkConnection>& connection) { onClientDisconnected(connection); };
+    client->onConnectedEvent += [this](const std::shared_ptr<NetworkConnection>& connection) { onClientConnected(connection); };
+    client->onDisconnectedEvent += [this](const std::shared_ptr<NetworkConnection>& connection) { onClientDisconnected(connection); };
 
     KapEngine::Debug::log("NetworkManager: Connecting to server \"" + networkAddress + ":" + std::to_string(networkPort) + "\"");
     client->connect(networkAddress, networkPort);

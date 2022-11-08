@@ -60,6 +60,6 @@ namespace KapMirror::Telepathy {
       public:
         std::function<void(int)> onConnected;
         std::function<void(int)> onDisconnected;
-        std::function<void(int, std::shared_ptr<ArraySegment<byte>>)> onData;
+        std::function<void(int, const std::shared_ptr<ArraySegment<byte>>&)> onData;
     };
 } // namespace KapMirror::Telepathy

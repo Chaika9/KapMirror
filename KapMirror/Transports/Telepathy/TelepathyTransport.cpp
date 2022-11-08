@@ -18,21 +18,9 @@ void TelepathyTransport::createClient() {
     client->sendQueueLimit = clientSendQueueLimit;
     client->receiveQueueLimit = clientReceiveQueueLimit;
 
-    client->onConnected = [this]() {
-        if (onClientConnected) {
-            onClientConnected(*this);
-        }
-    };
-    client->onDisconnected = [this]() {
-        if (onClientDisconnected) {
-            onClientDisconnected(*this);
-        }
-    };
-    client->onData = [this](std::shared_ptr<ArraySegment<byte>> data) {
-        if (onClientDataReceived) {
-            onClientDataReceived(*this, data);
-        }
-    };
+    client->onConnected = [this]() { onClientConnected(*this); };
+    client->onDisconnected = [this]() { onClientDisconnected(*this); };
+    client->onData = [this](const std::shared_ptr<ArraySegment<byte>>& data) { onClientDataReceived(*this, data); };
 }
 
 bool TelepathyTransport::clientConnected() { return client != nullptr && client->connected(); }
@@ -74,20 +62,10 @@ void TelepathyTransport::serverStart(int port) {
     server->receiveQueueLimit = serverReceiveQueueLimitPerConnection;
 
     // Servers Hooks
-    server->onConnected = [this](int connectionId) {
-        if (onServerConnected) {
-            onServerConnected(*this, connectionId);
-        }
-    };
-    server->onDisconnected = [this](int connectionId) {
-        if (onServerDisconnected) {
-            onServerDisconnected(*this, connectionId);
-        }
-    };
+    server->onConnected = [this](int connectionId) { onServerConnected(*this, connectionId); };
+    server->onDisconnected = [this](int connectionId) { onServerDisconnected(*this, connectionId); };
     server->onData = [this](int connectionId, std::shared_ptr<ArraySegment<byte>> data) {
-        if (onServerDataReceived) {
-            onServerDataReceived(*this, connectionId, data);
-        }
+        onServerDataReceived(*this, connectionId, data);
     };
 
     server->start(port);

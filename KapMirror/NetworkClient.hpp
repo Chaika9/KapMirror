@@ -3,6 +3,7 @@
 #include "Core/ArraySegment.hpp"
 #include "Core/NetworkConnectionToServer.hpp"
 #include "Core/NetworkMessage.hpp"
+#include "KapMirror/Experimental/Core/Action.hpp"
 #include "Messages.hpp"
 #include "KapEngine.hpp"
 #include "Platform.hpp"
@@ -152,7 +153,7 @@ namespace KapMirror {
         void onObjectTransformUpdate(ObjectTransformMessage& message);
 
       public:
-        std::function<void(std::shared_ptr<NetworkConnection>)> onConnectedEvent;
-        std::function<void(std::shared_ptr<NetworkConnection>)> onDisconnectedEvent;
+        Experimental::Action<void(std::shared_ptr<NetworkConnection>)> onConnectedEvent;
+        Experimental::Action<void(std::shared_ptr<NetworkConnection>)> onDisconnectedEvent;
     };
 } // namespace KapMirror

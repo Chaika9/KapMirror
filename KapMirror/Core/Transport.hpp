@@ -2,6 +2,7 @@
 
 #include "ArraySegment.hpp"
 #include "Platform.hpp"
+#include "KapMirror/Experimental/Core/Action.hpp"
 #include <functional>
 #include <memory>
 
@@ -71,12 +72,12 @@ namespace KapMirror {
       public:
         static std::shared_ptr<Transport> activeTransport;
 
-        std::function<void(Transport&)> onClientConnected;
-        std::function<void(Transport&)> onClientDisconnected;
-        std::function<void(Transport&, std::shared_ptr<ArraySegment<byte>>)> onClientDataReceived;
+        Experimental::Action<void(Transport&)> onClientConnected;
+        Experimental::Action<void(Transport&)> onClientDisconnected;
+        Experimental::Action<void(Transport&, const std::shared_ptr<ArraySegment<byte>>&)> onClientDataReceived;
 
-        std::function<void(Transport&, int)> onServerConnected;
-        std::function<void(Transport&, int)> onServerDisconnected;
-        std::function<void(Transport&, int, std::shared_ptr<ArraySegment<byte>>)> onServerDataReceived;
+        Experimental::Action<void(Transport&, int)> onServerConnected;
+        Experimental::Action<void(Transport&, int)> onServerDisconnected;
+        Experimental::Action<void(Transport&, int, const std::shared_ptr<ArraySegment<byte>>&)> onServerDataReceived;
     };
 } // namespace KapMirror

@@ -56,10 +56,6 @@ void NetworkServer::shutdown() {
     active = false;
 
     connections.clear();
-
-    // clear events
-    onConnectedEvent = nullptr;
-    onDisconnectedEvent = nullptr;
 }
 
 void NetworkServer::networkEarlyUpdate() const {
@@ -69,17 +65,17 @@ void NetworkServer::networkEarlyUpdate() const {
 }
 
 void NetworkServer::addTransportHandlers() {
-    Transport::activeTransport->onServerConnected = [this](Transport&, int connectionId) { onTransportConnect(connectionId); };
-    Transport::activeTransport->onServerDisconnected = [this](Transport&, int connectionId) { onTransportDisconnect(connectionId); };
-    Transport::activeTransport->onServerDataReceived = [this](Transport&, int connectionId, std::shared_ptr<ArraySegment<byte>> data) {
-        onTransportData(connectionId, data);
-    };
+    Transport::activeTransport->onServerConnected += [this](Transport&, int connectionId) { onTransportConnect(connectionId); };
+    Transport::activeTransport->onServerDisconnected += [this](Transport&, int connectionId) { onTransportDisconnect(connectionId); };
+    Transport::activeTransport->onServerDataReceived +=
+        [this](Transport&, int connectionId, const std::shared_ptr<ArraySegment<byte>>& data) { onTransportData(connectionId, data); };
 }
 
 void NetworkServer::removeTransportHandlers() {
-    Transport::activeTransport->onServerConnected = nullptr;
-    Transport::activeTransport->onServerDisconnected = nullptr;
-    Transport::activeTransport->onServerDataReceived = nullptr;
+    // TODO: Clear only the handlers of this class
+    Transport::activeTransport->onServerConnected.clear();
+    Transport::activeTransport->onServerDisconnected.clear();
+    Transport::activeTransport->onServerDataReceived.clear();
 }
 
 void NetworkServer::registerSystemHandlers() {
@@ -111,9 +107,7 @@ void NetworkServer::onTransportConnect(int connectionId) {
         sendObject(gameObject, connection);
     }
 
-    if (onConnectedEvent != nullptr) {
-        onConnectedEvent(connection);
-    }
+    onConnectedEvent(connection);
 }
 
 void NetworkServer::onTransportDisconnect(int connectionId) {
@@ -122,10 +116,7 @@ void NetworkServer::onTransportDisconnect(int connectionId) {
     std::shared_ptr<NetworkConnectionToClient> connection;
     if (connections.tryGetValue(connectionId, connection)) {
         removeConnection(connectionId);
-
-        if (onDisconnectedEvent != nullptr) {
-            onDisconnectedEvent(connection);
-        }
+        onDisconnectedEvent(connection);
     }
 }
 
