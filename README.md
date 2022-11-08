@@ -1,7 +1,7 @@
 [![KapEngine](https://img.shields.io/badge/KapEngine-brightgreen.svg)](https://github.com/benji-35/KapEngine/)
 [![Documentation](https://img.shields.io/badge/docs-brightgreen.svg)](https://chaika9.gitbook.io/kapmirror/)
 [![Release](https://img.shields.io/github/release/Chaika9/KapMirror.svg)](https://github.com/Chaika9/KapMirror/releases/latest)
-[![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/vis2k/Mirror/blob/master/LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/Chaika9/KapMirror/blob/main/LICENSE)
 
 **It's only the dreamers who ever move mountains.**
 
