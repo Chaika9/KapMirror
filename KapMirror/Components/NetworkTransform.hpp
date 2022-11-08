@@ -87,5 +87,7 @@ namespace KapMirror {
         void updateServer();
 
         void updateClient();
+
+        void checkValues();
     };
 } // namespace KapMirror

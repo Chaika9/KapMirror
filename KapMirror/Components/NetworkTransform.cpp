@@ -28,12 +28,7 @@ void NetworkTransform::onUpdate() {
 #pragma region Server
 
 void NetworkTransform::updateServer() {
-    if (sendRate <= 0 || sendRate > 120) {
-        throw std::runtime_error("Send rate must be between 1 and 120");
-    }
-    if (lateUpdateDelay < 300) {
-        throw std::runtime_error("Late update delay must be greater than 300");
-    }
+    checkValues();
 
     // Update transform
     if (activeUpdate && KapMirror::NetworkTime::localTime() - lastUpdateRefreshTime > 1000 / sendRate &&
@@ -85,6 +80,8 @@ void NetworkTransform::updateClient() {
         return;
     }
 
+    checkValues();
+
     // Update transform
     if (activeUpdate && KapMirror::NetworkTime::localTime() - lastUpdateRefreshTime > 1000 / sendRate) {
         lastUpdateRefreshTime = NetworkTime::localTime();
@@ -121,6 +118,15 @@ void NetworkTransform::updateClient() {
         message.rotate = transform.getLocalRotation();
         message.scale = transform.getLocalScale();
         getClient()->send(message);
+    }
+}
+
+void NetworkTransform::checkValues() {
+    if (sendRate <= 0 || sendRate > 120) {
+        throw std::runtime_error("Send rate must be between 1 and 120");
+    }
+    if (lateUpdateDelay < 300) {
+        throw std::runtime_error("Late update delay must be greater than 300");
     }
 }
 
