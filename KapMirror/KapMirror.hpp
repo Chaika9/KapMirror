@@ -4,6 +4,7 @@
 #include "NetworkServer.hpp"
 #include "NetworkManager.hpp"
 #include "Core/NetworkMessage.hpp"
+#include "Core/NetworkTime.hpp"
 
 #include "Components/NetworkComponent.hpp"
 #include "Components/NetworkTransform.hpp"
