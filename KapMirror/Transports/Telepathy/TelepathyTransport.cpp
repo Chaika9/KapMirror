@@ -42,6 +42,8 @@ void TelepathyTransport::clientDisconnect() {
 void TelepathyTransport::clientSend(std::shared_ptr<ArraySegment<byte>> data) {
     if (client != nullptr) {
         client->send(data);
+
+        onClientDataSent(*this, data);
     }
 }
 
@@ -64,7 +66,7 @@ void TelepathyTransport::serverStart(int port) {
     // Servers Hooks
     server->onConnected = [this](int connectionId) { onServerConnected(*this, connectionId); };
     server->onDisconnected = [this](int connectionId) { onServerDisconnected(*this, connectionId); };
-    server->onData = [this](int connectionId, std::shared_ptr<ArraySegment<byte>> data) {
+    server->onData = [this](int connectionId, const std::shared_ptr<ArraySegment<byte>>& data) {
         onServerDataReceived(*this, connectionId, data);
     };
 
@@ -83,6 +85,8 @@ void TelepathyTransport::serverStop() {
 void TelepathyTransport::serverSend(int connectionId, std::shared_ptr<ArraySegment<byte>> data) {
     if (server != nullptr) {
         server->send(connectionId, data);
+
+        onServerDataSent(*this, connectionId, data);
     }
 }
 

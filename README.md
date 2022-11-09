@@ -30,8 +30,10 @@ Check out our [Documentation](https://chaika9.gitbook.io/kapmirror/) to learn ho
 ## Made with KapMirror
 
 ### [RType](https://github.com/aureliancnx/R-Type)
+
 [![banner](https://camo.githubusercontent.com/52505114bf1ff279f08ac18368748aca050181ad9973c4ee8cc0cfff28cd3ee1/68747470733a2f2f66732d70726f642d63646e2e6e696e74656e646f2d6575726f70652e636f6d2f6d656469612f696d616765732f31305f73686172655f696d616765732f67616d65735f31352f7669727475616c5f636f6e736f6c655f7769695f755f372f483278315f5769695556435f52547970652e6a7067)](https://github.com/aureliancnx/R-Type)
-RType is a remake of the classic R-Type game. It is a 2D space shooter game where you have to destroy all the enemies to win the level. The game is multiplayer and you can play with up to 4 players. The game is made with KapMirror.
+RType is a remake of the classic R-Type game. It is a 2D space shooter game where you have to destroy all the enemies to
+win the level. The game is multiplayer and you can play with up to 4 players. The game is made with KapMirror.
 
 *This is a student project for learning and for use in network gaming projects at Epitech.*
 

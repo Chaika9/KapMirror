@@ -75,9 +75,11 @@ namespace KapMirror {
         Experimental::Action<void(Transport&)> onClientConnected;
         Experimental::Action<void(Transport&)> onClientDisconnected;
         Experimental::Action<void(Transport&, const std::shared_ptr<ArraySegment<byte>>&)> onClientDataReceived;
+        Experimental::Action<void(Transport&, const std::shared_ptr<ArraySegment<byte>>&)> onClientDataSent;
 
         Experimental::Action<void(Transport&, int)> onServerConnected;
         Experimental::Action<void(Transport&, int)> onServerDisconnected;
         Experimental::Action<void(Transport&, int, const std::shared_ptr<ArraySegment<byte>>&)> onServerDataReceived;
+        Experimental::Action<void(Transport&, int, const std::shared_ptr<ArraySegment<byte>>&)> onServerDataSent;
     };
 } // namespace KapMirror
