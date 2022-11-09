@@ -22,7 +22,6 @@ namespace KapMirror {
 
         /**
          * @brief Send raw data to the transport.
-         *
          * @param data Data to send
          */
         virtual void sendToTransport(std::shared_ptr<ArraySegment<byte>> data) = 0;

@@ -13,6 +13,10 @@ namespace KapMirror::Experimental {
         std::mutex handlersMutex;
 
       public:
+        /**
+         * @brief Call all handlers
+         * @param args The arguments to pass to the handlers
+         */
         template <class... Args>
         void operator()(Args&&... args) {
             std::lock_guard<std::mutex> lock(handlersMutex);
@@ -23,6 +27,10 @@ namespace KapMirror::Experimental {
             }
         }
 
+        /**
+         * @brief Add a handler to the action
+         * @param hanlder The handler to add
+         */
         template <typename Handler>
         void operator+=(Handler&& hanlder) {
             std::lock_guard<std::mutex> lock(handlersMutex);
@@ -30,6 +38,10 @@ namespace KapMirror::Experimental {
             handlers[hash] = std::forward<Handler>(hanlder);
         }
 
+        /**
+         * @brief Remove a handler from the action
+         * @param hanlder The handler to remove
+         */
         template <typename Handler>
         void operator-=(Handler&& hanlder) {
             std::lock_guard<std::mutex> lock(handlersMutex);
@@ -37,6 +49,9 @@ namespace KapMirror::Experimental {
             handlers.erase(hash);
         }
 
+        /**
+         * @brief Clear all handlers
+         */
         void clear() {
             std::lock_guard<std::mutex> lock(handlersMutex);
             handlers.clear();

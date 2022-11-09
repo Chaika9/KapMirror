@@ -7,7 +7,6 @@ namespace KapMirror {
       public:
         /**
          * @brief Resize an array
-         *
          * @param array Array
          * @param size Old size
          * @param newSize New size
@@ -26,10 +25,8 @@ namespace KapMirror {
 
         /**
          * @brief Copy an array
-         *
          * @param array Array
          * @param size Size
-         *
          * @return Copy of the array
          */
         template <typename T>
