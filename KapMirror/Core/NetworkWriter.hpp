@@ -31,7 +31,6 @@ namespace KapMirror {
 
         /**
          * @brief Write a value to the buffer
-         *
          * @tparam T The type of the value
          * @param value Value
          */
@@ -76,7 +75,6 @@ namespace KapMirror {
       public:
         /**
          * @brief Write a byte array to the buffer
-         *
          * @param array Array
          * @param offset Offset
          * @param count Count
@@ -95,7 +93,6 @@ namespace KapMirror {
 
         /**
          * @brief Write a string to the buffer
-         *
          * @param value Value
          */
         void writeString(const std::string& value) {

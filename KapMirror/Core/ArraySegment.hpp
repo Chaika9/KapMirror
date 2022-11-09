@@ -35,23 +35,20 @@ namespace KapMirror {
 
         /**
          * @brief Get the array
-         *
          * @return Array
          */
         T* toArray() const { return array + offset; }
 
-        operator T*() const { return array + offset; }
+        explicit operator T*() const { return array + offset; }
 
         /**
          * @brief Get the offset of the array
-         *
          * @return Offset
          */
         int getOffset() const { return offset; }
 
         /**
          * @brief Get the size of the array
-         *
          * @return Size
          */
         int getSize() const { return size; }

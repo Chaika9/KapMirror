@@ -34,7 +34,6 @@ namespace KapMirror {
 
         /**
          * @brief Read a value from the buffer
-         *
          * @tparam T The type of the value
          * @return Value
          */
@@ -47,7 +46,6 @@ namespace KapMirror {
 
         /**
          * @brief Read a byte array from the buffer
-         *
          * @return Value
          */
         byte* readBytes(int count) {
@@ -59,7 +57,6 @@ namespace KapMirror {
 
         /**
          * @brief Read a string from the buffer
-         *
          * @return Value
          */
         std::string readString() {
