@@ -62,19 +62,39 @@ void NetworkStatistics::updateServer() {
 void NetworkStatistics::onClientReceive(const std::shared_ptr<ArraySegment<byte>>& data) {
     clientIntervalReceivedPackets++;
     clientIntervalReceivedBytes += data->getSize();
+    clientReceivedBytesTotal += data->getSize();
 }
 
 void NetworkStatistics::onClientSend(const std::shared_ptr<ArraySegment<byte>>& data) {
     clientIntervalSentPackets++;
     clientIntervalSentBytes += data->getSize();
+    clientSentBytesTotal += data->getSize();
 }
 
 void NetworkStatistics::onServerReceive(const std::shared_ptr<ArraySegment<byte>>& data) {
     serverIntervalReceivedPackets++;
     serverIntervalReceivedBytes += data->getSize();
+    serverReceivedBytesTotal += data->getSize();
 }
 
 void NetworkStatistics::onServerSend(const std::shared_ptr<ArraySegment<byte>>& data) {
     serverIntervalSentPackets++;
     serverIntervalSentBytes += data->getSize();
+    serverSentBytesTotal += data->getSize();
+}
+
+void NetworkStatistics::reset() {
+    clientReceivedPacketsPerSecond = 0;
+    clientReceivedBytesPerSecond = 0;
+    clientSentPacketsPerSecond = 0;
+    clientSentBytesPerSecond = 0;
+    clientReceivedBytesTotal = 0;
+    clientSentBytesTotal = 0;
+
+    serverReceivedPacketsPerSecond = 0;
+    serverReceivedBytesPerSecond = 0;
+    serverSentPacketsPerSecond = 0;
+    serverSentBytesPerSecond = 0;
+    serverReceivedBytesTotal = 0;
+    serverSentBytesTotal = 0;
 }
