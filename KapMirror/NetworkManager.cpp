@@ -74,7 +74,7 @@ void NetworkManager::setupServer() {
 
     onStartServer();
 
-    auto& scene = getGameObject().getEngine().getSceneManager()->getCurrentScene();
+    auto& scene = getEngine().getSceneManager()->getCurrentScene();
     for (auto& go : scene.getAllObjects()) {
         for (auto& component : go->getAllComponents()) {
             auto identity = std::dynamic_pointer_cast<NetworkIdentity>(component);
@@ -94,7 +94,7 @@ void NetworkManager::stopServer() {
 
     server->shutdown();
 
-    auto& scene = getGameObject().getEngine().getSceneManager()->getCurrentScene();
+    auto& scene = getEngine().getSceneManager()->getCurrentScene();
     for (auto& go : scene.getAllObjects()) {
         for (auto& component : go->getAllComponents()) {
             auto identity = std::dynamic_pointer_cast<NetworkIdentity>(component);
@@ -122,7 +122,7 @@ void NetworkManager::startClient() {
 
     onStartClient();
 
-    auto& scene = getGameObject().getEngine().getSceneManager()->getCurrentScene();
+    auto& scene= getEngine().getSceneManager()->getCurrentScene();
     for (auto& go : scene.getAllObjects()) {
         for (auto& component : go->getAllComponents()) {
             auto identity = std::dynamic_pointer_cast<NetworkIdentity>(component);
@@ -142,7 +142,7 @@ void NetworkManager::stopClient() {
 
     client->disconnect();
 
-    auto& scene = getGameObject().getEngine().getSceneManager()->getCurrentScene();
+    auto& scene = getEngine().getSceneManager()->getCurrentScene();
     for (auto& go : scene.getAllObjects()) {
         for (auto& component : go->getAllComponents()) {
             auto identity = std::dynamic_pointer_cast<NetworkIdentity>(component);
