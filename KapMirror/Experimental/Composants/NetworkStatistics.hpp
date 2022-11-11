@@ -17,6 +17,10 @@ namespace KapMirror::Experimental {
         int clientIntervalSentPackets = 0;
         long clientIntervalSentBytes = 0;
 
+        // total packets
+        int clientTotalReceivedPackets = 0;
+        int clientTotalSentPackets = 0;
+
         // total bytes to support >2GB
         long clientReceivedBytesTotal = 0;
         long clientSentBytesTotal = 0;
@@ -37,6 +41,10 @@ namespace KapMirror::Experimental {
         long serverIntervalReceivedBytes = 0;
         int serverIntervalSentPackets = 0;
         long serverIntervalSentBytes = 0;
+
+        // total packets
+        int serverTotalReceivedPackets = 0;
+        int serverTotalSentPackets = 0;
 
         // total bytes to support >2GB
         long serverReceivedBytesTotal = 0;
