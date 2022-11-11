@@ -4,8 +4,6 @@
 #include "NetworkManager.hpp"
 #include "Components/NetworkIdentity.hpp"
 #include "Components/NetworkComponent.hpp"
-#include "KapEngine.hpp"
-#include "Transform.hpp"
 
 using namespace KapMirror;
 
