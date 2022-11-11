@@ -7,15 +7,15 @@
 namespace KapMirror {
     struct ObjectSpawnMessage : NetworkMessage {
         // networkId of new or existing object
-        unsigned int networkId;
+        unsigned int networkId{};
         // Sets hasAuthority on the spawned object
-        bool isOwner;
-        std::string sceneName;
+        bool isOwner{};
+        std::string sceneName{};
         // Prefab name
-        std::string prefabName;
-        KapEngine::Tools::Vector3 position;
-        KapEngine::Tools::Vector3 rotation;
-        KapEngine::Tools::Vector3 scale;
+        std::string prefabName{};
+        KapEngine::Tools::Vector3 position{};
+        KapEngine::Tools::Vector3 rotation{};
+        KapEngine::Tools::Vector3 scale{};
         // Custom payload
         std::shared_ptr<ArraySegment<byte>> payload;
 
@@ -65,7 +65,7 @@ namespace KapMirror {
 
     struct ObjectDestroyMessage : NetworkMessage {
         // networkId of existing object
-        unsigned int networkId;
+        unsigned int networkId{};
 
         void serialize(KapMirror::NetworkWriter& writer) override { writer.write(networkId); }
 
@@ -74,10 +74,10 @@ namespace KapMirror {
 
     struct ObjectTransformMessage : NetworkMessage {
         // networkId of existing object
-        unsigned int networkId;
-        KapEngine::Tools::Vector3 position;
-        KapEngine::Tools::Vector3 rotation;
-        KapEngine::Tools::Vector3 scale;
+        unsigned int networkId{};
+        KapEngine::Tools::Vector3 position{};
+        KapEngine::Tools::Vector3 rotation{};
+        KapEngine::Tools::Vector3 scale{};
 
         void serialize(KapMirror::NetworkWriter& writer) override {
             writer.write(networkId);
