@@ -3,7 +3,7 @@
 
 using namespace KapMirror::Experimental;
 
-NetworkStatistics::NetworkStatistics(std::shared_ptr<KapEngine::GameObject> go) : NetworkComponent(go, "NetworkStatistics") {}
+NetworkStatistics::NetworkStatistics(std::shared_ptr<KapEngine::GameObject> go) : KapEngine::Component(go, "NetworkStatistics") {}
 
 void NetworkStatistics::onStart() {
     if (Transport::activeTransport != nullptr) {

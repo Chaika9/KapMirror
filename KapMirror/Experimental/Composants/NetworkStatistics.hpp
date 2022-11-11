@@ -3,7 +3,7 @@
 #include "KapMirror/Components/NetworkComponent.hpp"
 
 namespace KapMirror::Experimental {
-    class NetworkStatistics : public NetworkComponent {
+    class NetworkStatistics : public KapEngine::Component {
       private:
         long long lastIntervalTime = 0;
 

@@ -20,7 +20,7 @@ namespace KapMirror::Experimental {
         template <class... Args>
         void operator()(Args&&... args) {
             std::lock_guard<std::mutex> lock(handlersMutex);
-            for (auto handler : handlers) {
+            for (auto& handler : handlers) {
                 if (handler) {
                     handler(args...);
                 }
