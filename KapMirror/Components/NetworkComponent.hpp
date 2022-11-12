@@ -37,7 +37,12 @@ namespace KapMirror {
         /**
          * @brief The unique network Id of this object (unique at runtime).
          */
-        unsigned int getNetworkId() const { return networkIdentity->getNetworkId(); }
+        unsigned int getNetworkId() const {
+            if (networkIdentity == nullptr) {
+                throw std::runtime_error("NetworkComponent: NetworkIdentity is not set");
+            }
+            return networkIdentity->getNetworkId();
+        }
 
         /**
          * @brief Like start(), but only called on server.
@@ -60,6 +65,11 @@ namespace KapMirror {
         virtual void onStopClient() {}
 
         /**
+         * @brief Called when the object is spawned or updated.
+         */
+        virtual void onObjectUpdate() {}
+
+        /**
          * @brief Serialize all the data from this component into payload.
          */
         virtual void serialize(KapMirror::NetworkWriter& writer) {}
@@ -68,5 +78,8 @@ namespace KapMirror {
          * @brief Deserialize all the data from payload into this component.
          */
         virtual void deserialize(KapMirror::NetworkReader& reader) {}
+
+      public:
+        void _setNetworkIdentity(NetworkIdentity* identity) { networkIdentity = identity; }
     };
 } // namespace KapMirror

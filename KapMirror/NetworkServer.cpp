@@ -206,11 +206,21 @@ void NetworkServer::onObjectSpawn(ObjectSpawnMessage& message) {
         for (auto& component : gameObject->getAllComponents()) {
             auto networkCompenent = std::dynamic_pointer_cast<NetworkComponent>(component);
             if (networkCompenent) {
+                networkCompenent->_setNetworkIdentity(&networkIdentity);
                 networkCompenent->setActive(reader.read<bool>()); // isActive
                 networkCompenent->deserialize(reader);
             }
         }
     } catch (...) { KapEngine::Debug::error("NetworkServer: failed to deserialize custom payload for object " + message.prefabName); }
+
+    for (auto& component : gameObject->getAllComponents()) {
+        auto networkCompenent = std::dynamic_pointer_cast<NetworkComponent>(component);
+        if (networkCompenent) {
+            try {
+                networkCompenent->onObjectUpdate();
+            } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkServer: Exception in onObjectUpdate: " + std::string(e.what())); }
+        }
+    }
 }
 
 void NetworkServer::spawnObject(const std::string& prefabName, KapEngine::SceneManagement::Scene& scene,
