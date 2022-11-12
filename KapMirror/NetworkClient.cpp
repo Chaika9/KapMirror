@@ -139,7 +139,7 @@ void NetworkClient::onObjectSpawn(ObjectSpawnMessage& message) {
     }
 
     if (!gameObject->hasComponent<NetworkIdentity>()) {
-        KapEngine::Debug::warning("NetworkClient: object " + message.prefabName + " does not have NetworkIdentity component");
+        KapEngine::Debug::error("NetworkClient: object " + message.prefabName + " does not have NetworkIdentity component");
         return;
     }
 
@@ -191,7 +191,6 @@ void NetworkClient::onObjectDestroy(ObjectDestroyMessage& message) {
     networkObjects.remove(message.networkId);
 
     if (!gameObject->hasComponent<NetworkIdentity>()) {
-        KapEngine::Debug::warning("NetworkClient: destroyObject: GameObject does not have NetworkIdentity component");
         return;
     }
 
@@ -224,7 +223,7 @@ void NetworkClient::updateObject(unsigned int id) {
     }
 
     if (!gameObject->hasComponent<NetworkIdentity>()) {
-        KapEngine::Debug::warning("NetworkClient: object " + gameObject->getPrefabName() + " does not have NetworkIdentity component");
+        KapEngine::Debug::error("NetworkClient: object " + gameObject->getPrefabName() + " does not have NetworkIdentity component");
         return;
     }
 

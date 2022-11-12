@@ -180,7 +180,7 @@ void NetworkServer::onObjectSpawn(ObjectSpawnMessage& message) {
     }
 
     if (!gameObject->hasComponent<NetworkIdentity>()) {
-        KapEngine::Debug::warning("NetworkServer: object " + message.prefabName + " does not have NetworkIdentity component");
+        KapEngine::Debug::error("NetworkServer: object " + message.prefabName + " does not have NetworkIdentity component");
         return;
     }
 
@@ -234,7 +234,7 @@ void NetworkServer::spawnObject(const std::string& prefabName, KapEngine::SceneM
     }
 
     if (!gameObject->hasComponent<NetworkIdentity>()) {
-        KapEngine::Debug::warning("NetworkServer: spawnObject: GameObject does not have NetworkIdentity component");
+        KapEngine::Debug::error("NetworkServer: spawnObject: GameObject does not have NetworkIdentity component");
         gameObject->destroy();
         return;
     }
@@ -307,7 +307,6 @@ void NetworkServer::unSpawn(const std::shared_ptr<KapEngine::GameObject>& gameOb
     }
 
     if (!gameObject->hasComponent<NetworkIdentity>()) {
-        KapEngine::Debug::warning("NetworkServer: Cannot unSpawn, gameObject has no NetworkIdentity");
         return;
     }
 
@@ -324,7 +323,6 @@ void NetworkServer::destroyObject(unsigned int networkId) {
     networkObjects.remove(networkId);
 
     if (!gameObject->hasComponent<NetworkIdentity>()) {
-        KapEngine::Debug::warning("NetworkServer: destroyObject: GameObject does not have NetworkIdentity component");
         return;
     }
 
@@ -348,7 +346,7 @@ void NetworkServer::updateObject(unsigned int id) {
     }
 
     if (!gameObject->hasComponent<NetworkIdentity>()) {
-        KapEngine::Debug::warning("NetworkServer: object " + gameObject->getPrefabName() + " does not have NetworkIdentity component");
+        KapEngine::Debug::error("NetworkServer: object " + gameObject->getPrefabName() + " does not have NetworkIdentity component");
         return;
     }
 
@@ -390,7 +388,7 @@ void NetworkServer::updateObject(unsigned int id) {
 void NetworkServer::sendObject(const std::shared_ptr<KapEngine::GameObject>& gameObject,
                                const std::shared_ptr<NetworkConnectionToClient>& connection) {
     if (!gameObject->hasComponent<NetworkIdentity>()) {
-        KapEngine::Debug::warning("NetworkServer: sendObject: GameObject does not have NetworkIdentity component");
+        KapEngine::Debug::error("NetworkServer: sendObject: GameObject does not have NetworkIdentity component");
         return;
     }
 
