@@ -28,7 +28,7 @@ namespace KapMirror {
         ArraySegment(T* _array, int _offset, int _size) {
             array = Array::copyArray(_array, _size);
             offset = _offset;
-            size = _size;
+            size = _size - _offset;
         }
 
         ~ArraySegment() { delete[] array; }
