@@ -20,7 +20,7 @@ std::shared_ptr<KapMirror::ArraySegment<byte>> GZipCompression::decompress(std::
     boost::iostreams::filtering_ostream os;
     os.push(boost::iostreams::gzip_decompressor());
     os.push(boost::iostreams::back_inserter(decompressed));
-    os.write((char*)data->toArray(), data->getSize());
+    os.write((char*)data->toArray(), data->getSize() - 1);
     os.reset();
     return ArraySegment<byte>::createArraySegment(reinterpret_cast<byte*>(decompressed.data()), decompressed.size());
 }
