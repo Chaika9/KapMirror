@@ -26,6 +26,7 @@ void NetworkIdentity::onStartServer() {
         return;
     }
 
+    // set network id
     _networkId = nextNetworkId++;
 
     for (auto& component : getGameObject().getAllComponents()) {

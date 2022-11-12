@@ -8,9 +8,17 @@ namespace KapMirror {
       public:
         virtual ~Compression() = default;
 
-        virtual std::shared_ptr<ArraySegment<byte>> compress(std::shared_ptr<ArraySegment<byte>> data) = 0;
+        /**
+         * @brief Compress data with the compression algorithm
+         * @return Compressed data as ArraySegment<byte>
+         */
+        virtual std::shared_ptr<ArraySegment<byte>> compress(const std::shared_ptr<ArraySegment<byte>>& data) = 0;
 
-        virtual std::shared_ptr<ArraySegment<byte>> decompress(std::shared_ptr<ArraySegment<byte>> data) = 0;
+        /**
+         * @brief Decompress data with the compression algorithm
+         * @return Decompressed data as ArraySegment<byte>
+         */
+        virtual std::shared_ptr<ArraySegment<byte>> decompress(const std::shared_ptr<ArraySegment<byte>>& data) = 0;
 
       public:
         static std::shared_ptr<Compression> activeCompression;

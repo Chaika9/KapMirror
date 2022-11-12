@@ -1,9 +1,9 @@
 #pragma once
 
-#include "TcpListener.hpp"
+#include "KapMirror/Core/Network/TcpListener.hpp"
+#include "KapMirror/Core/ArraySegment.hpp"
 #include "MagnificentReceivePipe.hpp"
 #include "MagnificentSendPipe.hpp"
-#include "KapMirror/Core/ArraySegment.hpp"
 #include <thread>
 #include <mutex>
 #include <list>

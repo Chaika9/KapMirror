@@ -279,6 +279,15 @@ void NetworkServer::spawnObject(const std::string& prefabName, KapEngine::SceneM
         }
     } catch (...) { KapEngine::Debug::error("NetworkServer: Failed to serialize custom payload"); }
 
+    for (auto& component : gameObject->getAllComponents()) {
+        auto networkCompenent = std::dynamic_pointer_cast<NetworkComponent>(component);
+        if (networkCompenent) {
+            try {
+                networkCompenent->onObjectUpdate();
+            } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkServer: Exception in onObjectUpdate: " + std::string(e.what())); }
+        }
+    }
+
     ObjectSpawnMessage message;
     message.networkId = networkIdentity.getNetworkId();
     message.isOwner = !networkIdentity.hasAuthority();
@@ -356,6 +365,15 @@ void NetworkServer::updateObject(unsigned int id) {
             }
         }
     } catch (...) { KapEngine::Debug::error("NetworkServer: Failed to serialize custom payload"); }
+
+    for (auto& component : gameObject->getAllComponents()) {
+        auto networkCompenent = std::dynamic_pointer_cast<NetworkComponent>(component);
+        if (networkCompenent) {
+            try {
+                networkCompenent->onObjectUpdate();
+            } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkServer: Exception in onObjectUpdate: " + std::string(e.what())); }
+        }
+    }
 
     ObjectSpawnMessage message;
     message.networkId = identity.getNetworkId();

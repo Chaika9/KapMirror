@@ -1,8 +1,8 @@
 #include "TcpListener.hpp"
 
-using namespace KapMirror::Telepathy;
+using namespace KapMirror;
 
-TcpListener::TcpListener(std::shared_ptr<Address> address) {
+TcpListener::TcpListener(const std::shared_ptr<Address>& address) {
     if (address == nullptr) {
         throw std::runtime_error("Address cannot be null");
     }

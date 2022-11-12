@@ -33,7 +33,7 @@ namespace KapMirror {
          * @brief Send data to the server
          * @param data The data to send
          */
-        virtual void clientSend(std::shared_ptr<ArraySegment<byte>> data) = 0;
+        virtual void clientSend(const std::shared_ptr<ArraySegment<byte>>& data) = 0;
 
         /**
          * @brief Client Update (call this function every frame)
@@ -56,7 +56,7 @@ namespace KapMirror {
          * @param connectionId The id of the connection
          * @param data The data to send
          */
-        virtual void serverSend(int connectionId, std::shared_ptr<ArraySegment<byte>> data) = 0;
+        virtual void serverSend(int connectionId, const std::shared_ptr<ArraySegment<byte>>& data) = 0;
 
         /**
          * @brief Disconnect the connection

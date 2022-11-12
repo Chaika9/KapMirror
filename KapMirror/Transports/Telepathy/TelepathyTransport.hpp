@@ -32,7 +32,7 @@ namespace KapMirror {
 
         void clientDisconnect() override;
 
-        void clientSend(std::shared_ptr<ArraySegment<byte>> data) override;
+        void clientSend(const std::shared_ptr<ArraySegment<byte>>& data) override;
 
         void clientEarlyUpdate() override;
 
@@ -40,7 +40,7 @@ namespace KapMirror {
 
         void serverStop() override;
 
-        void serverSend(int connectionId, std::shared_ptr<ArraySegment<byte>> data) override;
+        void serverSend(int connectionId, const std::shared_ptr<ArraySegment<byte>>& data) override;
 
         void serverDisconnect(int connectionId) override;
 

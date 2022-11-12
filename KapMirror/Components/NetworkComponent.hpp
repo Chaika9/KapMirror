@@ -32,6 +32,9 @@ namespace KapMirror {
          */
         bool isClient() const;
 
+        /**
+         * @brief True if this object is not spawned by the server or the client. (is local object)
+         */
         bool isLocal() const;
 
         /**

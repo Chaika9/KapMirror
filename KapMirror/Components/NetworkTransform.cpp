@@ -5,7 +5,9 @@
 
 using namespace KapMirror;
 
-NetworkTransform::NetworkTransform(std::shared_ptr<KapEngine::GameObject> go) : NetworkComponent(go, "NetworkTransform") {}
+NetworkTransform::NetworkTransform(std::shared_ptr<KapEngine::GameObject> go) : NetworkComponent(go, "NetworkTransform") {
+    addRequireComponent("NetworkIdentity");
+}
 
 void NetworkTransform::setClientAuthority(bool _clientAuthority) { clientAuthority = _clientAuthority; }
 

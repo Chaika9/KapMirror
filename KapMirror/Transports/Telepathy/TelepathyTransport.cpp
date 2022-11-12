@@ -39,7 +39,7 @@ void TelepathyTransport::clientDisconnect() {
     client = nullptr;
 }
 
-void TelepathyTransport::clientSend(std::shared_ptr<ArraySegment<byte>> data) {
+void TelepathyTransport::clientSend(const std::shared_ptr<ArraySegment<byte>>& data) {
     if (client != nullptr) {
         client->send(data);
 
@@ -82,7 +82,7 @@ void TelepathyTransport::serverStop() {
     server = nullptr;
 }
 
-void TelepathyTransport::serverSend(int connectionId, std::shared_ptr<ArraySegment<byte>> data) {
+void TelepathyTransport::serverSend(int connectionId, const std::shared_ptr<ArraySegment<byte>>& data) {
     if (server != nullptr) {
         server->send(connectionId, data);
 

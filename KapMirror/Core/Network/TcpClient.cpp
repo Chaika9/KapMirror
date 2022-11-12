@@ -1,7 +1,6 @@
 #include "TcpClient.hpp"
-#include "SocketException.hpp"
 
-using namespace KapMirror::Telepathy;
+using namespace KapMirror;
 
 TcpClient::TcpClient(const std::shared_ptr<Address>& address) {
     if (address == nullptr) {

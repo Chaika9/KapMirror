@@ -26,11 +26,12 @@ namespace KapMirror {
          * @brief Send raw data to the transport.
          * @param data Data to send
          */
-        void sendToTransport(std::shared_ptr<ArraySegment<byte>> data) override {
+        void sendToTransport(const std::shared_ptr<ArraySegment<byte>>& data) override {
+            std::shared_ptr<ArraySegment<byte>> dataToSend = data;
             if (Compression::activeCompression != nullptr) {
-                data = Compression::activeCompression->compress(data);
+                dataToSend = Compression::activeCompression->compress(data);
             }
-            Transport::activeTransport->serverSend(connectionId, data);
+            Transport::activeTransport->serverSend(connectionId, dataToSend);
         }
     };
 } // namespace KapMirror

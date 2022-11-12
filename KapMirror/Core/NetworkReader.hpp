@@ -15,12 +15,12 @@ namespace KapMirror {
       public:
         explicit NetworkReader(byte* _buffer) : buffer(_buffer) { position = 0; }
 
-        explicit NetworkReader(ArraySegment<byte>& segment) {
+        explicit NetworkReader(const ArraySegment<byte>& segment) {
             buffer = segment.toArray();
             position = 0;
         }
 
-        explicit NetworkReader(std::shared_ptr<ArraySegment<byte>> segment) {
+        explicit NetworkReader(const std::shared_ptr<ArraySegment<byte>>& segment) {
             buffer = segment->toArray();
             position = 0;
         }

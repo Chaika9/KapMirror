@@ -5,7 +5,7 @@
 
 using namespace KapMirror::Experimental;
 
-std::shared_ptr<KapMirror::ArraySegment<byte>> GZipCompression::compress(std::shared_ptr<KapMirror::ArraySegment<byte>> data) {
+std::shared_ptr<KapMirror::ArraySegment<byte>> GZipCompression::compress(const std::shared_ptr<ArraySegment<byte>>& data) {
     std::vector<char> compressed;
     boost::iostreams::filtering_ostream os;
     os.push(boost::iostreams::gzip_compressor(boost::iostreams::gzip::best_compression));
@@ -15,7 +15,7 @@ std::shared_ptr<KapMirror::ArraySegment<byte>> GZipCompression::compress(std::sh
     return ArraySegment<byte>::createArraySegment(reinterpret_cast<byte*>(compressed.data()), (int)compressed.size());
 }
 
-std::shared_ptr<KapMirror::ArraySegment<byte>> GZipCompression::decompress(std::shared_ptr<KapMirror::ArraySegment<byte>> data) {
+std::shared_ptr<KapMirror::ArraySegment<byte>> GZipCompression::decompress(const std::shared_ptr<ArraySegment<byte>>& data) {
     std::vector<char> decompressed;
     boost::iostreams::filtering_ostream os;
     os.push(boost::iostreams::gzip_decompressor());

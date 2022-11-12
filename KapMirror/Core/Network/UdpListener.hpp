@@ -1,16 +1,16 @@
 #pragma once
 
-#include "TcpClient.hpp"
+#include "UdpClient.hpp"
 #include "SocketException.hpp"
 
-namespace KapMirror::Telepathy {
-    class TcpListener {
+namespace KapMirror {
+    class UdpListener {
       private:
         std::shared_ptr<Socket> socket;
 
       public:
-        explicit TcpListener(std::shared_ptr<Address> address);
-        ~TcpListener();
+        explicit UdpListener(const std::shared_ptr<Address>& address);
+        ~UdpListener();
 
         /**
          * @brief Close the listener
@@ -22,12 +22,9 @@ namespace KapMirror::Telepathy {
          */
         void start();
 
-        /**
-         * @brief Accept a connection
-         *
-         * @return The client socket
-         */
-        std::shared_ptr<TcpClient> acceptTcpClient();
+        void sendTo(const std::shared_ptr<Address>& address, byte* buffer, int size);
+
+        bool receiveFrom(const std::shared_ptr<Address>& address, int maxMessageSize, byte* buffer, int& size);
 
         bool isReadable() const;
 
@@ -35,4 +32,4 @@ namespace KapMirror::Telepathy {
 
         void setBlocking(bool blocking);
     };
-} // namespace KapMirror::Telepathy
+} // namespace KapMirror

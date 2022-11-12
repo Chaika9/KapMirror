@@ -1,8 +1,9 @@
 #include "Socket.hpp"
 #include "SocketException.hpp"
 #include <stdexcept>
+#include <cstring>
 
-using namespace KapMirror::Telepathy;
+using namespace KapMirror;
 
 Socket::Socket(std::shared_ptr<Address> _address) : address(_address), socket_fd(INVALID_SOCKET) {
     if (address == nullptr) {
@@ -38,6 +39,8 @@ Socket::Socket(std::shared_ptr<Address> _address, SOCKET _socket_fd) : address(_
 }
 
 Socket::~Socket() { close(); }
+
+std::shared_ptr<Address> Socket::getAddress() const { return address; }
 
 void Socket::close() {
     if (socket_fd != INVALID_SOCKET) {
@@ -85,7 +88,7 @@ void Socket::connect() {
 }
 
 std::shared_ptr<Socket> Socket::accept() {
-    SOCKET client_fd = ::accept(socket_fd, nullptr, nullptr);
+    SOCKET client_fd = ::accept(socket_fd, NULL, NULL);
     if (client_fd == INVALID_SOCKET) {
         throw SocketException("Socket accept error");
     }
@@ -115,6 +118,18 @@ void Socket::send(byte* buffer, int size, uint32_t flags) const {
     }
 }
 
+void Socket::sendTo(byte* buffer, int size, const std::shared_ptr<Address>& address, uint32_t flags) const {
+    addrinfo* addr = address->getAddress();
+#ifdef __WINDOWS__
+    int status = ::sendto(socket_fd, (const char*)buffer, size, flags, addr->ai_addr, addr->ai_addrlen);
+#else
+    int status = ::sendto(socket_fd, buffer, size, flags, addr->ai_addr, addr->ai_addrlen);
+#endif
+    if (status == SOCKET_ERROR || status <= 0) {
+        throw SocketException("Socket send error");
+    }
+}
+
 int Socket::receive(byte* buffer, int size, uint32_t flags) const {
 #ifdef __WINDOWS__
     auto received = ::recv(socket_fd, (char*)buffer, size, flags);
@@ -124,6 +139,22 @@ int Socket::receive(byte* buffer, int size, uint32_t flags) const {
     if (received == SOCKET_ERROR || received <= 0) {
         return 0;
     }
+    return static_cast<int>(received);
+}
+
+int Socket::receiveFrom(byte* buffer, int size, const std::shared_ptr<Address>& address, uint32_t flags) const {
+    sockaddr addr = {0};
+    socklen_t addr_len = sizeof(sockaddr);
+#ifdef __WINDOWS__
+    auto received = ::recvfrom(socket_fd, (char*)buffer, size, flags, &addr, &addr_len);
+#else
+    auto received = ::recvfrom(socket_fd, buffer, size, flags, &addr, &addr_len);
+#endif
+    if (received == SOCKET_ERROR || received <= 0) {
+        return 0;
+    }
+    std::memcpy(address->getAddress()->ai_addr, &addr, addr_len);
+    address->getAddress()->ai_addrlen = addr_len;
     return static_cast<int>(received);
 }
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TcpClient.hpp"
+#include "KapMirror/Core/Network/TcpClient.hpp"
 #include "MagnificentReceivePipe.hpp"
 #include "MagnificentSendPipe.hpp"
 #include <thread>

@@ -23,6 +23,10 @@ namespace KapMirror {
          */
         unsigned int getNetworkId() const { return _networkId; }
 
+        /**
+         * @brief Set the network Id of this object. (warning: set manually only if you know what you are doing)
+         * @param networkId
+         */
         void setNetworkId(unsigned int networkId) { _networkId = networkId; }
 
         /**
@@ -30,6 +34,9 @@ namespace KapMirror {
          */
         bool hasAuthority() const { return _hasAuthority; }
 
+        /**
+         * @brief Set the authority of this object.
+         */
         void setAuthority(bool authority) { _hasAuthority = authority; }
 
         /**
@@ -42,6 +49,9 @@ namespace KapMirror {
          */
         bool isClient() const { return _isClient; }
 
+        /**
+         * @brief Returns true if running on local. (not spawned by server or client)
+         */
         bool isLocal() const { return !_isServer && !_isClient; }
 
         void onStartServer();
