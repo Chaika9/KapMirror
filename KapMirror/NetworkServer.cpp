@@ -177,9 +177,9 @@ void NetworkServer::onObjectSpawn(ObjectSpawnMessage& message) {
         return;
     }
 
-    auto& networkIdentity = gameObject->getComponent<NetworkIdentity>();
-    if (!networkIdentity.hasAuthority()) {
-        KapEngine::Debug::warning("NetworkServer: object " + std::to_string(networkIdentity.getNetworkId()) + " does not have authority");
+    auto& identity = gameObject->getComponent<NetworkIdentity>();
+    if (!identity.hasAuthority()) {
+        KapEngine::Debug::warning("NetworkServer: object " + std::to_string(identity.getNetworkId()) + " does not have authority");
         return;
     }
 
@@ -210,8 +210,8 @@ void NetworkServer::onObjectSpawn(ObjectSpawnMessage& message) {
     }
 
     ObjectSpawnMessage objectSpawnMessage;
-    objectSpawnMessage.networkId = networkIdentity.getNetworkId();
-    objectSpawnMessage.isOwner = !networkIdentity.hasAuthority();
+    objectSpawnMessage.networkId = identity.getNetworkId();
+    objectSpawnMessage.isOwner = identity.hasAuthority();
     objectSpawnMessage.prefabName = gameObject->getPrefabName();
     objectSpawnMessage.sceneName = gameObject->getScene().getName();
     objectSpawnMessage.position = transform.getLocalPosition();
@@ -237,11 +237,11 @@ void NetworkServer::spawnObject(const std::string& prefabName, KapEngine::SceneM
         return;
     }
 
-    auto& networkIdentity = gameObject->getComponent<NetworkIdentity>();
+    auto& identity = gameObject->getComponent<NetworkIdentity>();
 
     // Spawn should only be called once per netId
-    if (networkObjects.containsKey(networkIdentity.getNetworkId())) {
-        KapEngine::Debug::warning("NetworkServer: " + prefabName + " with networkId=" + std::to_string(networkIdentity.getNetworkId()) +
+    if (networkObjects.containsKey(identity.getNetworkId())) {
+        KapEngine::Debug::warning("NetworkServer: " + prefabName + " with networkId=" + std::to_string(identity.getNetworkId()) +
                                   " was already spawned.");
         gameObject->destroy();
         return;
@@ -250,20 +250,20 @@ void NetworkServer::spawnObject(const std::string& prefabName, KapEngine::SceneM
     for (auto& component : gameObject->getAllComponents()) {
         auto networkCompenent = std::dynamic_pointer_cast<NetworkComponent>(component);
         if (networkCompenent) {
-            networkCompenent->_setNetworkIdentity(&networkIdentity);
+            networkCompenent->_setNetworkIdentity(&identity);
         }
     }
 
-    networkIdentity.setAuthority(false);
+    identity.setAuthority(false);
 
     try {
-        networkIdentity.onStartServer();
+        identity.onStartServer();
     } catch (std::exception& e) {
         KapEngine::Debug::error("NetworkServer: Exception in onStartServer: " + std::string(e.what()));
         return;
     }
 
-    networkObjects[networkIdentity.getNetworkId()] = gameObject;
+    networkObjects[identity.getNetworkId()] = gameObject;
 
     auto& transform = gameObject->getComponent<KapEngine::Transform>();
     transform.setPosition(position);
@@ -294,8 +294,8 @@ void NetworkServer::spawnObject(const std::string& prefabName, KapEngine::SceneM
     } catch (...) { KapEngine::Debug::error("NetworkServer: Failed to serialize custom payload"); }
 
     ObjectSpawnMessage message;
-    message.networkId = networkIdentity.getNetworkId();
-    message.isOwner = networkIdentity.hasAuthority();
+    message.networkId = identity.getNetworkId();
+    message.isOwner = identity.hasAuthority();
     message.prefabName = prefabName;
     message.sceneName = scene.getName();
     message.position = transform.getLocalPosition();
@@ -388,7 +388,7 @@ void NetworkServer::sendObject(const std::shared_ptr<KapEngine::GameObject>& gam
         return;
     }
 
-    auto& networkIdentity = gameObject->getComponent<NetworkIdentity>();
+    auto& identity = gameObject->getComponent<NetworkIdentity>();
     auto& transform = gameObject->getComponent<KapEngine::Transform>();
 
     // Serialize all components
@@ -404,8 +404,8 @@ void NetworkServer::sendObject(const std::shared_ptr<KapEngine::GameObject>& gam
     } catch (...) { KapEngine::Debug::error("NetworkServer: Failed to serialize custom payload"); }
 
     ObjectSpawnMessage message;
-    message.networkId = networkIdentity.getNetworkId();
-    message.isOwner = networkIdentity.hasAuthority();
+    message.networkId = identity.getNetworkId();
+    message.isOwner = identity.hasAuthority();
     message.prefabName = gameObject->getPrefabName();
     message.sceneName = gameObject->getScene().getName();
     message.position = transform.getLocalPosition();
