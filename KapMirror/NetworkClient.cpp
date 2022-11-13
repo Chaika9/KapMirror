@@ -183,9 +183,7 @@ void NetworkClient::onObjectSpawn(ObjectSpawnMessage& message) {
         if (networkCompenent) {
             try {
                 networkCompenent->onObjectUpdate();
-            } catch (std::exception& e) {
-                KapEngine::Debug::error("NetworkClient: Exception in onObjectUpdate: " + std::string(e.what()));
-            }
+            } catch (std::exception& e) { KapEngine::Debug::error("NetworkClient: Exception in onObjectUpdate: " + std::string(e.what())); }
         }
     }
 }

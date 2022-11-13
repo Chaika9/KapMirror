@@ -13,15 +13,19 @@ Simple, message based, MMO Scale TCP networking in C++. And no magic.
 - Thanks to the original version [Github](https://github.com/vis2k/Telepathy)
 
 ## What makes Telepathy special?
+
 Telepathy is originally Mirror's Transport Telepathy project.
 
 We needed a library that is:
+
 - Concurrent: Telepathy uses one thread per connection. It can make heavy use of multi core processors.
 - Simple: Telepathy takes care of everything. All you need to do is call Connect/GetNextMessage/Disconnect.
 
-MMORPGs are insanely difficult to make and we created Telepathy so that we would never have to worry about low level Networking again.
+MMORPGs are insanely difficult to make and we created Telepathy so that we would never have to worry about low level
+Networking again.
 What about...
-UDP vs. TCP: Minecraft and World of Warcraft are two of the biggest multiplayer games of all time and they both use TCP networking. There is a reason for that.
+UDP vs. TCP: Minecraft and World of Warcraft are two of the biggest multiplayer games of all time and they both use TCP
+networking. There is a reason for that.
 
 ## Credits
 
