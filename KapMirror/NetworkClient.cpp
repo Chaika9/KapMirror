@@ -21,6 +21,8 @@ void NetworkClient::connect(const std::string& ip, int port) {
     }
 
     registerSystemHandlers();
+
+    removeTransportHandlers();
     addTransportHandlers();
 
     connectState = ConnectState::Connecting;
@@ -86,8 +88,6 @@ void NetworkClient::onTransportDisconnect() {
     connectState = ConnectState::Disconnected;
 
     connection = nullptr;
-
-    removeTransportHandlers();
 }
 
 void NetworkClient::onTransportData(const std::shared_ptr<ArraySegment<byte>>& data) {

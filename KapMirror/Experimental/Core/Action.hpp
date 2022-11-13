@@ -52,7 +52,9 @@ namespace KapMirror::Experimental {
         /**
          * @brief Clear all handlers
          */
-        void clear() { handlers.clear(); }
+        void clear() {
+            handlers.clear();
+        }
 
       private:
         std::size_t getHash(const std::function<Signature>& func) { return (std::size_t)func.target_type().hash_code(); }
