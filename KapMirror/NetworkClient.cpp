@@ -150,13 +150,11 @@ void NetworkClient::onObjectSpawn(ObjectSpawnMessage& message) {
 
     auto& networkIdentity = gameObject->getComponent<NetworkIdentity>();
 
-    if (isNew) {
-        networkIdentity.setAuthority(message.isOwner);
-        networkIdentity.setNetworkId(message.networkId);
-
-        try {
-            networkIdentity.onStartClient();
-        } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkClient: Exception in onStartClient: " + std::string(e.what())); }
+    for (auto& component : gameObject->getAllComponents()) {
+        auto networkCompenent = std::dynamic_pointer_cast<NetworkComponent>(component);
+        if (networkCompenent) {
+            networkCompenent->_setNetworkIdentity(&networkIdentity);
+        }
     }
 
     // Deserialize all components
@@ -165,19 +163,29 @@ void NetworkClient::onObjectSpawn(ObjectSpawnMessage& message) {
         for (auto& component : gameObject->getAllComponents()) {
             auto networkCompenent = std::dynamic_pointer_cast<NetworkComponent>(component);
             if (networkCompenent) {
-                networkCompenent->_setNetworkIdentity(&networkIdentity);
                 networkCompenent->setActive(reader.read<bool>()); // isActive
                 networkCompenent->deserialize(reader);
             }
         }
     } catch (...) { KapEngine::Debug::error("NetworkClient: failed to deserialize custom payload for object " + message.prefabName); }
 
+    if (isNew) {
+        networkIdentity.setAuthority(message.isOwner);
+        networkIdentity.setNetworkId(message.networkId);
+
+        try {
+            networkIdentity.onStartClient();
+        } catch (std::exception& e) { KapEngine::Debug::error("NetworkClient: Exception in onStartClient: " + std::string(e.what())); }
+    }
+
     for (auto& component : gameObject->getAllComponents()) {
         auto networkCompenent = std::dynamic_pointer_cast<NetworkComponent>(component);
         if (networkCompenent) {
             try {
                 networkCompenent->onObjectUpdate();
-            } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkClient: Exception in onObjectUpdate: " + std::string(e.what())); }
+            } catch (std::exception& e) {
+                KapEngine::Debug::error("NetworkClient: Exception in onObjectUpdate: " + std::string(e.what()));
+            }
         }
     }
 }

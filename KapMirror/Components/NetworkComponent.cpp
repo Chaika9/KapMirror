@@ -44,3 +44,10 @@ bool NetworkComponent::isLocal() const {
     }
     return true;
 }
+
+bool NetworkComponent::hasAuthority() const {
+    if (networkIdentity != nullptr) {
+        return networkIdentity->hasAuthority();
+    }
+    return false;
+}

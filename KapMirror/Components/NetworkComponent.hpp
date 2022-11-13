@@ -38,6 +38,11 @@ namespace KapMirror {
         bool isLocal() const;
 
         /**
+         * @brief True on client if that component has been assigned to the client.
+         */
+        bool hasAuthority() const;
+
+        /**
          * @brief The unique network Id of this object (unique at runtime).
          */
         unsigned int getNetworkId() const {

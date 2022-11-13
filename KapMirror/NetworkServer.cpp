@@ -160,18 +160,9 @@ bool NetworkServer::removeConnection(int connectionId) { return connections.remo
 #pragma region KapEngine
 
 void NetworkServer::onObjectSpawn(ObjectSpawnMessage& message) {
-    bool isNew = false;
     std::shared_ptr<KapEngine::GameObject> gameObject;
     if (!getExistingObject(message.networkId, gameObject)) {
-        auto& scene = engine.getSceneManager()->getScene(message.sceneName);
-        if (!engine.getPrefabManager()->instantiatePrefab(message.prefabName, scene, gameObject)) {
-            KapEngine::Debug::error("NetworkServer: failed to instantiate prefab " + message.prefabName + " with networkId " +
-                                    std::to_string(message.networkId));
-            return;
-        }
-
-        isNew = true;
-        networkObjects[message.networkId] = gameObject;
+        return;
     }
 
     if (gameObject == nullptr) {
@@ -184,21 +175,16 @@ void NetworkServer::onObjectSpawn(ObjectSpawnMessage& message) {
         return;
     }
 
+    auto& networkIdentity = gameObject->getComponent<NetworkIdentity>();
+    if (!networkIdentity.hasAuthority()) {
+        KapEngine::Debug::warning("NetworkServer: object " + std::to_string(networkIdentity.getNetworkId()) + " does not have authority");
+        return;
+    }
+
     auto& transform = gameObject->getComponent<KapEngine::Transform>();
     transform.setPosition(message.position);
     transform.setRotation(message.rotation);
     transform.setScale(message.scale);
-
-    auto& networkIdentity = gameObject->getComponent<NetworkIdentity>();
-
-    if (isNew) {
-        networkIdentity.setAuthority(message.isOwner);
-        networkIdentity.setNetworkId(message.networkId);
-
-        try {
-            networkIdentity.onStartServer();
-        } catch (std::exception& e) { KapEngine::Debug::error("NetworkServer: Exception in onStartServer: " + std::string(e.what())); }
-    }
 
     // Deserialize all components
     NetworkReader reader(message.payload);
@@ -206,7 +192,6 @@ void NetworkServer::onObjectSpawn(ObjectSpawnMessage& message) {
         for (auto& component : gameObject->getAllComponents()) {
             auto networkCompenent = std::dynamic_pointer_cast<NetworkComponent>(component);
             if (networkCompenent) {
-                networkCompenent->_setNetworkIdentity(&networkIdentity);
                 networkCompenent->setActive(reader.read<bool>()); // isActive
                 networkCompenent->deserialize(reader);
             }
@@ -218,9 +203,20 @@ void NetworkServer::onObjectSpawn(ObjectSpawnMessage& message) {
         if (networkCompenent) {
             try {
                 networkCompenent->onObjectUpdate();
-            } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkServer: Exception in onObjectUpdate: " + std::string(e.what())); }
+            } catch (std::exception& e) { KapEngine::Debug::error("NetworkServer: Exception in onObjectUpdate: " + std::string(e.what())); }
         }
     }
+
+    ObjectSpawnMessage objectSpawnMessage;
+    objectSpawnMessage.networkId = networkIdentity.getNetworkId();
+    objectSpawnMessage.isOwner = !networkIdentity.hasAuthority();
+    objectSpawnMessage.prefabName = gameObject->getPrefabName();
+    objectSpawnMessage.sceneName = gameObject->getScene().getName();
+    objectSpawnMessage.position = transform.getLocalPosition();
+    objectSpawnMessage.rotation = transform.getLocalRotation();
+    objectSpawnMessage.scale = transform.getLocalScale();
+    objectSpawnMessage.payload = message.payload;
+    sendToAll(objectSpawnMessage);
 }
 
 void NetworkServer::spawnObject(const std::string& prefabName, KapEngine::SceneManagement::Scene& scene,
@@ -249,7 +245,14 @@ void NetworkServer::spawnObject(const std::string& prefabName, KapEngine::SceneM
         return;
     }
 
-    networkIdentity.setAuthority(true);
+    for (auto& component : gameObject->getAllComponents()) {
+        auto networkCompenent = std::dynamic_pointer_cast<NetworkComponent>(component);
+        if (networkCompenent) {
+            networkCompenent->_setNetworkIdentity(&networkIdentity);
+        }
+    }
+
+    networkIdentity.setAuthority(false);
 
     try {
         networkIdentity.onStartServer();
@@ -267,6 +270,15 @@ void NetworkServer::spawnObject(const std::string& prefabName, KapEngine::SceneM
         playload(gameObject);
     }
 
+    for (auto& component : gameObject->getAllComponents()) {
+        auto networkCompenent = std::dynamic_pointer_cast<NetworkComponent>(component);
+        if (networkCompenent) {
+            try {
+                networkCompenent->onObjectUpdate();
+            } catch (std::exception& e) { KapEngine::Debug::error("NetworkServer: Exception in onObjectUpdate: " + std::string(e.what())); }
+        }
+    }
+
     // Serialize all components
     NetworkWriter writer;
     try {
@@ -279,18 +291,9 @@ void NetworkServer::spawnObject(const std::string& prefabName, KapEngine::SceneM
         }
     } catch (...) { KapEngine::Debug::error("NetworkServer: Failed to serialize custom payload"); }
 
-    for (auto& component : gameObject->getAllComponents()) {
-        auto networkCompenent = std::dynamic_pointer_cast<NetworkComponent>(component);
-        if (networkCompenent) {
-            try {
-                networkCompenent->onObjectUpdate();
-            } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkServer: Exception in onObjectUpdate: " + std::string(e.what())); }
-        }
-    }
-
     ObjectSpawnMessage message;
     message.networkId = networkIdentity.getNetworkId();
-    message.isOwner = !networkIdentity.hasAuthority();
+    message.isOwner = networkIdentity.hasAuthority();
     message.prefabName = prefabName;
     message.sceneName = scene.getName();
     message.position = transform.getLocalPosition();
@@ -364,15 +367,6 @@ void NetworkServer::updateObject(unsigned int id) {
         }
     } catch (...) { KapEngine::Debug::error("NetworkServer: Failed to serialize custom payload"); }
 
-    for (auto& component : gameObject->getAllComponents()) {
-        auto networkCompenent = std::dynamic_pointer_cast<NetworkComponent>(component);
-        if (networkCompenent) {
-            try {
-                networkCompenent->onObjectUpdate();
-            } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkServer: Exception in onObjectUpdate: " + std::string(e.what())); }
-        }
-    }
-
     ObjectSpawnMessage message;
     message.networkId = identity.getNetworkId();
     message.isOwner = identity.hasAuthority();
@@ -409,7 +403,7 @@ void NetworkServer::sendObject(const std::shared_ptr<KapEngine::GameObject>& gam
 
     ObjectSpawnMessage message;
     message.networkId = networkIdentity.getNetworkId();
-    message.isOwner = !networkIdentity.hasAuthority();
+    message.isOwner = networkIdentity.hasAuthority();
     message.prefabName = gameObject->getPrefabName();
     message.sceneName = gameObject->getScene().getName();
     message.position = transform.getLocalPosition();
@@ -426,7 +420,7 @@ void NetworkServer::onObjectTransformUpdate(ObjectTransformMessage& message) {
     }
 
     auto& identity = gameObject->getComponent<NetworkIdentity>();
-    if (!identity.hasAuthority()) {
+    if (identity.hasAuthority()) {
         return;
     }
 
