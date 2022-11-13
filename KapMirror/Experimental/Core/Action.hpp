@@ -53,7 +53,6 @@ namespace KapMirror::Experimental {
          * @brief Clear all handlers
          */
         void clear() {
-            std::lock_guard<std::mutex> lock(handlersMutex);
             handlers.clear();
         }
 
