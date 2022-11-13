@@ -38,7 +38,7 @@ namespace KapMirror {
         KapEngine::Dictionary<unsigned int, std::shared_ptr<KapEngine::GameObject>> networkObjects;
 
       public:
-        NetworkClient(NetworkManager& _manager, KapEngine::KEngine& _engine);
+        explicit NetworkClient(NetworkManager& _manager, KapEngine::KEngine& _engine);
         ~NetworkClient() = default;
 
         /**
@@ -143,9 +143,9 @@ namespace KapMirror {
 
         void onTransportConnect();
         void onTransportDisconnect();
-        void onTransportData(std::shared_ptr<ArraySegment<byte>> data);
+        void onTransportData(const std::shared_ptr<ArraySegment<byte>>& data);
 
-        bool unpackAndInvoke(std::shared_ptr<ArraySegment<byte>> data);
+        bool unpackAndInvoke(const std::shared_ptr<ArraySegment<byte>>& data);
 
         // KapEngine
         void onObjectSpawn(ObjectSpawnMessage& message);

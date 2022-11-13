@@ -6,22 +6,28 @@ using namespace KapMirror::Experimental;
 NetworkStatistics::NetworkStatistics(std::shared_ptr<KapEngine::GameObject> go) : KapEngine::Component(go, "NetworkStatistics") {}
 
 void NetworkStatistics::onStart() {
+    onClientDataReceived = [this](Transport&, const std::shared_ptr<ArraySegment<byte>>& data) { onClientReceive(data); };
+    onClientDataSent = [this](Transport&, const std::shared_ptr<ArraySegment<byte>>& data) { onClientSend(data); };
+    onServerDataReceived = [this](Transport&, int, const std::shared_ptr<ArraySegment<byte>>& data) { onServerReceive(data); };
+    onServerDataSent = [this](Transport&, int, const std::shared_ptr<ArraySegment<byte>>& data) { onServerSend(data); };
+
     if (Transport::activeTransport != nullptr) {
-        Transport::activeTransport->onClientDataReceived +=
-            [this](Transport&, const std::shared_ptr<ArraySegment<byte>>& data) { onClientReceive(data); };
-        Transport::activeTransport->onClientDataSent +=
-            [this](Transport&, const std::shared_ptr<ArraySegment<byte>>& data) { onClientSend(data); };
-        Transport::activeTransport->onServerDataReceived +=
-            [this](Transport&, int, const std::shared_ptr<ArraySegment<byte>>& data) { onServerReceive(data); };
-        Transport::activeTransport->onServerDataSent +=
-            [this](Transport&, int, const std::shared_ptr<ArraySegment<byte>>& data) { onServerSend(data); };
+        Transport::activeTransport->onClientDataReceived += onClientDataReceived;
+        Transport::activeTransport->onClientDataSent += onClientDataSent;
+        Transport::activeTransport->onServerDataReceived += onServerDataReceived;
+        Transport::activeTransport->onServerDataSent += onServerDataSent;
     } else {
         KapEngine::Debug::error("NetworkStatistics: no available or active Transport");
     }
 }
 
 void NetworkStatistics::onDestroy() {
-    // TODO: remove events
+    if (Transport::activeTransport != nullptr) {
+        Transport::activeTransport->onClientDataReceived -= onClientDataReceived;
+        Transport::activeTransport->onClientDataSent -= onClientDataSent;
+        Transport::activeTransport->onServerDataReceived -= onServerDataReceived;
+        Transport::activeTransport->onServerDataSent -= onServerDataSent;
+    }
 }
 
 void NetworkStatistics::onUpdate() {

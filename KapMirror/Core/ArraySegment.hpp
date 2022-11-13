@@ -19,13 +19,13 @@ namespace KapMirror {
             size = 0;
         }
 
-        ArraySegment(T* _array, int _size) {
+        explicit ArraySegment(T* _array, int _size) {
             array = Array::copyArray(_array, _size);
             offset = 0;
             size = _size;
         }
 
-        ArraySegment(T* _array, int _offset, int _size) {
+        explicit ArraySegment(T* _array, int _offset, int _size) {
             array = Array::copyArray(_array, _size);
             offset = _offset;
             size = _size - _offset;

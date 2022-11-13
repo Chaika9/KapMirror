@@ -30,10 +30,10 @@ void NetworkServer::initialize() {
     initialized = true;
 }
 
-void NetworkServer::listen(int maxConnections, int port) {
+void NetworkServer::listen(int _maxConnections, int port) {
     initialize();
 
-    this->maxConnections = maxConnections;
+    maxConnections = _maxConnections;
     Transport::activeTransport->serverStart(port);
 
     active = true;
@@ -70,7 +70,7 @@ void NetworkServer::addTransportHandlers() {
 }
 
 void NetworkServer::removeTransportHandlers() {
-    // TODO: Clear only the handlers of this class
+    // clear all events
     Transport::activeTransport->onServerConnected.clear();
     Transport::activeTransport->onServerDisconnected.clear();
     Transport::activeTransport->onServerDataReceived.clear();
@@ -118,7 +118,7 @@ void NetworkServer::onTransportDisconnect(int connectionId) {
     }
 }
 
-void NetworkServer::onTransportData(int connectionId, std::shared_ptr<ArraySegment<byte>> data) {
+void NetworkServer::onTransportData(int connectionId, const std::shared_ptr<ArraySegment<byte>>& data) {
     std::shared_ptr<NetworkConnectionToClient> connection;
     if (connections.tryGetValue(connectionId, connection)) {
         if (!unpackAndInvoke(connection, data)) {
@@ -129,12 +129,14 @@ void NetworkServer::onTransportData(int connectionId, std::shared_ptr<ArraySegme
     }
 }
 
-bool NetworkServer::unpackAndInvoke(std::shared_ptr<NetworkConnectionToClient> connection, std::shared_ptr<ArraySegment<byte>> data) {
+bool NetworkServer::unpackAndInvoke(const std::shared_ptr<NetworkConnectionToClient>& connection,
+                                    const std::shared_ptr<ArraySegment<byte>>& data) {
+    std::shared_ptr<ArraySegment<byte>> dataToRead = data;
     if (Compression::activeCompression != nullptr) {
-        data = Compression::activeCompression->decompress(data);
+        dataToRead = Compression::activeCompression->decompress(dataToRead);
     }
 
-    NetworkReader reader(data);
+    NetworkReader reader(dataToRead);
 
     ushort messageType;
     MessagePacking::unpack(reader, messageType);

@@ -56,7 +56,7 @@ void NetworkClient::addTransportHandlers() {
 }
 
 void NetworkClient::removeTransportHandlers() {
-    // TODO: Clear only the handlers of this class
+    // clear all events
     Transport::activeTransport->onClientConnected.clear();
     Transport::activeTransport->onClientDisconnected.clear();
     Transport::activeTransport->onClientDataReceived.clear();
@@ -90,7 +90,7 @@ void NetworkClient::onTransportDisconnect() {
     removeTransportHandlers();
 }
 
-void NetworkClient::onTransportData(std::shared_ptr<ArraySegment<byte>> data) {
+void NetworkClient::onTransportData(const std::shared_ptr<ArraySegment<byte>>& data) {
     if (!unpackAndInvoke(data)) {
         KapEngine::Debug::warning("NetworkClient: failed to unpack and invoke message. Disconnecting");
         connection->disconnect();
@@ -98,12 +98,13 @@ void NetworkClient::onTransportData(std::shared_ptr<ArraySegment<byte>> data) {
     }
 }
 
-bool NetworkClient::unpackAndInvoke(std::shared_ptr<ArraySegment<byte>> data) {
+bool NetworkClient::unpackAndInvoke(const std::shared_ptr<ArraySegment<byte>>& data) {
+    std::shared_ptr<ArraySegment<byte>> dataToRead = data;
     if (Compression::activeCompression != nullptr) {
-        data = Compression::activeCompression->decompress(data);
+        dataToRead = Compression::activeCompression->decompress(dataToRead);
     }
 
-    NetworkReader reader(data);
+    NetworkReader reader(dataToRead);
 
     ushort messageType;
     MessagePacking::unpack(reader, messageType);
@@ -148,12 +149,12 @@ void NetworkClient::onObjectSpawn(ObjectSpawnMessage& message) {
     transform.setRotation(message.rotation);
     transform.setScale(message.scale);
 
-    auto& networkIdentity = gameObject->getComponent<NetworkIdentity>();
+    auto& identity = gameObject->getComponent<NetworkIdentity>();
 
     for (auto& component : gameObject->getAllComponents()) {
         auto networkCompenent = std::dynamic_pointer_cast<NetworkComponent>(component);
         if (networkCompenent) {
-            networkCompenent->_setNetworkIdentity(&networkIdentity);
+            networkCompenent->_setNetworkIdentity(&identity);
         }
     }
 
@@ -170,11 +171,11 @@ void NetworkClient::onObjectSpawn(ObjectSpawnMessage& message) {
     } catch (...) { KapEngine::Debug::error("NetworkClient: failed to deserialize custom payload for object " + message.prefabName); }
 
     if (isNew) {
-        networkIdentity.setAuthority(message.isOwner);
-        networkIdentity.setNetworkId(message.networkId);
+        identity.setAuthority(message.isOwner);
+        identity.setNetworkId(message.networkId);
 
         try {
-            networkIdentity.onStartClient();
+            identity.onStartClient();
         } catch (std::exception& e) { KapEngine::Debug::error("NetworkClient: Exception in onStartClient: " + std::string(e.what())); }
     }
 
@@ -200,10 +201,10 @@ void NetworkClient::onObjectDestroy(ObjectDestroyMessage& message) {
         return;
     }
 
-    auto& networkIdentity = gameObject->getComponent<NetworkIdentity>();
+    auto& identity = gameObject->getComponent<NetworkIdentity>();
 
     try {
-        networkIdentity.onStopClient();
+        identity.onStopClient();
     } catch (std::exception& e) { KapEngine::Debug::error("NetworkClient: Exception in onStopClient: " + std::string(e.what())); }
 
     gameObject->destroy();
@@ -233,9 +234,6 @@ void NetworkClient::updateObject(unsigned int id) {
         return;
     }
 
-    auto& identity = gameObject->getComponent<NetworkIdentity>();
-    auto& transform = gameObject->getComponent<KapEngine::Transform>();
-
     NetworkWriter writer;
     try {
         for (auto& component : gameObject->getAllComponents()) {
@@ -246,6 +244,9 @@ void NetworkClient::updateObject(unsigned int id) {
             }
         }
     } catch (...) { KapEngine::Debug::error("NetworkClient: Failed to serialize custom payload"); }
+
+    auto& identity = gameObject->getComponent<NetworkIdentity>();
+    auto& transform = gameObject->getComponent<KapEngine::Transform>();
 
     ObjectSpawnMessage message;
     message.networkId = identity.getNetworkId();

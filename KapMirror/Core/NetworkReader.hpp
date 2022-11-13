@@ -9,7 +9,7 @@
 namespace KapMirror {
     class NetworkReader {
       private:
-        byte* buffer;
+        byte* buffer = nullptr;
         int position;
 
       public:

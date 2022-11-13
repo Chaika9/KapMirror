@@ -2,10 +2,11 @@
 #include "SocketException.hpp"
 #include <stdexcept>
 #include <cstring>
+#include <utility>
 
 using namespace KapMirror;
 
-Socket::Socket(std::shared_ptr<Address> _address) : address(_address), socket_fd(INVALID_SOCKET) {
+Socket::Socket(std::shared_ptr<Address> _address) : address(std::move(_address)), socket_fd(INVALID_SOCKET) {
     if (address == nullptr) {
         throw std::runtime_error("Address cannot be null");
     }
@@ -27,7 +28,7 @@ Socket::Socket(std::shared_ptr<Address> _address) : address(_address), socket_fd
 #endif
 }
 
-Socket::Socket(std::shared_ptr<Address> _address, SOCKET _socket_fd) : address(_address), socket_fd(_socket_fd) {
+Socket::Socket(std::shared_ptr<Address> _address, SOCKET _socket_fd) : address(std::move(_address)), socket_fd(_socket_fd) {
     if (address == nullptr) {
         throw std::runtime_error("Address cannot be null");
     }

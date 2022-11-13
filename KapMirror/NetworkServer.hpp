@@ -11,7 +11,6 @@
 #include "Debug.hpp"
 #include <memory>
 #include <functional>
-#include <iostream>
 
 namespace KapMirror {
     class NetworkManager;
@@ -32,7 +31,7 @@ namespace KapMirror {
         KapEngine::Dictionary<unsigned int, std::shared_ptr<KapEngine::GameObject>> networkObjects;
 
       public:
-        NetworkServer(NetworkManager& _manager, KapEngine::KEngine& _engine);
+        explicit NetworkServer(NetworkManager& _manager, KapEngine::KEngine& _engine);
         ~NetworkServer() = default;
 
         bool isActivated() const { return active; }
@@ -159,7 +158,7 @@ namespace KapMirror {
         }
 
         /**
-         * @brief Spawn new GameObject for all clients. (only Prefab)
+         * @brief Spawn new GameObject on current Scene for all clients. (only Prefab)
          */
         void spawnObject(const std::string& prefabName, const KapEngine::Tools::Vector3& position,
                          std::shared_ptr<KapEngine::GameObject>& gameObject) {
@@ -206,12 +205,12 @@ namespace KapMirror {
 
         void onTransportConnect(int connectionId);
         void onTransportDisconnect(int connectionId);
-        void onTransportData(int connectionId, std::shared_ptr<ArraySegment<byte>> data);
+        void onTransportData(int connectionId, const std::shared_ptr<ArraySegment<byte>>& data);
 
         bool addConnection(const std::shared_ptr<NetworkConnectionToClient>& connection);
         bool removeConnection(int connectionId);
 
-        bool unpackAndInvoke(std::shared_ptr<NetworkConnectionToClient> connection, std::shared_ptr<ArraySegment<byte>> data);
+        bool unpackAndInvoke(const std::shared_ptr<NetworkConnectionToClient>& connection, const std::shared_ptr<ArraySegment<byte>>& data);
 
         void sendObject(const std::shared_ptr<KapEngine::GameObject>& gameObject,
                         const std::shared_ptr<NetworkConnectionToClient>& connection);

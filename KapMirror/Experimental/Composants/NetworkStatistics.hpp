@@ -1,6 +1,7 @@
 #pragma once
 
 #include "KapMirror/Components/NetworkComponent.hpp"
+#include <functional>
 
 namespace KapMirror::Experimental {
     class NetworkStatistics : public KapEngine::Component {
@@ -84,5 +85,11 @@ namespace KapMirror::Experimental {
         void updateClient();
 
         void updateServer();
+
+      private:
+        std::function<void(Transport&, const std::shared_ptr<ArraySegment<byte>>&)> onClientDataReceived;
+        std::function<void(Transport&, const std::shared_ptr<ArraySegment<byte>>&)> onClientDataSent;
+        std::function<void(Transport&, int, const std::shared_ptr<ArraySegment<byte>>&)> onServerDataReceived;
+        std::function<void(Transport&, int, const std::shared_ptr<ArraySegment<byte>>&)> onServerDataSent;
     };
 } // namespace KapMirror::Experimental

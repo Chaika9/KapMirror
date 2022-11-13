@@ -14,7 +14,9 @@ namespace KapMirror {
 
       public:
         explicit Socket(std::shared_ptr<Address> _address);
-        Socket(std::shared_ptr<Address> _address, SOCKET _socket_fd);
+
+        explicit Socket(std::shared_ptr<Address> _address, SOCKET _socket_fd);
+
         ~Socket();
 
         std::shared_ptr<Address> getAddress() const;

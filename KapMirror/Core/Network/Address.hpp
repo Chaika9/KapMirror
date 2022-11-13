@@ -14,7 +14,7 @@ namespace KapMirror {
 
       public:
         Address();
-        Address(const std::string& host, int port, SocketType type = SocketType::TCP);
+        explicit Address(const std::string& host, int port, SocketType type = SocketType::TCP);
         explicit Address(int port, bool passive = true, SocketType type = SocketType::TCP);
 
         ~Address();

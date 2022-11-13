@@ -75,7 +75,14 @@ namespace KapMirror {
          */
         virtual void onStopServer() {}
 
+        /**
+         * @brief This is invoked when a client is connected to a server.
+         */
         virtual void onServerClientConnected(const std::shared_ptr<NetworkConnection>& connection) {}
+
+        /**
+         * @brief This is invoked when a client is disconnected from a server.
+         */
         virtual void onServerClientDisconnected(const std::shared_ptr<NetworkConnection>& connection) {}
 
         /**
@@ -88,12 +95,21 @@ namespace KapMirror {
          */
         virtual void onStopClient() {}
 
+        /**
+         * @brief This is invoked when the client is connected to a server.
+         */
         virtual void onClientConnected(const std::shared_ptr<NetworkConnection>& connection) {}
+
+        /**
+         * @brief This is invoked when the client is disconnected from a server.
+         */
         virtual void onClientDisconnected(const std::shared_ptr<NetworkConnection>& connection) {}
 
       private:
         void initializeSingleton();
 
         void setupServer();
+
+        void removeHandlers();
     };
 } // namespace KapMirror

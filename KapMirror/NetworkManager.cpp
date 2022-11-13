@@ -17,6 +17,14 @@ NetworkManager::NetworkManager(std::shared_ptr<KapEngine::GameObject> go) : KapE
 NetworkManager::~NetworkManager() {
     server->shutdown();
     client->disconnect();
+    removeHandlers();
+}
+
+void NetworkManager::removeHandlers() {
+    server->onConnectedEvent.clear();
+    server->onDisconnectedEvent.clear();
+    client->onConnectedEvent.clear();
+    client->onDisconnectedEvent.clear();
 }
 
 void NetworkManager::initializeSingleton() {
@@ -94,6 +102,8 @@ void NetworkManager::stopServer() {
 
     server->shutdown();
 
+    removeHandlers();
+
     auto& scene = getEngine().getSceneManager()->getCurrentScene();
     for (auto& go : scene.getAllObjects()) {
         for (auto& component : go->getAllComponents()) {
@@ -141,6 +151,8 @@ void NetworkManager::stopClient() {
     } catch (std::exception& e) { KAP_DEBUG_ERROR("NetworkManager: Exception in onStopClient: " + std::string(e.what())); }
 
     client->disconnect();
+
+    removeHandlers();
 
     auto& scene = getEngine().getSceneManager()->getCurrentScene();
     for (auto& go : scene.getAllObjects()) {

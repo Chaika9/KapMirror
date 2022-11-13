@@ -11,7 +11,7 @@
 namespace KapMirror {
     class NetworkWriter {
       private:
-        byte* buffer;
+        byte* buffer = nullptr;
         int bufferSize;
         int position;
 
@@ -19,6 +19,12 @@ namespace KapMirror {
         NetworkWriter() {
             buffer = new byte[BUFFER_SIZE];
             bufferSize = BUFFER_SIZE;
+            position = 0;
+        }
+
+        explicit NetworkWriter(int size) {
+            buffer = new byte[size];
+            bufferSize = size;
             position = 0;
         }
 
