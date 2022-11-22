@@ -31,7 +31,7 @@ void Server::start(int port) {
 }
 
 void Server::listen(int port) {
-    auto address = std::make_shared<Address>(port);
+    auto address = std::make_shared<Address>(port, true);
     listener = std::make_shared<TcpListener>(address);
 
     try {

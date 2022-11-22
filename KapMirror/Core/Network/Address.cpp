@@ -27,6 +27,7 @@ Address::Address(int port, bool passive, SocketType type) {
     addrinfo hints = {0};
     hints.ai_family = AF_INET; // Note: Windows fails to connect if left unspecified
     hints.ai_socktype = (int)type;
+    hints.ai_addr = INADDR_ANY;
     if (passive) {
         hints.ai_flags = AI_PASSIVE;
     }
